@@ -6,8 +6,13 @@
 /*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 02:45:03 by yel-ouaz          #+#    #+#             */
-/*   Updated: 2024/08/14 02:47:40 by yel-ouaz         ###   ########.fr       */
+/*   Updated: 2024/08/14 02:48:30 by yel-ouaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minshell.h"
+#include "minishell.h"
+
+int main()
+{
+	
+}
