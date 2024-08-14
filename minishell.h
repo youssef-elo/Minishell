@@ -6,11 +6,11 @@
 /*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 02:45:15 by yel-ouaz          #+#    #+#             */
-/*   Updated: 2024/08/14 02:46:01 by yel-ouaz         ###   ########.fr       */
+/*   Updated: 2024/08/14 04:20:41 by yel-ouaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
-# define MINISHELL_h
+# define MINISHELL_H
 
 #endif
