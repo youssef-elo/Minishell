@@ -10,7 +10,7 @@ struct s_env
 {
 	char *key;
 	char *value;
-	t_env *next;	
+	t_env *next;
 };
 
 size_t	ft_strlen(const char *s);
