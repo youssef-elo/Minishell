@@ -1,1 +1,0 @@
-when cheking for unclosed quotes the single quotes inside double quotes are considered as characters  !! as in dont handle nested quotes
