@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
+/*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 02:45:03 by yel-ouaz          #+#    #+#             */
-/*   Updated: 2024/08/14 06:21:25 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/08/15 23:27:18 by yel-ouaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,19 +44,15 @@ void env_stacking(char **env, t_env **env_stack)
 	}
 }
 
-
-int main(int argc, char const *argv[], char **env)
+int main(int argc, char **argv, char **env)
 {
-	t_env *env_stack;	
-	env_stacking(env, &env_stack);
 	t_env *temp;
+	t_env *env_stack;	
+
+	argc = 0;
+	argv = 0;
+	env_stacking(env, &env_stack);
 	temp = env_stack;
-	while (temp)
-	{
-		printf("key : %s ----> value : %s\n", temp->key, temp->value);
-		temp = temp->next;
-	}
-	// system("leaks a.out");
-	
+	get_line(env_stack);
 	return 0;
 }

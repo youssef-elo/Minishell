@@ -10,7 +10,7 @@ FLAGS = -Wall -Wextra -Werror
 
 READLINE = -l readline
 
-all : $(NAME)
+all : $(NAME) clean
 
 $(NAME) : $(OFILES) $(HEADER) 
 	cc $(FLAGS) $(OFILES) $(READLINE) -o $(NAME)

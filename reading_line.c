@@ -6,7 +6,7 @@
 /*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 04:19:47 by yel-ouaz          #+#    #+#             */
-/*   Updated: 2024/08/15 23:42:15 by yel-ouaz         ###   ########.fr       */
+/*   Updated: 2024/08/16 01:22:57 by yel-ouaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,31 @@
 
 void check_quotes(char *line)
 {
-	int i;
-	int doubl;
-	int single;
+	int		i;
+	char	quote;
+	int		opened;
 
 	i = 0;
-	doubl = 0;
-	single = 0;
+	quote = 0;
+	opened = 0;
 	while(line[i])
 	{
-		if (line[i] == '\'')
-			single++;
-		if (line[i] == '\"')
-			doubl++;
+		if ((line[i] == '\'' || line[i] == '\"') && opened == 0)
+		{
+			opened = 1;
+			quote = line[i];
+		}
+		else if (line[i] == quote && opened == 1)
+		{
+			opened = 0;
+			quote = 0;
+		}
 		i++;
 	}
-	if (doubl % 2 != 0)
-		printf("ERROR : unclosed double quote\n");
-	if (single % 2 != 0)
+	if (opened == 1 && quote == '\'')
 		printf("ERROR : unclosed single quote\n");
+	if (opened == 1 && quote == '\"')
+		printf("ERROR : unclosed double quote\n");
 }
 
 void clean_up_line(char **line)
@@ -58,9 +64,8 @@ void get_line(t_env *env)
 	while(1)
 	{
 		line = readline("KTAB > ");
-		if (line)
+		if (line[0] != '\0')
 			add_history(line);
-		// clean_up_line(&line);
 		check_quotes(line);
 		free(line);
 	}
