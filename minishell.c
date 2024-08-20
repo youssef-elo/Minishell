@@ -6,7 +6,7 @@
 /*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 02:45:03 by yel-ouaz          #+#    #+#             */
-/*   Updated: 2024/08/15 23:27:18 by yel-ouaz         ###   ########.fr       */
+/*   Updated: 2024/08/16 21:57:18 by yel-ouaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,11 @@ void env_stacking(char **env, t_env **env_stack)
 
 int main(int argc, char **argv, char **env)
 {
-	t_env *temp;
-	t_env *env_stack;	
+	t_env *env_list;	
 
 	argc = 0;
 	argv = 0;
-	env_stacking(env, &env_stack);
-	temp = env_stack;
-	get_line(env_stack);
+	env_stacking(env, &env_list);
+	get_line(env_list);
 	return 0;
 }
