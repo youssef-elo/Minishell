@@ -6,7 +6,7 @@
 /*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 02:45:03 by yel-ouaz          #+#    #+#             */
-/*   Updated: 2024/08/16 21:57:18 by yel-ouaz         ###   ########.fr       */
+/*   Updated: 2024/09/21 22:56:50 by yel-ouaz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,5 @@ int main(int argc, char **argv, char **env)
 	argc = 0;
 	argv = 0;
 	env_stacking(env, &env_list);
-	get_line(env_list);
 	return 0;
 }
