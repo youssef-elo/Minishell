@@ -1,6 +1,7 @@
 NAME = minishell
 
-FILES = reading_line.c string_utils.c linked_list_utils.c minishell.c
+FILES := $(shell ls *.c)
+#remove forbiden
 
 OFILES = $(FILES:.c=.o)
 
@@ -10,7 +11,7 @@ FLAGS = -Wall -Wextra -Werror
 
 READLINE = -l readline
 
-all : $(NAME) clean
+all : $(NAME)
 
 $(NAME) : $(OFILES) $(HEADER) 
 	cc $(FLAGS) $(OFILES) $(READLINE) -o $(NAME)

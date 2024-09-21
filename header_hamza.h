@@ -16,6 +16,8 @@ struct s_env
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
 t_env	*ft_lstnew(void *key, void *value);
+void	env_stacking(char **env, t_env **env_stack);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 void	append_node(t_env **list, char *key, char *value);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
 char	*ft_substr(const char *s, unsigned int start, size_t len);
