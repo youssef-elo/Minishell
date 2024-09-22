@@ -13,10 +13,13 @@ struct s_env
 	t_env *next;
 };
 
+void	parse(char *str);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
 t_env	*ft_lstnew(void *key, void *value);
+// char	*ft_strjoinc(const char **s1, const char c);
 void	env_stacking(char **env, t_env **env_stack);
+char	*ft_strjoin(const char *s1, const char *s2);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 void	append_node(t_env **list, char *key, char *value);
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);

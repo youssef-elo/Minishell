@@ -6,7 +6,7 @@
 /*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 02:45:03 by yel-ouaz          #+#    #+#             */
-/*   Updated: 2024/09/22 00:40:10 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/09/22 22:45:59 by hrochd           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,15 @@ int main(int argc, char **argv, char **env)
 
 	while (1)
 	{
-		rl = readline("minishell >");
+		rl = readline("minishell> ");
 		if(rl == NULL)
 			break;
 		if(ft_strlen(rl) > 0)
 			add_history(rl);
 		if(ft_strncmp(rl, "exit", 4) == 0)
 			break;
+		parse(rl);
 	}
-	
+	free(rl);
 	return 0;
 }
