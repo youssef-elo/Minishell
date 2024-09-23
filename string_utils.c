@@ -6,7 +6,7 @@
 /*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 06:12:17 by hrochd            #+#    #+#             */
-/*   Updated: 2024/09/22 23:43:39 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/09/23 13:26:26 by hrochd           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,26 +66,22 @@ char	*ft_strdup(const char *s1)
 
 	i = 0;
 	slen = ft_strlen(s1) + 1;
-	s2 = malloc(slen * sizeof(char));
+	s2 = gc_handler(slen * sizeof(char), MALLOC);
 	if (!s2)
 		return (NULL);
 	ft_strlcpy(s2, s1, slen);
 	return (s2);
 }
 
-char	*ft_chrdup(const char s1)
+char	*ft_chrdup(const char c)
 {
-	size_t	i;
-	size_t	slen;
-	char	*s2;
+	char	*s;
 
-	i = 0;
-	slen = 1;
-	s2 = malloc(slen * sizeof(char));
-	if (!s2)
+	s = gc_handler(2 * sizeof(char), MALLOC);
+	if (!s)
 		return (NULL);
-	ft_strlcpy(s2, &s1, slen);
-	return (s2);
+	ft_strlcpy(s, &c, 2);
+	return (s);
 }
 
 char	*ft_substr(const char *s, unsigned int start, size_t len)
@@ -104,7 +100,7 @@ char	*ft_substr(const char *s, unsigned int start, size_t len)
 		return (ft_strdup(""));
 	if (len > slen - i)
 		len = slen - i;
-	p = (char *)malloc(len + 1);
+	p = (char *)gc_handler(len + 1, MALLOC);
 	if (p == NULL)
 		return (NULL);
 	while (j < len && s[i])
@@ -143,32 +139,30 @@ char	*ft_strjoin(const char *s1, const char *s2)
 		return (ft_strdup(s1));
 	i = ft_strlen(s1);
 	j = ft_strlen(s2);
-	p = malloc((i + j + 1) * sizeof(char));
+	p = gc_handler((i + j + 1) * sizeof(char), MALLOC);
 	if (!p)
 		return (NULL);
 	ft_strlcpy(p, s1, (i + 1));
 	ft_strlcat(p, s2, (i + j + 1));
 	return (p);
 }
-// char	*ft_strjoinc(const char **s1, const char c)
-// {
-// 	size_t	i;
-// 	size_t	j;
-// 	char	*p;
+char	*ft_strjoinc(const char *s1, const char c)
+{
+	size_t	i;
+	char	*p;
 
-// 	if (s1 == NULL && !c)
-// 		return (NULL);
-// 	if (s1 == NULL && c)
-// 		return (ft_chrdup(c));
-// 	if (!c && s1)
-// 		return (ft_strdup(&s1));
-// 	i = ft_strlen(s1);
-// 	j = 1;
-// 	p = malloc((i + 2) * sizeof(char));
-// 	if (!p)
-// 		return (NULL);
-// 	ft_strlcpy(p, s1, (i + 1));
-// 	ft_strlcat(p, &c, (i + 2));
-// 	return (p);
-// }
+	if (s1 == NULL && !c)
+		return (NULL);
+	if (s1 == NULL && c)
+		return (ft_chrdup(c));
+	if (!c && s1)
+		return (ft_strdup(s1));
+	i = ft_strlen(s1);
+	p = gc_handler((i + 2) * sizeof(char), MALLOC);
+	if (!p)
+		return (NULL);
+	ft_strlcpy(p, s1, (i + 1));
+	ft_strlcat(p, &c, (i + 2));
+	return (p);
+}
 
