@@ -6,7 +6,7 @@
 /*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/21 23:00:49 by hrochd            #+#    #+#             */
-/*   Updated: 2024/09/23 18:15:57 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/09/25 20:53:58 by hrochd           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,19 @@ int	is_space(char c)
 		return (0);
 }
 
-void omit_spaces(int *i, char *str)
+void omit_spaces(int *i, char *str, char **cmd)
 {
+	int j;
+
+	j = *i;
 	while(str[*i] && is_space(str[*i]))
 		(*i)++;
 	(*i)--;
+	if(str[(*i) + 1] != '\0' && j > 0)
+	{
+		*cmd = ft_strjoinc(*cmd, SEPARATOR);
+		// (*i)++;
+	}
 }
 
 void toggle(int *boolean)
@@ -35,6 +43,37 @@ void toggle(int *boolean)
 	else
 		*boolean = 1;
 }
+
+void print_tokens(char *str)
+{
+	int i = 0;
+	while (str[i])
+	{
+		if(str[i] == SEPARATOR)
+			write(1, "$\n", 2);
+		else
+			write(1, &str[i], 1);
+		i++;
+	}
+	write(1, "$\n", 2);
+}
+
+void handle_delimiter(int *i, char **cmd, char *str)
+{
+	if((*i) != 0 && !is_space(str[*i - 1]))
+		*cmd = ft_strjoinc(*cmd, SEPARATOR);
+	*cmd = ft_strjoinc(*cmd, str[*i]);
+	if(str[*i] == str[*i + 1])
+	{
+		(*i)++;
+		if(str[*i] == '|')
+			*cmd = ft_strjoinc(*cmd, SEPARATOR);
+		*cmd = ft_strjoinc(*cmd, str[*i]);
+	}
+	if(str[*i + 1] != '\0' && !is_space(str[*i + 1]) && str[*i + 1] != '|' && str[*i + 1] != '<' && str[*i + 1] != '>')
+		*cmd = ft_strjoinc(*cmd, SEPARATOR);
+}
+
 
 void parse(char *str)
 {
@@ -47,11 +86,11 @@ void parse(char *str)
 	single_quoted = 0;
 	cmd = NULL;
 	i = 0;
-	if(is_space(str[i]))
-	{
-		omit_spaces(&i, str);
-		i++;
-	}	
+	// if(is_space(str[i]))
+	// {
+	// 	omit_spaces(&i, str, &cmd);
+	// 	i++;
+	// }	
 	while (str[i])
 	{
 		if(str[i] == '"' && !single_quoted)
@@ -59,24 +98,9 @@ void parse(char *str)
 		else if(str[i] == '\'' && !double_quoted)
 			toggle(&single_quoted);
 		else if (is_space(str[i]) && !double_quoted && !single_quoted)
-		{
-			omit_spaces(&i, str);
-			if(str[i + 1] != '\0')
-				cmd = ft_strjoinc(cmd, ' ');
-		}
+			omit_spaces(&i, str, &cmd);
 		else if (!double_quoted && !single_quoted && (str[i] == '|' || str[i] == '>' || str[i] == '<'))
-		{
-			if(!is_space(str[i - 1]))
-				cmd = ft_strjoinc(cmd, ' ');
-			cmd = ft_strjoinc(cmd, str[i]);
-			if(str[i] == str[i + 1])
-			{
-				i++;
-				cmd = ft_strjoinc(cmd, str[i]);
-			}
-			if (!is_space(str[i + 1]))
-				cmd = ft_strjoinc(cmd, ' ');
-		}
+			handle_delimiter(&i, &cmd, str);
 		else
 			cmd = ft_strjoinc(cmd, str[i]);
 		i++;
@@ -90,7 +114,10 @@ void parse(char *str)
 	else
 	{
 		if(cmd)
-			printf("%s$\n", cmd);
+		{
+			// printf("%s$\n", cmd);
+			print_tokens(cmd);
+		}
 		else
 			printf("$\n");
 	}

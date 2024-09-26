@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #define MALLOC 1
 #define FREE 0
+#define SEPARATOR '\x1D'
 
 typedef struct s_env t_env;
 struct s_env
