@@ -6,7 +6,7 @@
 /*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 02:45:03 by yel-ouaz          #+#    #+#             */
-/*   Updated: 2024/09/22 22:45:59 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/09/26 18:44:57 by hrochd           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int main(int argc, char **argv, char **env)
 			add_history(rl);
 		if(ft_strncmp(rl, "exit", 4) == 0)
 			break;
-		parse(rl);
+		parse(rl, env_list);
 	}
 	free(rl);
 	return 0;

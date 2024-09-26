@@ -6,11 +6,19 @@
 /*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 06:12:17 by hrochd            #+#    #+#             */
-/*   Updated: 2024/09/23 13:26:26 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/09/26 23:38:39 by hrochd           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	ft_is_alphanum(int c)
+{
+	if ((c > 47 && c < 58) || (c > 64 && c < 91) || (c > 96 && c < 123))
+		return (1);
+	else
+		return (0);
+}
 
 size_t	ft_strlen(const char *s)
 {

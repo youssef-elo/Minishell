@@ -23,9 +23,10 @@ struct s_mblock
 	t_mblock *next;
 };
 
-void	parse(char *str);
+int		ft_is_alphanum(int c);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
+void	parse(char *str, t_env *env_list);
 void	*gc_handler(size_t s ,int action);
 t_env	*ft_lstnew(void *key, void *value);
 char	*ft_strjoinc(const char *s1, const char c);
