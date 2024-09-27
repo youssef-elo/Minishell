@@ -10,21 +10,4 @@
 
 void get_line(t_env *env);
 
-enum token
-{
-	CMD,
-	ARG,
-	PIPE,
-	INPUT_R,
-	OUTPUT_R,
-	OUTPUT_A,
-	HEREDOC,
-};
-
-typedef struct s_token{
-	enum token		type;
-	char			*string;
-	struct s_token	*next;
-}				t_token;
-
 #endif

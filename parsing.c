@@ -6,7 +6,7 @@
 /*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/21 23:00:49 by hrochd            #+#    #+#             */
-/*   Updated: 2024/09/27 00:47:17 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/09/27 17:59:34 by hrochd           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,51 +48,43 @@ char *expand_token(char *cmd, t_env *env_list)
 	
 	i = 0;
 	cmd_len = ft_strlen(cmd);
+	if(!cmd)
+		return(NULL);
 	while (env_list)
 	{
 		if(ft_strncmp(cmd, env_list->key, cmd_len + 1) == 0)
-		{
-			// printf("FOUND KEY IN ENV = %s\n", env_list->value);
 			return (env_list->value);
-		}
 		env_list = env_list->next;
 	}
-	// printf("KEY DON'T FOUND IN ENV = %s\n", cmd);
 	return (NULL);
 }
 
-char	*handle_dollar_sign(int *i, char *str, t_env *env_list)
+char	*handle_dollar_sign(int *i, char *str, t_env *env_list, int double_quoted)
 {
 	char	*cmd;
-	// int		found_non_alphanum;
 	
 	cmd = NULL;
-	// found_non_alphanum = 0;
-	// *cmd = ft_strjoinc(*cmd, '$');
-	if(str[(*i) + 1] == '"' || str[(*i) + 1] == '\'' || is_space(str[(*i) + 1]) || str[(*i) + 1] == '\0')
-		return (cmd);
-	(*i)++;
-	if(str[(*i)] && (str[(*i)] == '$' || str[(*i)] == '?'))
+	if(str[(*i) + 1] && str[(*i) + 1] == '?')
 	{
-		cmd = ft_strjoinc(cmd, '$');
-		cmd = ft_strjoinc(cmd, str[(*i)]);
-		// if(!is_space(str[(*i) + 1]))
-		// 	cmd = ft_strjoinc(cmd, SEPARATOR);
-		return (cmd);
-	}
-	while (str[(*i) + 1] && !is_space(str[(*i) + 1]) && str[(*i) + 1] != '"' && str[(*i) + 1] != '\'' && str[(*i) + 1] != '$') 
-	{
-		// if(!ft_is_alphanum(str[(*i) + 1]) || !ft_is_alphanum(str[*i]))
-		// 	found_non_alphanum = 1;
-		cmd = ft_strjoinc(cmd, str[*i]);
+		cmd = ft_strjoin(cmd, "$?");
+		cmd = ft_strjoinc(cmd, SEPARATOR);
 		(*i)++;
+		return (cmd);
 	}
-	cmd = ft_strjoinc(cmd, str[*i]);
-	// printf("%s(CMD)", cmd);
-	
-	// if(found_non_alphanum)
-	// 	return (ft_strjoin("$", cmd));
-	return (expand_token(cmd, env_list));
+	if(str[(*i) + 1] && ft_is_alphanum(str[(*i) + 1]))
+	{
+		if(ft_is_digit(str[(*i) + 1]))
+			return (NULL);
+		while (ft_is_alphanum(str[(*i) + 1]))
+		{
+			cmd = ft_strjoinc(cmd, str[(*i) + 1]);
+			(*i)++;
+		}
+		return (expand_token(cmd, env_list));
+	}
+	if((str[(*i) + 1] == '"' || str[(*i) + 1] == '\'') && !double_quoted)
+		return (expand_token(cmd, env_list));
+	return ("$");
 }
 
 void print_tokens(char *str)
@@ -126,6 +118,8 @@ void handle_delimiter(int *i, char **cmd, char *str)
 }
 
 
+
+
 void parse(char *str, t_env *env_list)
 {
 	int i;
@@ -139,6 +133,7 @@ void parse(char *str, t_env *env_list)
 	i = 0;
 	while (str[i])
 	{
+		// printf("---%c---\n", str[i]);
 		if(str[i] == '"' && !single_quoted)
 			toggle(&double_quoted);
 		else if(str[i] == '\'' && !double_quoted)
@@ -148,7 +143,7 @@ void parse(char *str, t_env *env_list)
 		else if (!double_quoted && !single_quoted && (str[i] == '|' || str[i] == '>' || str[i] == '<'))
 			handle_delimiter(&i, &cmd, str);
 		else if(str[i] == '$' && !single_quoted)
-			cmd = ft_strjoin(cmd, handle_dollar_sign(&i, str, env_list));
+			cmd = ft_strjoin(cmd, handle_dollar_sign(&i, str, env_list, double_quoted));
 		else
 			cmd = ft_strjoinc(cmd, str[i]);
 		if(str[i] != '\0')

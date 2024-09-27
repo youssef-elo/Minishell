@@ -6,15 +6,23 @@
 /*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/14 06:12:17 by hrochd            #+#    #+#             */
-/*   Updated: 2024/09/26 23:38:39 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/09/27 09:46:21 by hrochd           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+
+int	ft_is_digit(int c)
+{
+	if ((c > 47 && c < 58))
+		return (1);
+	else
+		return (0);
+}
 int	ft_is_alphanum(int c)
 {
-	if ((c > 47 && c < 58) || (c > 64 && c < 91) || (c > 96 && c < 123))
+	if ((c > 47 && c < 58) || (c > 64 && c < 91) || (c > 96 && c < 123) || c == 95)
 		return (1);
 	else
 		return (0);

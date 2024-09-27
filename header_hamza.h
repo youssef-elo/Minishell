@@ -23,6 +23,37 @@ struct s_mblock
 	t_mblock *next;
 };
 
+typedef enum e_token_type
+{
+	CMD,
+	ARG,
+	PIPE,
+	INPUT_R,
+	OUTPUT_R,
+	OUTPUT_A,
+	HEREDOC,
+} t_token_type;
+
+typedef struct s_token t_token;
+
+struct s_token
+{
+	char			*value;
+	t_token_type	type;
+	t_token			*next;
+};
+
+typedef struct s_segment
+{
+	t_token	seg_command;
+	t_token *output_rdr;
+	t_token *input_rdr;
+	t_token *seg_args;
+	int		seg_output_fd;
+	int		seg_input_fd;
+} t_segment;
+
+int		ft_is_digit(int c);
 int		ft_is_alphanum(int c);
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
