@@ -10,7 +10,6 @@
 
 typedef struct s_execution
 {
-	char				*cmd;
 	char				**args;
 	int					fd_in;
 	int					fd_out;
