@@ -8,6 +8,13 @@
 #include <unistd.h>
 #include "header_hamza.h"
 
-void get_line(t_env *env);
+typedef struct s_execution
+{
+	char				*cmd;
+	char				**args;
+	int					fd_in;
+	int					fd_out;
+	struct s_execution	*next;
+}						t_execution;
 
 #endif
