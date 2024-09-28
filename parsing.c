@@ -6,7 +6,7 @@
 /*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/21 23:00:49 by hrochd            #+#    #+#             */
-/*   Updated: 2024/09/27 17:59:34 by hrochd           ###   ########.fr       */
+/*   Updated: 2024/09/28 01:56:37 by hrochd           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,22 @@ void handle_delimiter(int *i, char **cmd, char *str)
 
 
 
+// t_token	*tokenizer(char *cmd)
+// {
+// 	int tokens_num;
+// 	t_token *tokens;
+	
+// 	tokens_num = tokens_counter(cmd);
+// 	tokens = gc_handler((tokens_num + 1) * sizeof(t_token), MALLOC);
+// 	if(!tokens)
+// 		return (NULL);
+// 	while ()
+// 	{
+		
+// 	}
+	
+// }
+
 
 void parse(char *str, t_env *env_list)
 {
@@ -126,14 +142,16 @@ void parse(char *str, t_env *env_list)
 	int double_quoted;
 	int single_quoted;
 	char *cmd;
+	char **tokens;
 	
 	double_quoted = 0;
 	single_quoted = 0;
 	cmd = NULL;
 	i = 0;
+	if(str[0] == '\0')
+		return ;
 	while (str[i])
 	{
-		// printf("---%c---\n", str[i]);
 		if(str[i] == '"' && !single_quoted)
 			toggle(&double_quoted);
 		else if(str[i] == '\'' && !double_quoted)
@@ -157,9 +175,18 @@ void parse(char *str, t_env *env_list)
 		printf("Syntax error: unexpected end of file (unmatched single quote)\n");
 	else
 	{
-		if(cmd)
-			print_tokens(cmd);
-		else
-			printf("~\n");
+		// if(cmd)
+		// 	print_tokens(cmd);
+		// else
+		// 	printf("~\n");
+		
+		
+		tokens = split_tokens(cmd, SEPARATOR);
+		int j = 0;
+		while(tokens[j])
+		{
+			printf("TOKEN -> {%s}\n", tokens[j]);
+			j++;
+		}
 	}
 }

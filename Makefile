@@ -5,7 +5,8 @@ FILES := $(shell ls *.c)
 
 OFILES = $(FILES:.c=.o)
 
-HEADER = minishell.h header_hamza.h header_ysf.h
+HEADER := $(shell ls *.h)
+#also forbidden remove later
 
 FLAGS = -Wall -Wextra -Werror 
 
