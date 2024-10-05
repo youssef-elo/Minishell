@@ -7,16 +7,16 @@ OFILES = $(FILES:.c=.o)
 
 HEADER = minishell.h header_hamza.h header_ysf.h
 
-FLAGS = -Wall -Wextra -Werror 
+FLAGS = -Wall -Wextra -Werror -g -fsanitize=address
 
 READLINE = -l readline
 
 all : $(NAME)
 
-$(NAME) : $(OFILES) $(HEADER) 
+$(NAME) : $(OFILES) $(HEADER)
 	cc $(FLAGS) $(OFILES) $(READLINE) -o $(NAME)
 
-%.o : %.c $(HEADER)
+%.o : %.c $(HEADER) Makefile
 	cc -c $(FLAGS) $< -o $@
 
 re : fclean all
@@ -25,4 +25,4 @@ clean :
 	rm -rf $(OFILES)
 
 fclean : clean
-	rm -rf $(NAME)
+	rm -rf $(NAME)   

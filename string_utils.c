@@ -1,17 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   string_utils.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/14 06:12:17 by hrochd            #+#    #+#             */
-/*   Updated: 2024/09/27 09:46:21 by hrochd           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
-
 
 int	ft_is_digit(int c)
 {
@@ -28,9 +15,9 @@ int	ft_is_alphanum(int c)
 		return (0);
 }
 
-size_t	ft_strlen(const char *s)
+int	ft_strlen(const char *s)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
 	if (!s)
@@ -40,9 +27,9 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-int	ft_strncmp(const char *s1, const char *s2, size_t n)
+int	ft_strncmp(const char *s1, const char *s2, int n)
 {
-	size_t	i;
+	int	i;
 
 	i = 0;
 	while (i < n && s1[i] && s2[i])
@@ -56,10 +43,10 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 	return (0);
 }
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+int	ft_strlcpy(char *dst, const char *src, int dstsize)
 {
-	size_t	i;
-	size_t	slen;
+	int	i;
+	int	slen;
 
 	i = 0;
 	slen = ft_strlen(src);
@@ -76,8 +63,8 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 
 char	*ft_strdup(const char *s1)
 {
-	size_t	i;
-	size_t	slen;
+	int	i;
+	int	slen;
 	char	*s2;
 
 	i = 0;
@@ -100,16 +87,16 @@ char	*ft_chrdup(const char c)
 	return (s);
 }
 
-char	*ft_substr(const char *s, unsigned int start, size_t len)
+char	*ft_substr(const char *s, int start, int len)
 {
-	size_t	i;
-	size_t	j;
-	size_t	slen;
+	int	i;
+	int	j;
+	int	slen;
 	char	*p;
 
 	if (s == NULL)
 		return (NULL);
-	i = (size_t)start;
+	i = (int)start;
 	j = 0;
 	slen = ft_strlen(s);
 	if (start >= slen)
@@ -125,10 +112,10 @@ char	*ft_substr(const char *s, unsigned int start, size_t len)
 	return (p);
 }
 
-size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
+int	ft_strlcat(char *dst, const char *src, int dstsize)
 {
-	size_t	dlen;
-	size_t	slen;
+	int	dlen;
+	int	slen;
 
 	slen = ft_strlen(src);
 	if (dst == NULL && dstsize == 0)
@@ -143,8 +130,8 @@ size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 
 char	*ft_strjoin(const char *s1, const char *s2)
 {
-	size_t	i;
-	size_t	j;
+	int	i;
+	int	j;
 	char	*p;
 
 	if (s1 == NULL && s2 == NULL)
@@ -164,7 +151,7 @@ char	*ft_strjoin(const char *s1, const char *s2)
 }
 char	*ft_strjoinc(const char *s1, const char c)
 {
-	size_t	i;
+	int	i;
 	char	*p;
 
 	if (s1 == NULL && !c)

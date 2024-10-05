@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   garbage_collector.c                                :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/23 12:32:18 by hrochd            #+#    #+#             */
-/*   Updated: 2024/09/23 13:27:31 by hrochd           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 void gc_free(t_mblock *head)
@@ -25,7 +13,7 @@ void gc_free(t_mblock *head)
 	}
 }
 
-void *gc_handler(size_t s ,int action)
+void *gc_handler(int s ,int action)
 {
 	static t_mblock *head_mblock;
 	void *ptr;

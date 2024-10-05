@@ -55,18 +55,16 @@ typedef struct s_segment
 
 int		ft_is_digit(int c);
 int		ft_is_alphanum(int c);
-size_t	ft_strlen(const char *s);
+int		ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
+void	*gc_handler(int s ,int action);
 void	parse(char *str, t_env *env_list);
-void	*gc_handler(size_t s ,int action);
 t_env	*ft_lstnew(void *key, void *value);
 char	*ft_strjoinc(const char *s1, const char c);
-void	env_stacking(char **env, t_env **env_stack);
 char	*ft_strjoin(const char *s1, const char *s2);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
+void	env_stacking(char **env, t_env **env_stack);
+char	*ft_substr(const char *s, int start, int len);
 void	append_node(t_env **list, char *key, char *value);
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
-char	*ft_substr(const char *s, unsigned int start, size_t len);
-
-
+int		ft_strncmp(const char *s1, const char *s2, int n);
+int		ft_strlcpy(char *dst, const char *src, int dstsize);
 #endif

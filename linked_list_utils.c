@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   linked_list_utils.c                                :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/14 06:16:38 by hrochd            #+#    #+#             */
-/*   Updated: 2024/08/15 23:32:27 by yel-ouaz         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 t_env	*ft_lstnew(void *key, void *value)
@@ -30,10 +18,12 @@ void append_node(t_env **list, char *key, char *value)
 	t_env *new_node;
 	t_env *temp;
 	
+	if(!list)
+		return ;
 	new_node = ft_lstnew(key, value);
 	free(key);
 	free(value);
-	if(*list == NULL)
+	if( *list== NULL)
 	{
 		*list = new_node;
 		return;
