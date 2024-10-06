@@ -106,21 +106,7 @@ void handle_delimiter(int *i, char **cmd, char *str)
 
 
 
-// t_token	*tokenizer(char *cmd)
-// {
-// 	int tokens_num;
-// 	t_token *tokens;
-	
-// 	tokens_num = tokens_counter(cmd);
-// 	tokens = gc_handler((tokens_num + 1) * sizeof(t_token), MALLOC);
-// 	if(!tokens)
-// 		return (NULL);
-// 	while ()
-// 	{
-		
-// 	}
-	
-// }
+
 
 
 void parse(char *str, t_env *env_list)
@@ -163,12 +149,6 @@ void parse(char *str, t_env *env_list)
 		printf("Syntax error: unexpected end of file (unmatched single quote)\n");
 	else
 	{
-		
-		// if (cmd)
-		// {
-		// 	print_tokens(cmd);
-		// }
-		
 		tokens = split_tokens(cmd, SEPARATOR);
 		int j = 0;
 		while(tokens[j])
@@ -176,5 +156,7 @@ void parse(char *str, t_env *env_list)
 			printf("TOKEN -> {%s}\n", tokens[j]);
 			j++;
 		}
+		
+		
 	}
 }

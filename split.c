@@ -65,7 +65,6 @@ char	**split_tokens(const char *s, char c)
 	if (s == NULL)
 		return (NULL);
 	tokens_count = tokens_counter(s);
-	printf("TOKENS COUNTER : %d\n", tokens_count);
 	tokens = (char **)malloc((tokens_count + 1) * sizeof(char *));
 	if (tokens == NULL)
 		return (NULL);
