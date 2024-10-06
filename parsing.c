@@ -80,12 +80,12 @@ void print_tokens(char *str)
 	while (str[i])
 	{
 		if(str[i] == SEPARATOR)
-			write(1, "~\n", 2);
+			write(1, "~", 1);
 		else
 			write(1, &str[i], 1);
 		i++;
 	}
-	write(1, "~\n", 2);
+	write(1, "\n", 1);
 }
 
 void handle_delimiter(int *i, char **cmd, char *str)
@@ -154,19 +154,20 @@ void parse(char *str, t_env *env_list)
 		if(str[i] != '\0')
 			i++;
 	}
-	if(cmd && cmd[i - 1] == ' ')
-		cmd[i - 1] = '\0';
+	if(!cmd)
+		return;
+	cmd = ft_strjoinc(cmd, SEPARATOR);
 	if(cmd && double_quoted)
 		printf("Syntax error: unexpected end of file (unmatched double quote)\n");
 	else if(cmd && single_quoted)
 		printf("Syntax error: unexpected end of file (unmatched single quote)\n");
 	else
 	{
-		// if(cmd)
-		// 	print_tokens(cmd);
-		// else
-		// 	printf("~\n");
 		
+		// if (cmd)
+		// {
+		// 	print_tokens(cmd);
+		// }
 		
 		tokens = split_tokens(cmd, SEPARATOR);
 		int j = 0;

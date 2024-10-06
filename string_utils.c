@@ -49,7 +49,10 @@ int	ft_strlcpy(char *dst, const char *src, int dstsize)
 	int	slen;
 
 	i = 0;
-	slen = ft_strlen(src);
+	if(dstsize == 2)
+		slen = 2;
+	else
+		slen = ft_strlen(src);
 	if (dstsize == 0)
 		return (slen);
 	while (i < (dstsize - 1) && src[i])
@@ -94,6 +97,8 @@ char	*ft_substr(const char *s, int start, int len)
 	int	slen;
 	char	*p;
 
+	if(len == 0)
+		return (ft_strdup(""));
 	if (s == NULL)
 		return (NULL);
 	i = (int)start;
@@ -118,6 +123,22 @@ int	ft_strlcat(char *dst, const char *src, int dstsize)
 	int	slen;
 
 	slen = ft_strlen(src);
+	if (dst == NULL && dstsize == 0)
+		return (slen);
+	dlen = ft_strlen(dst);
+	if (dlen >= dstsize)
+		return (slen + dstsize);
+	if (dlen < dstsize)
+		ft_strlcpy(dst + dlen, src, dstsize - dlen);
+	return (dlen + slen);
+}
+
+int	ft_strchrcat(char *dst, const char *src, int dstsize)
+{
+	int	dlen;
+	int	slen;
+
+	slen = 1;
 	if (dst == NULL && dstsize == 0)
 		return (slen);
 	dlen = ft_strlen(dst);
@@ -165,7 +186,7 @@ char	*ft_strjoinc(const char *s1, const char c)
 	if (!p)
 		return (NULL);
 	ft_strlcpy(p, s1, (i + 1));
-	ft_strlcat(p, &c, (i + 2));
+	ft_strchrcat(p, &c, (i + 2));
 	return (p);
 }
 
