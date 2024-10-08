@@ -104,11 +104,6 @@ void handle_delimiter(int *i, char **cmd, char *str)
 		*cmd = ft_strjoinc(*cmd, SEPARATOR);
 }
 
-
-
-
-
-
 void parse(char *str, t_env *env_list)
 {
 	int i;
@@ -116,10 +111,12 @@ void parse(char *str, t_env *env_list)
 	int single_quoted;
 	char *cmd;
 	char **tokens;
+	t_token *token_list;
 	
 	double_quoted = 0;
 	single_quoted = 0;
 	cmd = NULL;
+	token_list = NULL;
 	i = 0;
 	if(str[0] == '\0')
 		return ;
@@ -129,7 +126,7 @@ void parse(char *str, t_env *env_list)
 			toggle(&double_quoted);
 		else if(str[i] == '\'' && !double_quoted)
 			toggle(&single_quoted);
-		else if (is_space(str[i]) && !double_quoted && !single_quoted)
+		if (is_space(str[i]) && !double_quoted && !single_quoted)
 			omit_spaces(&i, str, &cmd);
 		else if (!double_quoted && !single_quoted && (str[i] == '|' || str[i] == '>' || str[i] == '<'))
 			handle_delimiter(&i, &cmd, str);
@@ -156,7 +153,10 @@ void parse(char *str, t_env *env_list)
 			printf("TOKEN -> {%s}\n", tokens[j]);
 			j++;
 		}
+
 		
-		
+
+		// tokens_definer(cmd);
+
 	}
 }

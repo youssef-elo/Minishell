@@ -27,6 +27,7 @@ typedef enum e_token_type
 {
 	CMD,
 	ARG,
+	RDR_ARG,
 	PIPE,
 	INPUT_R,
 	OUTPUT_R,
@@ -57,6 +58,7 @@ int		ft_is_digit(int c);
 int		ft_is_alphanum(int c);
 int		ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
+t_token	*list_tokens(char **tokens);
 void	*gc_handler(int s ,int action);
 int		tokens_counter(const char *cmd);
 void	parse(char *str, t_env *env_list);
@@ -69,4 +71,5 @@ char	*ft_substr(const char *s, int start, int len);
 void	append_node(t_env **list, char *key, char *value);
 int		ft_strncmp(const char *s1, const char *s2, int n);
 int		ft_strlcpy(char *dst, const char *src, int dstsize);
+void	append_token(t_token **token_list, char *value, t_token_type type);
 #endif
