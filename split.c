@@ -111,7 +111,7 @@ t_token	*list_tokens(char **tokens)
 	{
 		if(is_delimiter(tokens[i]))
 			token_type = delimiter_definer(tokens[i]);
-		else if(i > 0 && is_delimiter(tokens[i - 1]))
+		else if(i > 0 && is_delimiter(tokens[i - 1]) && PIPE != delimiter_definer(tokens[i - 1]))
 			token_type = RDR_ARG;
 		else
 		{

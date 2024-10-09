@@ -112,6 +112,8 @@ void parse(char *str, t_env *env_list)
 	char *cmd;
 	char **tokens;
 	t_token *token_list;
+
+	const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
 	
 	double_quoted = 0;
 	single_quoted = 0;
@@ -147,16 +149,22 @@ void parse(char *str, t_env *env_list)
 	else
 	{
 		tokens = split_tokens(cmd, SEPARATOR);
-		int j = 0;
-		while(tokens[j])
+		// int j = 0;
+		// while(tokens[j])
+		// {
+		// 	printf("TOKEN -> {%s}\n", tokens[j]);
+		// 	j++;
+		// }
+
+		token_list = list_tokens(tokens);
+
+		t_token *temp_tokens_list = token_list;
+		while(temp_tokens_list)
 		{
-			printf("TOKEN -> {%s}\n", tokens[j]);
-			j++;
+			printf("TOKEN VALUE -> {%s} ----- TOKEN TYPE -> {%s}\n", temp_tokens_list->value, token_types[temp_tokens_list->type]);
+			temp_tokens_list = temp_tokens_list->next;
 		}
 
-		
-
-		// tokens_definer(cmd);
 
 	}
 }
