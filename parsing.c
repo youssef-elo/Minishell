@@ -104,6 +104,90 @@ void handle_delimiter(int *i, char **cmd, char *str)
 		*cmd = ft_strjoinc(*cmd, SEPARATOR);
 }
 
+int syntax_err_checker(t_token *token_list)
+{
+	t_token *tmp;
+	int		err;
+
+	tmp = token_list;
+	err = 1;
+	if(token_list->type == PIPE)
+		return(write(2, "syntax error near unexpected token `|'\n", 39));
+	while (tmp)
+	{
+		if(tmp->type == PIPE)
+		{
+			if(err == 1)
+				return(write(2, "syntax error near unexpected token `|'\n", 39));
+			else
+				err = 1;
+		}
+		if(tmp->type == ARG || tmp->type == CMD || tmp->type == RDR_ARG)
+			err = 0;
+		tmp = tmp->next;
+	}
+	if(err)
+		return(write(2, "syntax error near unexpected token `newline'\n", 45));
+	else
+		return (0);
+}
+
+void	quotes_omit(char **str)
+{
+	int i;
+	int j;
+	int	double_quoted;
+	int single_quoted;
+	int len;
+
+	i = 0;
+	j = 0;
+	double_quoted = 0;
+	single_quoted = 0;
+	len = ft_strlen(*str);
+	while (j < len)
+	{
+		if((*str)[j] == '"' && !single_quoted)
+		{
+			toggle(&double_quoted);
+			j++;
+		}
+		else if((*str)[j] == '\'' && !double_quoted)
+		{
+			toggle(&single_quoted);
+			j++;
+		}
+		else
+		{
+			(*str)[i] = (*str)[j];
+			i++;
+			j++;
+		}
+	}
+	(*str)[i] = '\0';
+	return ;
+}
+
+void	tokens_quotes_omit(t_token **list)
+{
+	t_token *tokens;
+
+	tokens = *list;
+	while (tokens)
+	{
+		quotes_omit(&tokens->value);
+		tokens = tokens->next;
+	}
+	
+}
+
+
+// t_segment	*segments_definer(t_token *token_list)
+// {
+
+// }
+
+
 void parse(char *str, t_env *env_list)
 {
 	int i;
@@ -112,9 +196,14 @@ void parse(char *str, t_env *env_list)
 	char *cmd;
 	char **tokens;
 	t_token *token_list;
+	// t_execution *segments;
 
 	const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
 	
+	// segments->args = NULL;
+	// segments->fd_in = 0;
+	// segments->fd_out = 1;
+	// segments->next = NULL;
 	double_quoted = 0;
 	single_quoted = 0;
 	cmd = NULL;
@@ -149,14 +238,33 @@ void parse(char *str, t_env *env_list)
 	else
 	{
 		tokens = split_tokens(cmd, SEPARATOR);
+
+		// TOKENS PRINTER WITH TOKEN VALUE
+
 		// int j = 0;
 		// while(tokens[j])
 		// {
 		// 	printf("TOKEN -> {%s}\n", tokens[j]);
 		// 	j++;
 		// }
+		////////////////////////////////////
 
 		token_list = list_tokens(tokens);
+
+
+
+
+		if(syntax_err_checker(token_list))
+			return;
+
+		t_token *temp_tokens_listt = token_list;
+		while(temp_tokens_listt)
+		{
+			quotes_omit(&temp_tokens_listt->value);
+			temp_tokens_listt = temp_tokens_listt->next;
+		}
+
+		// TOKENS PRINTER WITH TOKEN VALUE AND TYPE
 
 		t_token *temp_tokens_list = token_list;
 		while(temp_tokens_list)
@@ -164,7 +272,9 @@ void parse(char *str, t_env *env_list)
 			printf("TOKEN VALUE -> {%s} ----- TOKEN TYPE -> {%s}\n", temp_tokens_list->value, token_types[temp_tokens_list->type]);
 			temp_tokens_list = temp_tokens_list->next;
 		}
+		//////////////////////////////////////////
 
+		// segments_definer(token_list);
 
 	}
 }

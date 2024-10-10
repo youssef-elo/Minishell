@@ -50,6 +50,7 @@ typedef struct s_segment
 	t_token *output_rdr;
 	t_token *input_rdr;
 	t_token *seg_args;
+	int		args_count;
 	int		seg_output_fd;
 	int		seg_input_fd;
 } t_segment;
