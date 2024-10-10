@@ -7,9 +7,13 @@
 #include <readline/history.h>
 #include <unistd.h>
 #include "header_hamza.h"
+#include <limits.h>
+
+void ft_putstr_fd(char *str, int fd);
 
 typedef struct s_execution
 {
+	char				*cmd;
 	char				**args;
 	int					fd_in;
 	int					fd_out;
