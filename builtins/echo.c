@@ -25,15 +25,6 @@ int	flag_check(char **args)
 	return (-1);
 }
 
-void ft_putstr_fd(char *str, int fd)
-{
-	while(*str)
-	{
-		write(fd, str, 1);
-		str++;
-	}
-}
-
 void ft_echo(char **args)
 {
 	int start;

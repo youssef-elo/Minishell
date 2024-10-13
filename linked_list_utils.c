@@ -27,8 +27,6 @@ t_token	*ft_lstnewtoken(void *value, t_token_type type)
 	return (token);
 }
 
-
-
 void append_node(t_env **list, char *key, char *value)
 {
 	t_env *new_node;
