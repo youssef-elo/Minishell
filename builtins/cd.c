@@ -1,0 +1,13 @@
+#include "../minishell.h"
+
+// void ft_cd(t_execution *data)
+// {
+// 	if (chdir("Desktop"))
+// 		perror;
+// }
+
+int main(int argc , char *argv[]){
+	if (chdir(argv[1]) == -1 )
+		perror("cd :");
+	printf("%s\n", getcwd(NULL, 0));
+}

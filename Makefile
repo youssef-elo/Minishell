@@ -8,7 +8,9 @@ OFILES = $(FILES:.c=.o)
 HEADER := $(shell ls *.h)
 #also forbidden remove later
 
-FLAGS = -Wall -Wextra -Werror -g -fsanitize=address
+# SANITIZE = -g -fsanitize=address
+
+FLAGS = -Wall -Wextra -Werror $(SANITIZE)
 
 READLINE = -l readline
 

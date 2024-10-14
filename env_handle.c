@@ -27,7 +27,7 @@ void env_stacking(char **env, t_env **env_stack)
 		equal_pos = equal_sign_position(env[i]);
 		while(env[i][j])
 			j++;
-		append_node(env_stack, ft_substr(env[i], 0, equal_pos), ft_substr(env[i], equal_pos + 1, j - equal_pos));
+		append_node_env(env_stack, ft_substr(env[i], 0, equal_pos), ft_substr(env[i], equal_pos + 1, j - equal_pos));
 		i++;
 	}
 }

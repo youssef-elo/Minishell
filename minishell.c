@@ -8,7 +8,6 @@ int main(int argc, char **argv, char **env)
 	argv = 0;
 	char *rl;
 	env_stacking(env, &env_list);
-
 	while (1)
 	{
 		rl = readline("minishell> ");
@@ -19,7 +18,9 @@ int main(int argc, char **argv, char **env)
 		if(ft_strncmp(rl, "exit", 4) == 0)
 			break;
 		parse(rl, env_list);
+		gc_handler(0, FREE);
+		free(rl);
 	}
-	free(rl);
+	galloc(0, FREE);
 	return 0;
 }

@@ -1,19 +1,5 @@
 #include "minishell.h"
 
-t_env	*ft_lstnew(void *key, void *value)
-{
-	t_env	*node;
-
-	// node = malloc(sizeof(t_env));
-	node = gc_handler(sizeof(t_env), MALLOC);
-	if (!node)
-		return (NULL);
-	node->key = ft_strdup(key);
-	node->value = ft_strdup(value);
-	node->next = NULL;
-	return (node);
-}
-
 t_token	*ft_lstnewtoken(void *value, t_token_type type)
 {
 	t_token	*token;
@@ -27,27 +13,7 @@ t_token	*ft_lstnewtoken(void *value, t_token_type type)
 	return (token);
 }
 
-t_execution	*ft_lstnewseg(t_segment *seg)
-{
-	t_execution	*exec_seg;
-	int			i;
 
-	i = 0;
-	exec_seg = gc_handler(sizeof(t_execution), MALLOC);
-	if(!exec_seg)
-		return (NULL);
-	exec_seg->cmd = ft_strdup(seg->seg_command.value);
-	exec_seg->args = (char **)gc_handler((seg->args_count + 1) * sizeof(char *), MALLOC);
-	while(i < seg->args_count)
-	{
-		exec_seg->args[i] = ft_strdup(seg->seg_args[i].value);
-		i++;
-	}
-	exec_seg->fd_in = seg->seg_input_fd;
-	exec_seg->fd_out = seg->seg_output_fd;
-	exec_seg->next = NULL;
-	return (exec_seg);
-}
 
 void append_node(t_env **list, char *key, char *value)
 {
