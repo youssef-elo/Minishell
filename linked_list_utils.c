@@ -13,27 +13,26 @@ t_token	*ft_lstnewtoken(void *value, t_token_type type)
 	return (token);
 }
 
-
-
-void append_node(t_env **list, char *key, char *value)
+t_execution	*ft_lstnewseg(t_segment *seg)
 {
-	t_env *new_node;
-	t_env *temp;
-	
-	if(!list)
-		return ;
-	new_node = ft_lstnew(key, value);
-	// free(key);
-	// free(value);
-	if( *list== NULL)
+	t_execution	*exec_seg;
+	int			i;
+
+	i = 0;
+	exec_seg = gc_handler(sizeof(t_execution), MALLOC);
+	if(!exec_seg)
+		return (NULL);
+	exec_seg->cmd = ft_strdup(seg->seg_command.value);
+	exec_seg->args = (char **)gc_handler((seg->args_count + 1) * sizeof(char *), MALLOC);
+	while(i < seg->args_count)
 	{
-		*list = new_node;
-		return;
+		exec_seg->args[i] = ft_strdup(seg->seg_args[i].value);
+		i++;
 	}
-	temp = *list;
-	while(temp->next)
-		temp = temp->next;
-	temp->next = new_node;
+	exec_seg->fd_in = seg->seg_input_fd;
+	exec_seg->fd_out = seg->seg_output_fd;
+	exec_seg->next = NULL;
+	return (exec_seg);
 }
 
 void append_token(t_token **token_list, char *value, t_token_type type)
