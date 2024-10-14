@@ -181,11 +181,30 @@ void	tokens_quotes_omit(t_token **list)
 	
 }
 
+void exec_segment_init(t_execution *exec_segment)
+{
+	exec_segment->cmd = NULL;
+	exec_segment->args = NULL;
+	exec_segment->fd_in = 0;
+	exec_segment->fd_out = 1;
+	exec_segment->next = NULL;
+}
 
-// t_segment	*segments_definer(t_token *token_list)
-// {
+t_segment	*segments_definer(t_token *token_list)
+{
+	t_token *temp;
+	t_execution *exec_segments;
 
-// }
+	temp = token_list;
+	exec_segments_init(exec_segments);
+	while (temp)
+	{
+		if(temp->type == CMD)
+			exec_segments->cmd = ft_strdup(temp->value);
+		temp = temp->next;
+	}
+	
+}
 
 
 void parse(char *str, t_env *env_list)
@@ -196,14 +215,15 @@ void parse(char *str, t_env *env_list)
 	char *cmd;
 	char **tokens;
 	t_token *token_list;
-	// t_execution *segments;
+	t_execution *exec_segments;
 
 	const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
 	
-	// segments->args = NULL;
-	// segments->fd_in = 0;
-	// segments->fd_out = 1;
-	// segments->next = NULL;
+	exec_segments->cmd = NULL;
+	exec_segments->args = NULL;
+	exec_segments->fd_in = 0;
+	exec_segments->fd_out = 1;
+	exec_segments->next = NULL;
 	double_quoted = 0;
 	single_quoted = 0;
 	cmd = NULL;
@@ -274,7 +294,7 @@ void parse(char *str, t_env *env_list)
 		}
 		//////////////////////////////////////////
 
-		// segments_definer(token_list);
+		segments_definer(token_list);
 
 	}
 }
