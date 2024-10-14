@@ -13,7 +13,7 @@ void gc_free(t_mblock *head)
 	}
 }
 
-void	galloc(int size, int action)
+void	*galloc(int size, int action)
 {
 	static t_mblock *head;
 	void *ptr;
@@ -30,7 +30,11 @@ void	galloc(int size, int action)
 		gc_node(ptr, &head);
 	}
 	else if (action == FREE)
+	{
 		gc_free(head);
+		head = NULL;
+	}
+	return (NULL);
 }
 
 void gc_node(void *ptr, t_mblock **head)
@@ -55,7 +59,10 @@ void *gc_handler(int s ,int action)
 	static t_mblock *head;
 	
 	if(action == FREE)
+	{
 		gc_free(head);
+		head = NULL;
+	}
 	else if (action == MALLOC)
 	{
 		ptr = malloc(s);
