@@ -181,7 +181,7 @@ void	tokens_quotes_omit(t_token **list)
 	
 }
 
-void exec_segment_init(t_execution *exec_segment)
+void exec_segment_init(t_exec *exec_segment)
 {
 	exec_segment->cmd = NULL;
 	exec_segment->args = NULL;
@@ -193,7 +193,7 @@ void exec_segment_init(t_execution *exec_segment)
 t_segment	*segments_definer(t_token *token_list)
 {
 	t_token *temp;
-	t_execution *exec_segments;
+	t_exec *exec_segments;
 
 	temp = token_list;
 	exec_segments_init(exec_segments);
@@ -215,7 +215,7 @@ void parse(char *str, t_env *env_list)
 	char *cmd;
 	char **tokens;
 	t_token *token_list;
-	t_execution *exec_segments;
+	t_exec *exec_segments;
 
 	const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
 	

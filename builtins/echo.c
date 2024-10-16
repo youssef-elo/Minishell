@@ -25,24 +25,24 @@ int	flag_check(char **args)
 	return (-1);
 }
 
-void ft_echo(char **args)
+void ft_echo(t_exec *prompt)
 {
 	int start;
 	int nl;
 	
-	start = flag_check(args);
+	start = flag_check(prompt->args);
 	nl = start;
 	if (start == -1)
 		return;
-	while(args[start])
+	while(prompt->args[start])
 	{
-		ft_putstr_fd(args[start], 1);
-		if (args[start + 1])
-			write(1, " ", 1);
+		ft_putstr_fd(prompt->args[start], prompt->fd_out);
+		if (prompt->args[start + 1])
+			write(prompt->fd_out, " ", 1);
 		start++;
 	}
 	if (nl == 1)
-		write(1, "\n", 1);
+		write(prompt->fd_out, "\n", 1);
 }
 // int main(int argc, char *argv[]){
 // 	if (argc)

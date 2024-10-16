@@ -13,13 +13,13 @@ t_token	*ft_lstnewtoken(void *value, t_token_type type)
 	return (token);
 }
 
-t_execution	*ft_lstnewseg(t_segment *seg)
+t_exec	*ft_lstnewseg(t_segment *seg)
 {
-	t_execution	*exec_seg;
+	t_exec	*exec_seg;
 	int			i;
 
 	i = 0;
-	exec_seg = gc_handler(sizeof(t_execution), MALLOC);
+	exec_seg = gc_handler(sizeof(t_exec), MALLOC);
 	if(!exec_seg)
 		return (NULL);
 	exec_seg->cmd = ft_strdup(seg->seg_command.value);
@@ -54,10 +54,10 @@ void append_token(t_token **token_list, char *value, t_token_type type)
 	temp->next = new_token;
 }
 
-void append_seg(t_execution	**exec_seg_list, t_segment	*seg)
+void append_seg(t_exec	**exec_seg_list, t_segment	*seg)
 {
-	t_execution *new_exec_seg;
-	t_execution *temp_seg;
+	t_exec *new_exec_seg;
+	t_exec *temp_seg;
 
 	if(!exec_seg_list)
 		return ;

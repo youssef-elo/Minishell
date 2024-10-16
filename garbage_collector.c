@@ -28,6 +28,7 @@ void	*galloc(int size, int action)
 			exit (1);
 		}
 		gc_node(ptr, &head);
+		return (ptr);
 	}
 	else if (action == FREE)
 	{

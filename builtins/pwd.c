@@ -11,7 +11,7 @@ char *ft_getenv(t_env *envi , char *key)
 	return (NULL);
 }
 
-void ft_pwd(t_execution *data)
+void ft_pwd(t_exec *data)
 {
 	char dir[PATH_MAX];
 	char *env_pwd;
