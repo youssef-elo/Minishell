@@ -6,8 +6,8 @@
 // 		perror;
 // }
 
-int main(int argc , char *argv[]){
-	if (chdir(argv[1]) == -1 )
-		perror("cd :");
-	printf("%s\n", getcwd(NULL, 0));
-}
+// int main(int argc , char *argv[]){
+// 	if (chdir(argv[1]) == -1 )
+// 		perror("cd :");
+// 	printf("%s\n", getcwd(NULL, 0));
+// }

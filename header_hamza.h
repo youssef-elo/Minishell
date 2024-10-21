@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #define MALLOC 1
 #define FREE 0
 #define SEPARATOR '\x1D'
@@ -46,7 +47,7 @@ struct s_token
 
 typedef struct s_segment
 {
-	t_token	seg_command;
+	t_token	*seg_command;
 	t_token *output_rdr;
 	t_token *input_rdr;
 	t_token *seg_args;
@@ -68,7 +69,9 @@ char	*ft_strjoinc(const char *s1, const char c);
 char	*ft_strjoin(const char *s1, const char *s2);
 void	env_stacking(char **env, t_env **env_stack);
 char	*ft_substr(const char *s, int start, int len);
+t_token	*ft_lstnewtoken(void *value, t_token_type type);
 int		ft_strncmp(const char *s1, const char *s2, int n);
 int		ft_strlcpy(char *dst, const char *src, int dstsize);
+void	append_seg(t_exec	**exec_seg_list, t_segment	*seg);
 void	append_token(t_token **token_list, char *value, t_token_type type);
 #endif

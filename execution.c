@@ -105,21 +105,21 @@ void solo_command(t_exec *prompt)
 	ft_putstr_fd(prompt->cmd, 2);
 	ft_putstr_fd(" : command not found", 2);
 }
-#include <fcntl.h>
+// #include <fcntl.h>
 
-int main(int argc, char **argv, char **env){
-	t_exec pr = {0};
-	t_env *head = NULL;
-	int fd = open("ft",O_CREAT | O_RDWR, 0777);
-	printf("%d\n", fd);
-	env_stacking(env, &head);
-	pr.cmd = argv[1];
-	pr.args = argv + 1;
-	pr.fd_out = fd;
-	pr.fd_in = 0;
-	pr.env = head;
-	solo_command(&pr);
-}
+// int main(int argc, char **argv, char **env){
+// 	t_exec pr = {0};
+// 	t_env *head = NULL;
+// 	int fd = open("ft",O_CREAT | O_RDWR, 0777);
+// 	printf("%d\n", fd);
+// 	env_stacking(env, &head);
+// 	pr.cmd = argv[1];
+// 	pr.args = argv + 1;
+// 	pr.fd_out = fd;
+// 	pr.fd_in = 0;
+// 	pr.env = head;
+// 	solo_command(&pr);
+// }
 // int main()
 // {
 // 	t_exec pr = {0};

@@ -181,29 +181,102 @@ void	tokens_quotes_omit(t_token **list)
 	
 }
 
-void exec_segment_init(t_exec *exec_segment)
+void exec_segment_init(t_segment **exec_segment)
 {
-	exec_segment->cmd = NULL;
-	exec_segment->args = NULL;
-	exec_segment->fd_in = 0;
-	exec_segment->fd_out = 1;
-	exec_segment->next = NULL;
+	(*exec_segment)->seg_command = NULL;
+	(*exec_segment)->input_rdr = NULL;
+	(*exec_segment)->output_rdr = NULL;
+	(*exec_segment)->seg_args = NULL;
+	(*exec_segment)->args_count = 0;
+	(*exec_segment)->seg_input_fd = 0;
+	(*exec_segment)->seg_output_fd = 1;
 }
 
-t_segment	*segments_definer(t_token *token_list)
+int	open_output_rdrs(t_segment	*exec_segment)
 {
-	t_token *temp;
-	t_exec *exec_segments;
+	int fd;
+	t_token	*temp;
+
+	fd = 1;
+	temp = exec_segment->output_rdr;
+	while(temp)
+	{
+		if(temp->type == OUTPUT_R)
+			fd = open(temp->value, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+		else if(temp->type == OUTPUT_A)
+			fd = open(temp->value, O_CREAT | O_WRONLY | O_APPEND, 0666);
+		if(fd == -1)
+			break;
+		temp = temp->next;
+	}
+	if(fd == -1)
+	{
+		write(2, temp->value, ft_strlen(temp->value));
+		write(2, ": Permission denied\n", 20);
+		fd = 1;
+	}
+	return(fd);
+}
+
+int	open_input_rdrs(t_segment	*exec_segment)
+{
+	int fd;
+	t_token	*temp;
+
+	fd = 0;
+	temp = exec_segment->output_rdr;
+	while(temp)
+	{
+		if(temp->type == INPUT_R)
+			fd = open(temp->value, O_RDONLY);
+		if(fd == -1)
+			break;
+		temp = temp->next;
+	}
+	if(fd == -1)
+	{
+		write(2, "minishell: ", 11);
+		write(2, temp->value, ft_strlen(temp->value));
+		write(2, ": No such file or directory\n", 28);
+		fd = 0;
+	}
+	return(fd);
+}
+
+void	append_segment(t_exec	**exec_head, t_segment	*exec_segment)
+{
+	exec_segment->seg_output_fd = open_output_rdrs(exec_segment);
+	exec_segment->seg_input_fd = open_input_rdrs(exec_segment);
+	append_seg(exec_head, exec_segment);
+	exec_segment_init(exec_segment);
+}
+
+void	exec_segments_definer(t_token *token_list, t_exec	**exec_head)
+{
+	t_token		*temp;
+	t_segment	*exec_segment;
+	int			is_segment_first;
 
 	temp = token_list;
-	exec_segments_init(exec_segments);
+	is_segment_first = 1;
+	exec_segment_init(exec_segment);
 	while (temp)
 	{
 		if(temp->type == CMD)
-			exec_segments->cmd = ft_strdup(temp->value);
+			exec_segment->seg_command = temp;
+		else if(temp->type == ARG)
+		{
+			append_token(&(exec_segment->seg_args), temp->value, temp->type);
+			exec_segment->args_count++;
+		}
+		else if(temp->type == INPUT_R || temp->type == HEREDOC)
+			append_token(&(exec_segment->input_rdr), temp->next->value, temp->type);
+		else if(temp->type == OUTPUT_R || temp->type == OUTPUT_A)
+			append_token(&(exec_segment->output_rdr), temp->next->value, temp->type);
+		else if(temp->type == PIPE)
+			append_segment(exec_head, exec_segment);
 		temp = temp->next;
 	}
-	
 }
 
 
@@ -216,14 +289,16 @@ void parse(char *str, t_env *env_list)
 	char **tokens;
 	t_token *token_list;
 	t_exec *exec_segments;
+	t_exec *temp_exec;
 
-	const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
-	
+	// const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
+	exec_segments = gc_handler(sizeof(t_exec), MALLOC);
 	exec_segments->cmd = NULL;
 	exec_segments->args = NULL;
 	exec_segments->fd_in = 0;
 	exec_segments->fd_out = 1;
 	exec_segments->next = NULL;
+	temp_exec = exec_segments;
 	double_quoted = 0;
 	single_quoted = 0;
 	cmd = NULL;
@@ -286,15 +361,38 @@ void parse(char *str, t_env *env_list)
 
 		// TOKENS PRINTER WITH TOKEN VALUE AND TYPE
 
-		t_token *temp_tokens_list = token_list;
-		while(temp_tokens_list)
-		{
-			printf("TOKEN VALUE -> {%s} ----- TOKEN TYPE -> {%s}\n", temp_tokens_list->value, token_types[temp_tokens_list->type]);
-			temp_tokens_list = temp_tokens_list->next;
-		}
+		// t_token *temp_tokens_list = token_list;
+		// while(temp_tokens_list)
+		// {
+		// 	printf("TOKEN VALUE -> {%s} ----- TOKEN TYPE -> {%s}\n", temp_tokens_list->value, token_types[temp_tokens_list->type]);
+		// 	temp_tokens_list = temp_tokens_list->next;
+		// }
 		//////////////////////////////////////////
 
-		segments_definer(token_list);
+		exec_segments_definer(token_list, &exec_segments);
+
+		printf("TEST: EXEC CMD -> %s\n", exec_segments->cmd);
+
+		temp_exec = exec_segments;
+		while (temp_exec)
+		{
+			printf("SEGMENT :\n");
+			if(temp_exec->cmd)
+				printf("CMD: %s\n", temp_exec->cmd);
+			if(temp_exec->args)
+			{
+				int iter = 0;
+				while (temp_exec->args[i])
+				{
+					printf("ARG : %s\n", temp_exec->args[i]);
+					iter++;
+				}
+			}
+			printf("FD_IN : %d\nFD_OUT : %d\n", temp_exec->fd_in, temp_exec->fd_out);
+			printf("\n--------------------------------\n");
+			temp_exec = temp_exec->next;
+		}
+		
 
 	}
 }

@@ -1,6 +1,6 @@
 NAME = minishell
 
-FILES := $(shell ls *.c)
+FILES := $(shell ls *.c builtins/*.c)
 #remove forbiden
 
 OFILES = $(FILES:.c=.o)
