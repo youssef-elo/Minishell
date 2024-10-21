@@ -45,3 +45,28 @@ void append_node_env(t_env **list, char *key, char *value)
 		temp = temp->next;
 	temp->next = new_node;
 }
+
+char **char_env(t_env *env)
+{
+	int		i;
+	t_env	*tmp;
+	char	**env_c;
+
+	i = 0;
+	tmp = env;
+	while(tmp)
+	{
+		tmp = tmp->next;
+		i++;
+	}
+	env_c = gc_handler((i + 1) * sizeof(char *), MALLOC);
+	env_c[i] = NULL;
+	i = 0;
+	while(env)
+	{
+		env_c[i] = ft_strjoin(ft_strjoin(env->key, "="), env->value);
+		env = env->next;
+		i++;
+	}
+	return (env_c);
+}

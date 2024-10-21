@@ -13,8 +13,8 @@ char *ft_getenv(t_env *envi , char *key)
 
 void ft_pwd(t_exec *data)
 {
-	char dir[PATH_MAX];
-	char *env_pwd;
+	char	dir[PATH_MAX];
+	char	*env_pwd;
 
 	getcwd(dir, PATH_MAX);
 	if(dir[0] == '/')

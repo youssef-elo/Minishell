@@ -23,29 +23,29 @@ void ft_relative_absolute(t_exec *prompt)
 // ◦ env with no options or arguments
 // ◦ exit with no options
 
-// int is_builtin(t_exec *prompt)
-// {
-// 	int len;
+int	is_builtin(t_exec *prompt)
+{
+	int	len;
 
-// 	len = ft_strlen(prompt->cmd) + 1;
-// 	if (ft_strncmp(prompt->cmd, "echo", len))
-// 		ft_echo(prompt);
-// 	else if(ft_strncmp(prompt->cmd, "pwd", len))
-// 		ft_pwd(prompt);
-// 	else if(ft_strncmp(prompt->cmd, "exit", len))
-// 		ft_exit(prompt);
-// 	else if(ft_strncmp(prompt->cmd, "cd", len))
-// 		ft_cd(prompt);
-// 	else if(ft_strncmp(prompt->cmd, "env", len))
-// 		ft_env(prompt);
-// 	else if(ft_strncmp(prompt->cmd, "unset", len))
-// 		ft_unset(prompt);
-// 	else if(ft_strncmp(prompt->cmd, "export", len))
-// 		ft_export(prompt);
-// 	else 
-// 		return 0;
-// 	return 1;
-// }
+	len = ft_strlen(prompt->cmd) + 1;
+	if (!ft_strncmp(prompt->cmd, "echo", len))
+		ft_echo(prompt);
+	else if(!ft_strncmp(prompt->cmd, "pwd", len))
+		ft_pwd(prompt);
+	// else if(ft_strncmp(prompt->cmd, "exit", len))
+	// 	ft_exit(prompt);
+	// else if(ft_strncmp(prompt->cmd, "cd", len))
+	// 	ft_cd(prompt);
+	// else if(ft_strncmp(prompt->cmd, "env", len))
+	// 	ft_env(prompt);
+	// else if(ft_strncmp(prompt->cmd, "unset", len))
+	// 	ft_unset(prompt);
+	// else if(ft_strncmp(prompt->cmd, "export", len))
+		// ft_export(prompt);
+	else 
+		return 0;
+	return 1;
+}
 
 char	*get_path(char *cmd, char *path)
 {
@@ -71,54 +71,228 @@ char	*get_path(char *cmd, char *path)
 	return (NULL);
 }
 
-void exec_comm(t_exec *prompt, char *path)
+void	solo_exec(t_exec *prompt, char *path, char **env_c)
 {
-	int f;
+	int		f;
+	int		stat;
+	pid_t	pid;
 
 	f = fork();
 	if (f == 0)
 	{
 		dup2(prompt->fd_in, 0);
 		dup2(prompt->fd_out, 1);
-		execv(path, prompt->args);
+		execve(path, prompt->args, env_c);
+		perror(prompt->cmd);
+		if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
+			ft_exit_status(126, SET);
+		else if (access(prompt->cmd, F_OK))
+			ft_exit_status(127, SET);
 	}
-	
+	else
+	{
+		pid = waitpid(f, &stat, 0);
+		if (WIFSIGNALED(stat))
+			ft_exit_status(WTERMSIG(stat) + 128, SET);
+		else
+			ft_exit_status(WEXITSTATUS(stat), SET);
+	}
 }
 
-void solo_command(t_exec *prompt)
+void	solo_command(t_exec *prompt, char **env_c)
 {
-	char *path;
+	char	*path;
 
-	// if (is_builtin(prompt))
-	// 	return ;
+	if (is_builtin(prompt))
+		return ;
 	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
-		exec_comm(prompt, prompt->cmd);
+	{
+		solo_exec(prompt, prompt->cmd, env_c);
+		return ;
+	}
 	else
 	{
 		path = get_path(prompt->cmd, ft_getenv(prompt->env, "PATH"));
 		if (path)
 		{
-			exec_comm(prompt, path);
+			solo_exec(prompt, path, env_c);
 			return ;
 		}
 	}
 	ft_putstr_fd(prompt->cmd, 2);
-	ft_putstr_fd(" : command not found", 2);
+	ft_putstr_fd(" : command not found\n", 2);
+	ft_exit_status(127, SET);
 }
-// #include <fcntl.h>
+
+void	multi_exec(t_exec *prompt)
+{
+	char	*path;
+
+	// if (is_builtin(prompt))
+	// 	exit (0);
+	//needs update so that it return what the builtin returns
+	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
+	{
+		execve(prompt->cmd, prompt->args, char_env(prompt->env));
+		perror(prompt->cmd);
+		if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
+			exit (126);
+		else if (access(prompt->cmd, F_OK))
+			exit (127);
+	}
+	else
+	{
+		path = get_path(prompt->cmd, ft_getenv(prompt->env, "PATH"));
+		if (path)
+		{
+			// printf("%s\n", path);
+			execve(path, prompt->args, char_env(prompt->env));
+			perror(prompt->cmd);
+			if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
+				exit (126);
+			else if (access(prompt->cmd, F_OK))
+				exit (127);
+		}
+	}
+	ft_putstr_fd(prompt->cmd, 2);
+	ft_putstr_fd(" : command not found\n", 2);
+	exit (127);
+}
+
+void	ft_wait(int lastp)
+{
+	pid_t	wpid;
+	int		stat;
+
+	wpid = waitpid(-1, &stat, 0);
+	while(wpid != -1)
+	{
+		if (wpid == lastp)
+		{
+			if(WIFSIGNALED(stat))
+				ft_exit_status(WTERMSIG(stat) + 128, SET);
+			else
+				ft_exit_status(WEXITSTATUS(stat), SET);
+		}
+		wpid = waitpid(-1, &stat, 0);
+	}
+}
+
+void	multi_commands(t_exec *prompt)
+{
+	int pip[2];
+	int pre_pipe;
+	int c_pid;
+	int lastp;
+
+	pre_pipe = -1;
+	while(prompt)
+	{
+		if (prompt->next)
+		{
+			if (pipe(pip))
+			{
+				perror("pipe ");
+				return;
+			}
+		}
+		c_pid = fork();
+		if (c_pid == -1)
+		{
+			perror("fork ");
+			return ;
+		}
+		if (c_pid == 0)
+		{
+			if (pre_pipe != -1 && prompt->fd_in == 0)
+			{
+				dup2(pre_pipe, 0);
+				close(pre_pipe);
+			}
+			else if (prompt->fd_in != 0)
+			{
+				dup2(prompt->fd_in, 0);
+				close(prompt->fd_in);
+			}
+			if (prompt->next && prompt->fd_out == 1)
+				dup2(pip[1], 1);
+			else if (prompt->fd_out != 1)
+			{
+				dup2(prompt->fd_out, 1);
+				close(prompt->fd_out);
+			}
+			close(pip[0]);
+			multi_exec(prompt);
+		}
+		else
+		{
+			if (pre_pipe != -1)
+				close(pre_pipe);
+			pre_pipe = dup(pip[0]);
+			close(pip[0]);
+			close(pip[1]);
+			if (!prompt->next)
+				lastp = c_pid;
+		}
+		prompt = prompt->next;
+	}
+	ft_wait(lastp);
+}
+
+void	main_exec(t_exec *prompt)
+{
+	if (!prompt->next)
+		solo_command(prompt, char_env(prompt->env));
+	else
+		multi_commands(prompt);
+}
 
 // int main(int argc, char **argv, char **env){
-// 	t_exec pr = {0};
 // 	t_env *head = NULL;
-// 	int fd = open("ft",O_CREAT | O_RDWR, 0777);
-// 	printf("%d\n", fd);
 // 	env_stacking(env, &head);
-// 	pr.cmd = argv[1];
-// 	pr.args = argv + 1;
-// 	pr.fd_out = fd;
+
+// 	int fd = open("new", O_RDWR | O_CREAT , 0777);
+// 	int fd_in = open("red_in", O_RDWR);
+// 	// printf("%d\n", fd);
+// 	char *arg[] = {"cat", NULL};
+// 	char *arg2[] = {"wc","-l", NULL};	
+// 	// char *arg[] = {"ls", NULL};
+
+// 	t_exec pr = {0};
+// 	pr.args = arg;
+// 	pr.cmd = arg[0];
+// 	pr.fd_out = 1;
 // 	pr.fd_in = 0;
 // 	pr.env = head;
-// 	solo_command(&pr);
+// 	// solo_command(&pr, char_env(head));
+
+// 	t_exec second = {0};
+// 	pr.next = &second;
+// 	second.args = arg2;
+// 	second.cmd = arg2[0];
+// 	second.fd_out = fd;
+// 	second.fd_in = fd_in;
+// 	second.env = head;
+// 	second.next = NULL;
+// 	// t_exec third = {0};
+// 	// third.args = arg3;
+// 	// third.cmd = arg3[0];
+// 	// second.next = &third;
+// 	// third.fd_out = 1;
+// 	// third.fd_in = fd;
+// 	// third.env = head;
+// 	// third.next = NULL;
+// 	// solo_command(&pr, envc);
+// 	main_exec(&pr);
+// close(fd);
+// close(fd_in);
+// 	printf("%d\n", ft_exit_status(0, GET));
+// 	fflush(stdout);
+// 	// while (1)
+// 	// {
+// 	// 	sleep(1);
+// 	// }
+	
 // }
 // int main()
 // {
