@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-// void ft_cd(t_exec *data)
+// int	ft_cd(t_exec *data)
 // {
 // 	if (chdir("Desktop"))
 // 		perror;
@@ -11,3 +11,4 @@ int main(int argc , char *argv[]){
 		perror("cd :");
 	printf("%s\n", getcwd(NULL, 0));
 }
+//exit status if successeful is 0 other then that is 1 if the dir doesnt exist

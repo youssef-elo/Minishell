@@ -29,8 +29,8 @@ t_env	*ft_lstnew_env(void *key, void *value)
 }
 void append_node_env(t_env **list, char *key, char *value)
 {
-	t_env *new_node;
 	t_env *temp;
+	t_env *new_node;
 	
 	if(!list)
 		return ;

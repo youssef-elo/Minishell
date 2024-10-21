@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-char *ft_getenv(t_env *envi , char *key)
+char	*ft_getenv(t_env *envi , char *key)
 {
 	while(envi)
 	{
@@ -11,7 +11,7 @@ char *ft_getenv(t_env *envi , char *key)
 	return (NULL);
 }
 
-void ft_pwd(t_exec *data)
+int	ft_pwd(t_exec *data)
 {
 	char	dir[PATH_MAX];
 	char	*env_pwd;
@@ -20,7 +20,7 @@ void ft_pwd(t_exec *data)
 	if(dir[0] == '/')
 	{
 		ft_putstrnl_fd(dir , 1);
-		return ;
+		return (0);
 	}
 	else
 	{
@@ -31,5 +31,9 @@ void ft_pwd(t_exec *data)
 		}
 	}
 	if (!env_pwd)
+	{
 		ft_putstrnl_fd("pwd : error retreiving current directory", 2);
+		return (1);
+	}
+	return (0);
 }

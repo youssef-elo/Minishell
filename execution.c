@@ -5,16 +5,6 @@
 
 // }
 
-void ft_relative_absolute(t_exec *prompt)
-{
-	if(access(prompt->cmd, X_OK))
-	{
-		perror(prompt->cmd);
-		return ;
-	}
-
-}
-
 // ◦ echo with option -n
 // ◦ cd with only a relative or absolute path 
 // ◦ pwd with no options
@@ -124,12 +114,32 @@ void	solo_command(t_exec *prompt, char **env_c)
 	ft_exit_status(127, SET);
 }
 
+void	is_builtin_pipe(t_exec *prompt)
+{
+	int	len;
+
+	len = ft_strlen(prompt->cmd) + 1;
+	if (!ft_strncmp(prompt->cmd, "echo", len))
+		exit(ft_echo(prompt));
+	else if(!ft_strncmp(prompt->cmd, "pwd", len))
+		exit(ft_pwd(prompt));
+	// else if(ft_strncmp(prompt->cmd, "exit", len))
+	// 	exit(ft_exit(prompt));
+	// else if(ft_strncmp(prompt->cmd, "cd", len))
+	// 	exit(ft_cd(prompt));
+	// else if(ft_strncmp(prompt->cmd, "env", len))
+	// 	exit(ft_env(prompt));
+	// else if(ft_strncmp(prompt->cmd, "unset", len))
+	// 	exit(ft_unset(prompt));
+	// else if(ft_strncmp(prompt->cmd, "export", len))
+	// 	exit(ft_export(prompt));
+}
+
 void	multi_exec(t_exec *prompt)
 {
 	char	*path;
 
-	// if (is_builtin(prompt))
-	// 	exit (0);
+	is_builtin_pipe(prompt);
 	//needs update so that it return what the builtin returns
 	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
 	{
@@ -246,7 +256,7 @@ void	main_exec(t_exec *prompt)
 	else
 		multi_commands(prompt);
 }
-
+//the fuck is up with echo 
 // int main(int argc, char **argv, char **env){
 // 	t_env *head = NULL;
 // 	env_stacking(env, &head);
@@ -255,8 +265,9 @@ void	main_exec(t_exec *prompt)
 // 	int fd_in = open("red_in", O_RDWR);
 // 	// printf("%d\n", fd);
 // 	char *arg[] = {"cat", NULL};
-// 	char *arg2[] = {"wc","-l", NULL};	
-// 	// char *arg[] = {"ls", NULL};
+// 	// char *arg[] = {"echo","-n","hello world", NULL};	
+// 	char *arg2[] = {"echo","-n","hello world", NULL};	
+// 	// char *arg3[] = {"ls", NULL};
 
 // 	t_exec pr = {0};
 // 	pr.args = arg;
@@ -264,17 +275,17 @@ void	main_exec(t_exec *prompt)
 // 	pr.fd_out = 1;
 // 	pr.fd_in = 0;
 // 	pr.env = head;
-// 	// solo_command(&pr, char_env(head));
 
 // 	t_exec second = {0};
 // 	pr.next = &second;
 // 	second.args = arg2;
 // 	second.cmd = arg2[0];
-// 	second.fd_out = fd;
-// 	second.fd_in = fd_in;
+// 	second.fd_out = 1;
+// 	second.fd_in = 0;
 // 	second.env = head;
 // 	second.next = NULL;
 // 	// t_exec third = {0};
+// 	// solo_command(&second, char_env(head));
 // 	// third.args = arg3;
 // 	// third.cmd = arg3[0];
 // 	// second.next = &third;
@@ -284,10 +295,10 @@ void	main_exec(t_exec *prompt)
 // 	// third.next = NULL;
 // 	// solo_command(&pr, envc);
 // 	main_exec(&pr);
-// close(fd);
-// close(fd_in);
+// 	close(fd);
+// 	close(fd_in);
 // 	printf("%d\n", ft_exit_status(0, GET));
-// 	fflush(stdout);
+// 	// fflush(stdout);
 // 	// while (1)
 // 	// {
 // 	// 	sleep(1);
