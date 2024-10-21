@@ -25,7 +25,7 @@ int	flag_check(char **args)
 	return (-1);
 }
 
-void ft_echo(t_exec *prompt)
+int	ft_echo(t_exec *prompt)
 {
 	int start;
 	int nl;
@@ -33,7 +33,7 @@ void ft_echo(t_exec *prompt)
 	start = flag_check(prompt->args);
 	nl = start;
 	if (start == -1)
-		return;
+		return (0);
 	while(prompt->args[start])
 	{
 		ft_putstr_fd(prompt->args[start], prompt->fd_out);
@@ -43,6 +43,7 @@ void ft_echo(t_exec *prompt)
 	}
 	if (nl == 1)
 		write(prompt->fd_out, "\n", 1);
+	return (0);
 }
 // int main(int argc, char *argv[]){
 // 	if (argc)

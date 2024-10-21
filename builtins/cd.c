@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-// void ft_cd(t_exec *data)
+// int	ft_cd(t_exec *data)
 // {
 // 	if (chdir("Desktop"))
 // 		perror;
