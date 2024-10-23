@@ -22,11 +22,16 @@ t_exec	*ft_lstnewseg(t_segment *seg)
 	exec_seg = gc_handler(sizeof(t_exec), MALLOC);
 	if(!exec_seg)
 		return (NULL);
-	exec_seg->cmd = ft_strdup(seg->seg_command->value);
+	if (seg->seg_command)
+		exec_seg->cmd = ft_strdup(seg->seg_command->value);
+	else
+		exec_seg->cmd = NULL;
 	exec_seg->args = (char **)gc_handler((seg->args_count + 1) * sizeof(char *), MALLOC);
+	exec_seg->args[seg->args_count] = NULL;
 	while(i < seg->args_count)
 	{
-		exec_seg->args[i] = ft_strdup(seg->seg_args[i].value);
+		exec_seg->args[i] = ft_strdup(seg->seg_args->value);
+		seg->seg_args = seg->seg_args->next;
 		i++;
 	}
 	exec_seg->fd_in = seg->seg_input_fd;

@@ -71,6 +71,8 @@ char	*ft_strdup(const char *s1)
 	char	*s2;
 
 	i = 0;
+	if (!s1)
+		return (NULL);
 	slen = ft_strlen(s1) + 1;
 	s2 = gc_handler(slen * sizeof(char), MALLOC);
 	if (!s2)
@@ -189,4 +191,5 @@ char	*ft_strjoinc(const char *s1, const char c)
 	ft_strchrcat(p, &c, (i + 2));
 	return (p);
 }
+
 

@@ -34,6 +34,7 @@ typedef enum e_token_type
 	OUTPUT_R,
 	OUTPUT_A,
 	HEREDOC,
+	NIL,
 } t_token_type;
 
 typedef struct s_token t_token;
@@ -61,6 +62,7 @@ int		ft_is_alphanum(int c);
 int		ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
 t_token	*list_tokens(char **tokens);
+void	ft_putstr_fd(char *s, int fd);
 void	*gc_handler(int s ,int action);
 int		tokens_counter(const char *cmd);
 void	parse(char *str, t_env *env_list);

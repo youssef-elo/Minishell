@@ -124,8 +124,19 @@ int syntax_err_checker(t_token *token_list)
 		}
 		if(tmp->type == ARG || tmp->type == CMD || tmp->type == RDR_ARG)
 			err = 0;
+		if(tmp->type == OUTPUT_A || tmp->type == OUTPUT_R || tmp->type == INPUT_R || tmp->type == HEREDOC)
+		{
+			if(tmp->next->type != RDR_ARG)
+				// write(2, "syntax error near unexpected token `", 37);
+				// // printf("%s\n", tmp->next->value);
+				// ft_putstr_fd(tmp->next->value, 2);
+				// write(2, "'\n", 2);
+				return(22);
+			err = 1;
+		}
 		tmp = tmp->next;
 	}
+	printf("ERROR : %d\n", err);
 	if(err)
 		return(write(2, "syntax error near unexpected token `newline'\n", 45));
 	else
@@ -224,7 +235,7 @@ int	open_input_rdrs(t_segment	*exec_segment)
 	t_token	*temp;
 
 	fd = 0;
-	temp = exec_segment->output_rdr;
+	temp = exec_segment->input_rdr;
 	while(temp)
 	{
 		if(temp->type == INPUT_R)
@@ -248,7 +259,7 @@ void	append_segment(t_exec	**exec_head, t_segment	*exec_segment)
 	exec_segment->seg_output_fd = open_output_rdrs(exec_segment);
 	exec_segment->seg_input_fd = open_input_rdrs(exec_segment);
 	append_seg(exec_head, exec_segment);
-	exec_segment_init(exec_segment);
+	exec_segment_init(&exec_segment);
 }
 
 void	exec_segments_definer(t_token *token_list, t_exec	**exec_head)
@@ -259,22 +270,36 @@ void	exec_segments_definer(t_token *token_list, t_exec	**exec_head)
 
 	temp = token_list;
 	is_segment_first = 1;
-	exec_segment_init(exec_segment);
+	exec_segment = gc_handler(sizeof(t_segment), MALLOC);
+	exec_segment_init(&exec_segment);
 	while (temp)
 	{
 		if(temp->type == CMD)
+		{
+			// printf("~FOUND CMD : %s\n", temp->value);
 			exec_segment->seg_command = temp;
+		}
 		else if(temp->type == ARG)
 		{
+			// printf("~FOUND ARG : %s\n", temp->value);
 			append_token(&(exec_segment->seg_args), temp->value, temp->type);
 			exec_segment->args_count++;
 		}
 		else if(temp->type == INPUT_R || temp->type == HEREDOC)
+		{
+			// printf("~FOUND INPUT REDIRECTION OR HEREDOC FROM : %s\n", temp->next->value);
 			append_token(&(exec_segment->input_rdr), temp->next->value, temp->type);
+		}
 		else if(temp->type == OUTPUT_R || temp->type == OUTPUT_A)
+		{
+			// printf("~FOUND OUTPUT REDIRECTION TO : %s\n", temp->next->value);
 			append_token(&(exec_segment->output_rdr), temp->next->value, temp->type);
-		else if(temp->type == PIPE)
+		}
+		if(temp->type == PIPE || !temp->next)
+		{
 			append_segment(exec_head, exec_segment);
+			exec_segment_init(&exec_segment);
+		}
 		temp = temp->next;
 	}
 }
@@ -288,16 +313,16 @@ void parse(char *str, t_env *env_list)
 	char *cmd;
 	char **tokens;
 	t_token *token_list;
-	t_exec *exec_segments;
+	t_exec *exec_segments = NULL;
 	t_exec *temp_exec;
 
 	// const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
-	exec_segments = gc_handler(sizeof(t_exec), MALLOC);
-	exec_segments->cmd = NULL;
-	exec_segments->args = NULL;
-	exec_segments->fd_in = 0;
-	exec_segments->fd_out = 1;
-	exec_segments->next = NULL;
+	// exec_segments = gc_handler(sizeof(t_exec), MALLOC);
+	// exec_segments->cmd = NULL;
+	// exec_segments->args = NULL;
+	// exec_segments->fd_in = 0;
+	// exec_segments->fd_out = 1;
+	// exec_segments->next = NULL;
 	temp_exec = exec_segments;
 	double_quoted = 0;
 	single_quoted = 0;
@@ -371,20 +396,19 @@ void parse(char *str, t_env *env_list)
 
 		exec_segments_definer(token_list, &exec_segments);
 
-		printf("TEST: EXEC CMD -> %s\n", exec_segments->cmd);
 
 		temp_exec = exec_segments;
 		while (temp_exec)
 		{
-			printf("SEGMENT :\n");
+			printf("\n--------------------------------\n");
 			if(temp_exec->cmd)
 				printf("CMD: %s\n", temp_exec->cmd);
 			if(temp_exec->args)
 			{
 				int iter = 0;
-				while (temp_exec->args[i])
+				while (temp_exec->args[iter])
 				{
-					printf("ARG : %s\n", temp_exec->args[i]);
+					printf("ARG : %s\n", temp_exec->args[iter]);
 					iter++;
 				}
 			}
@@ -396,3 +420,4 @@ void parse(char *str, t_env *env_list)
 
 	}
 }
+//cmd arg red arg red == segv

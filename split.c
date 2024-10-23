@@ -107,6 +107,7 @@ t_token	*list_tokens(char **tokens)
 	count = 0;
 	i = 0;
 	first_token = NULL;
+	token_type = NIL;
 	while (tokens[i])
 	{
 		if(is_delimiter(tokens[i]))

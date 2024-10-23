@@ -3,7 +3,7 @@
 
 #define SET 0
 #define GET 1
-
+typedef struct s_execution t_exec;
 #include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
