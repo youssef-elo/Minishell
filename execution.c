@@ -190,6 +190,8 @@ void	ft_wait(int lastp)
 
 void	child_process(t_exec *prompt, int pre_pipe, int *pip)
 {
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	if (pre_pipe != -1 && prompt->fd_in == 0)
 	{
 		dup2(pre_pipe, 0);
@@ -211,30 +213,51 @@ void	child_process(t_exec *prompt, int pre_pipe, int *pip)
 	multi_exec(prompt);
 }
 
+int	child_setup(t_exec *prompt, int *pip, int *c_pid)
+{
+	if (prompt->next)
+	{
+		if (pipe(pip))
+		{
+			perror("pipe ");
+			return (0);
+		}
+	}
+	*c_pid = fork();
+	if (*c_pid == -1)
+	{
+		perror("fork ");
+		return (0);
+	}
+	return (1);
+}
+
 void	multi_commands(t_exec *prompt)
 {
-	int pip[2];
-	int pre_pipe;
 	int c_pid;
 	int lastp;
+	int pip[2];
+	int pre_pipe;
 
 	pre_pipe = -1;
 	while(prompt)
 	{
-		if (prompt->next)
-		{
-			if (pipe(pip))
-			{
-				perror("pipe ");
-				return;
-			}
-		}
-		c_pid = fork();
-		if (c_pid == -1)
-		{
-			perror("fork ");
+		if (!child_setup(prompt, pip, &c_pid))
 			return ;
-		}
+		// if (prompt->next)
+		// {
+		// 	if (pipe(pip))
+		// 	{
+		// 		perror("pipe ");
+		// 		return ;
+		// 	}
+		// }
+		// c_pid = fork();
+		// if (c_pid == -1)
+		// {
+		// 	perror("fork ");
+		// 	return ;
+		// }
 		if (c_pid == 0)
 			child_process(prompt, pre_pipe, pip);
 		// {
