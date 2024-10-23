@@ -126,17 +126,17 @@ int syntax_err_checker(t_token *token_list)
 			err = 0;
 		if(tmp->type == OUTPUT_A || tmp->type == OUTPUT_R || tmp->type == INPUT_R || tmp->type == HEREDOC)
 		{
-			if(tmp->next->type != RDR_ARG)
-				// write(2, "syntax error near unexpected token `", 37);
-				// // printf("%s\n", tmp->next->value);
-				// ft_putstr_fd(tmp->next->value, 2);
-				// write(2, "'\n", 2);
+			if(tmp->next && tmp->next->value && tmp->next->type != RDR_ARG)
+			{
+				write(2, "syntax error near unexpected token `", 37);
+				ft_putstr_fd(tmp->next->value, 2);
+				write(2, "'\n", 2);
 				return(22);
+			}
 			err = 1;
 		}
 		tmp = tmp->next;
 	}
-	printf("ERROR : %d\n", err);
 	if(err)
 		return(write(2, "syntax error near unexpected token `newline'\n", 45));
 	else
@@ -305,7 +305,7 @@ void	exec_segments_definer(t_token *token_list, t_exec	**exec_head)
 }
 
 
-void parse(char *str, t_env *env_list)
+t_exec	*parse(char *str, t_env *env_list)
 {
 	int i;
 	int double_quoted;
@@ -330,7 +330,7 @@ void parse(char *str, t_env *env_list)
 	token_list = NULL;
 	i = 0;
 	if(str[0] == '\0')
-		return ;
+		return (NULL);
 	while (str[i])
 	{
 		if(str[i] == '"' && !single_quoted)
@@ -349,7 +349,7 @@ void parse(char *str, t_env *env_list)
 			i++;
 	}
 	if(!cmd)
-		return;
+		return (NULL);
 	cmd = ft_strjoinc(cmd, SEPARATOR);
 	if(cmd && double_quoted)
 		printf("Syntax error: unexpected end of file (unmatched double quote)\n");
@@ -375,7 +375,7 @@ void parse(char *str, t_env *env_list)
 
 
 		if(syntax_err_checker(token_list))
-			return;
+			return (NULL);
 
 		t_token *temp_tokens_listt = token_list;
 		while(temp_tokens_listt)
@@ -395,29 +395,28 @@ void parse(char *str, t_env *env_list)
 		//////////////////////////////////////////
 
 		exec_segments_definer(token_list, &exec_segments);
-
-
-		temp_exec = exec_segments;
-		while (temp_exec)
-		{
-			printf("\n--------------------------------\n");
-			if(temp_exec->cmd)
-				printf("CMD: %s\n", temp_exec->cmd);
-			if(temp_exec->args)
-			{
-				int iter = 0;
-				while (temp_exec->args[iter])
-				{
-					printf("ARG : %s\n", temp_exec->args[iter]);
-					iter++;
-				}
-			}
-			printf("FD_IN : %d\nFD_OUT : %d\n", temp_exec->fd_in, temp_exec->fd_out);
-			printf("\n--------------------------------\n");
-			temp_exec = temp_exec->next;
-		}
+		return (exec_segments);
+		// temp_exec = exec_segments;
+		// while (temp_exec)
+		// {
+		// 	printf("\n--------------------------------\n");
+		// 	if(temp_exec->cmd)
+		// 		printf("CMD: %s\n", temp_exec->cmd);
+		// 	if(temp_exec->args)
+		// 	{
+		// 		int iter = 0;
+		// 		while (temp_exec->args[iter])
+		// 		{
+		// 			printf("ARG : %s\n", temp_exec->args[iter]);
+		// 			iter++;
+		// 		}
+		// 	}
+		// 	printf("FD_IN : %d\nFD_OUT : %d\n", temp_exec->fd_in, temp_exec->fd_out);
+		// 	printf("\n--------------------------------\n");
+		// 	temp_exec = temp_exec->next;
+		// }
 		
-
 	}
+	return NULL;
 }
 //cmd arg red arg red == segv

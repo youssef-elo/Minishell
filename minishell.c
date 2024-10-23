@@ -2,7 +2,8 @@
 
 int main(int argc, char **argv, char **env)
 {
-	t_env *env_list = NULL;	
+	t_env *env_list = NULL;
+	t_exec *prompt;
 
 	argc = 0;
 	argv = 0;
@@ -18,7 +19,8 @@ int main(int argc, char **argv, char **env)
 			add_history(rl);
 		if(ft_strncmp(rl, "exit", 4) == 0)
 			break;
-		parse(rl, env_list);
+		prompt = parse(rl, env_list);
+		main_exec(prompt, env_list);
 		gc_handler(0, FREE);
 		free(rl);
 	}

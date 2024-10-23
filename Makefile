@@ -12,9 +12,9 @@ SANITIZE = -g -fsanitize=address
 
 FLAGS = -Wall -Wextra -Werror $(SANITIZE)
 
-LIBS =  -L /Users/yel-ouaz/.brew/opt/readline/lib -l readline
+LIBS =  -L ~/.brew/opt/readline/lib -l readline
 
-INCLUDES = -I /Users/yel-ouaz/.brew/opt/readline/include
+INCLUDES = -I ~/.brew/opt/readline/include
 
 all : $(NAME)
 
