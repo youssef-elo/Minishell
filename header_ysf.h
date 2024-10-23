@@ -32,6 +32,7 @@ int		ft_env(t_exec * prompt);
 void	signal_handler(int sig);
 int		ft_exit(t_exec * prompt);
 int		ft_echo(t_exec * prompt);
+void	main_exec(t_exec *prompt, t_env *env);
 char	*ft_strdup_env(char *str);
 int		ft_unset(t_exec * prompt);
 int		ft_export(t_exec * prompt);

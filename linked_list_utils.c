@@ -75,5 +75,5 @@ void append_seg(t_exec	**exec_seg_list, t_segment	*seg)
 	temp_seg = *exec_seg_list;
 	while(temp_seg->next)
 		temp_seg = temp_seg->next;
-	temp_seg->next = new_exec_seg;	
+	temp_seg->next = new_exec_seg;
 }

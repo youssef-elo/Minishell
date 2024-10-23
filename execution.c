@@ -296,8 +296,10 @@ void	multi_commands(t_exec *prompt)
 	ft_wait(lastp);
 }
 
-void	main_exec(t_exec *prompt)
+void	main_exec(t_exec *prompt, t_env *env)
 {
+	if (prompt)
+		prompt->env = env;
 	if (!prompt->next)
 		solo_command(prompt, char_env(prompt->env));
 	else
