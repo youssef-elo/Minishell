@@ -188,6 +188,29 @@ void	ft_wait(int lastp)
 	}
 }
 
+void	child_process(t_exec *prompt, int pre_pipe, int *pip)
+{
+	if (pre_pipe != -1 && prompt->fd_in == 0)
+	{
+		dup2(pre_pipe, 0);
+		close(pre_pipe);
+	}
+	else if (prompt->fd_in != 0)
+	{
+		dup2(prompt->fd_in, 0);
+		close(prompt->fd_in);
+	}
+	if (prompt->next && prompt->fd_out == 1)
+		dup2(pip[1], 1);
+	else if (prompt->fd_out != 1)
+	{
+		dup2(prompt->fd_out, 1);
+		close(prompt->fd_out);
+	}
+	close(pip[0]);
+	multi_exec(prompt);
+}
+
 void	multi_commands(t_exec *prompt)
 {
 	int pip[2];
@@ -213,27 +236,28 @@ void	multi_commands(t_exec *prompt)
 			return ;
 		}
 		if (c_pid == 0)
-		{
-			if (pre_pipe != -1 && prompt->fd_in == 0)
-			{
-				dup2(pre_pipe, 0);
-				close(pre_pipe);
-			}
-			else if (prompt->fd_in != 0)
-			{
-				dup2(prompt->fd_in, 0);
-				close(prompt->fd_in);
-			}
-			if (prompt->next && prompt->fd_out == 1)
-				dup2(pip[1], 1);
-			else if (prompt->fd_out != 1)
-			{
-				dup2(prompt->fd_out, 1);
-				close(prompt->fd_out);
-			}
-			close(pip[0]);
-			multi_exec(prompt);
-		}
+			child_process(prompt, pre_pipe, pip);
+		// {
+		// 	if (pre_pipe != -1 && prompt->fd_in == 0)
+		// 	{
+		// 		dup2(pre_pipe, 0);
+		// 		close(pre_pipe);
+		// 	}
+		// 	else if (prompt->fd_in != 0)
+		// 	{
+		// 		dup2(prompt->fd_in, 0);
+		// 		close(prompt->fd_in);
+		// 	}
+		// 	if (prompt->next && prompt->fd_out == 1)
+		// 		dup2(pip[1], 1);
+		// 	else if (prompt->fd_out != 1)
+		// 	{
+		// 		dup2(prompt->fd_out, 1);
+		// 		close(prompt->fd_out);
+		// 	}
+		// 	close(pip[0]);
+		// 	multi_exec(prompt);
+		// }
 		else
 		{
 			if (pre_pipe != -1)
@@ -256,7 +280,7 @@ void	main_exec(t_exec *prompt)
 	else
 		multi_commands(prompt);
 }
-//the fuck is up with echo 
+
 // int main(int argc, char **argv, char **env){
 // 	t_env *head = NULL;
 // 	env_stacking(env, &head);
@@ -264,8 +288,8 @@ void	main_exec(t_exec *prompt)
 // 	int fd = open("new", O_RDWR | O_CREAT , 0777);
 // 	int fd_in = open("red_in", O_RDWR);
 // 	// printf("%d\n", fd);
-// 	char *arg[] = {"cat", NULL};
 // 	// char *arg[] = {"echo","-n","hello world", NULL};	
+// 	char *arg[] = {"cat", NULL};
 // 	char *arg2[] = {"echo","-n","hello world", NULL};	
 // 	// char *arg3[] = {"ls", NULL};
 
@@ -295,10 +319,12 @@ void	main_exec(t_exec *prompt)
 // 	// third.next = NULL;
 // 	// solo_command(&pr, envc);
 // 	main_exec(&pr);
-// 	close(fd);
-// 	close(fd_in);
-// 	printf("%d\n", ft_exit_status(0, GET));
-// 	// fflush(stdout);
+// 	int f1 =close(fd);
+// 	int f2 = close(fd_in);
+// 	// printf("%d\t%d\n", f1, f2);
+// 	// printf("%d\n", ft_exit_status(0, GET));
+
+// 	fflush(stdout);
 // 	// while (1)
 // 	// {
 // 	// 	sleep(1);

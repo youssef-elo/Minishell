@@ -12,15 +12,19 @@ SANITIZE = -g -fsanitize=address
 
 FLAGS = -Wall -Wextra -Werror $(SANITIZE)
 
-READLINE = -l readline
+LIBS =  -L /Users/yel-ouaz/.brew/opt/readline/lib -l readline
+
+INCLUDES = -I /Users/yel-ouaz/.brew/opt/readline/include
 
 all : $(NAME)
 
+n9i : all clean
+
 $(NAME) : $(OFILES) $(HEADER)
-	cc $(FLAGS) $(OFILES) $(READLINE) -o $(NAME)
+	cc $(FLAGS) $(OFILES) $(LIBS) -o $(NAME)
 
 %.o : %.c $(HEADER) Makefile
-	cc -c $(FLAGS) $< -o $@
+	cc -c $(FLAGS) $(INCLUDES) $< -o $@
 
 re : fclean all
 

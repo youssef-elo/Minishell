@@ -4,6 +4,7 @@
 #define SET 0
 #define GET 1
 typedef struct s_execution t_exec;
+#include <stdio.h>
 #include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -11,7 +12,7 @@ typedef struct s_execution t_exec;
 #include "header_hamza.h"
 #include <limits.h>
 #include <fcntl.h>
-
+#include <signal.h>
 
 typedef struct s_execution
 {
@@ -22,11 +23,13 @@ typedef struct s_execution
 	int					fd_out;
 	struct s_execution	*next;
 }						t_exec;
+void	set_signals(void);
 int		ft_pwd(t_exec *data);
 void	exec_test(t_env *env); 
 int		ft_cd(t_exec * prompt);
 char	**char_env(t_env *env);
 int		ft_env(t_exec * prompt);
+void	signal_handler(int sig);
 int		ft_exit(t_exec * prompt);
 int		ft_echo(t_exec * prompt);
 char	*ft_strdup_env(char *str);

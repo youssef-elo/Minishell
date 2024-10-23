@@ -8,11 +8,12 @@ int main(int argc, char **argv, char **env)
 	argv = 0;
 	char *rl;
 	env_stacking(env, &env_list);
+	set_signals();
 	while (1)
 	{
 		rl = readline("minishell> ");
 		if(rl == NULL)
-			break;
+			exit(ft_exit_status(0, GET));
 		if(ft_strlen(rl) > 0)
 			add_history(rl);
 		if(ft_strncmp(rl, "exit", 4) == 0)
