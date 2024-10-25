@@ -5,6 +5,7 @@
 #define GET 1
 typedef struct s_execution t_exec;
 #include <stdio.h>
+#include <termios.h>
 #include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -32,7 +33,7 @@ int		ft_env(t_exec * prompt);
 void	signal_handler(int sig);
 int		ft_exit(t_exec * prompt);
 int		ft_echo(t_exec * prompt);
-void	main_exec(t_exec *prompt, t_env *env);
+void	main_exec(t_exec *prompt);
 char	*ft_strdup_env(char *str);
 int		ft_unset(t_exec * prompt);
 int		ft_export(t_exec * prompt);

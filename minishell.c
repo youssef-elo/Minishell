@@ -4,7 +4,9 @@ int main(int argc, char **argv, char **env)
 {
 	t_env *env_list = NULL;
 	t_exec *prompt;
+	struct termios status;
 
+	tcgetattr(STDIN_FILENO, &status);
 	argc = 0;
 	argv = 0;
 	char *rl;
@@ -20,9 +22,10 @@ int main(int argc, char **argv, char **env)
 		if(ft_strncmp(rl, "exit", 4) == 0)
 			break;
 		prompt = parse(rl, env_list);
-		main_exec(prompt, env_list);
+		main_exec(prompt);
 		gc_handler(0, FREE);
 		free(rl);
+		tcsetattr(STDIN_FILENO, TCSAFLUSH, &status);
 	}
 	galloc(0, FREE);
 	return 0;

@@ -305,6 +305,15 @@ void	exec_segments_definer(t_token *token_list, t_exec	**exec_head)
 }
 
 
+void put_env(t_env *env, t_exec *prompt)
+{
+	while(prompt)
+	{
+		prompt->env = env;
+		prompt = prompt->next;
+	}
+}
+
 t_exec	*parse(char *str, t_env *env_list)
 {
 	int i;
@@ -395,6 +404,7 @@ t_exec	*parse(char *str, t_env *env_list)
 		//////////////////////////////////////////
 
 		exec_segments_definer(token_list, &exec_segments);
+		put_env(env_list, exec_segments);
 		return (exec_segments);
 		// temp_exec = exec_segments;
 		// while (temp_exec)

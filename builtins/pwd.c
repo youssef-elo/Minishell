@@ -11,7 +11,7 @@ char	*ft_getenv(t_env *envi , char *key)
 	return (NULL);
 }
 
-int	ft_pwd(t_exec *data)
+int	ft_pwd(t_exec *prompt)
 {
 	char	dir[PATH_MAX];
 	char	*env_pwd;
@@ -19,15 +19,15 @@ int	ft_pwd(t_exec *data)
 	getcwd(dir, PATH_MAX);
 	if(dir[0] == '/')
 	{
-		ft_putstrnl_fd(dir , 1);
+		ft_putstrnl_fd(dir , prompt->fd_out);
 		return (0);
 	}
 	else
 	{
-		env_pwd = ft_getenv(data->env, "PWD");
+		env_pwd = ft_getenv(prompt->env, "PWD");
 		if (env_pwd)
 		{
-			ft_putstrnl_fd(env_pwd , data->fd_out);
+			ft_putstrnl_fd(env_pwd , prompt->fd_out);
 		}
 	}
 	if (!env_pwd)
