@@ -53,7 +53,7 @@ char	*handle_dollar_sign(int *i, char *str, t_env *env_list, int double_quoted)
 	cmd = NULL;
 	if(str[(*i) + 1] && str[(*i) + 1] == '?')
 	{
-		cmd = ft_strjoin(cmd, "$?");
+		cmd = ft_strjoin(cmd, ft_itoa(ft_exit_status(0, GET)));
 		cmd = ft_strjoinc(cmd, SEPARATOR);
 		(*i)++;
 		return (cmd);
@@ -112,13 +112,19 @@ int syntax_err_checker(t_token *token_list)
 	tmp = token_list;
 	err = 1;
 	if(token_list->type == PIPE)
+	{
+		ft_exit_status(258, SET);
 		return(write(2, "syntax error near unexpected token `|'\n", 39));
+	}
 	while (tmp)
 	{
 		if(tmp->type == PIPE)
 		{
 			if(err == 1)
+			{
+				ft_exit_status(258, SET);
 				return(write(2, "syntax error near unexpected token `|'\n", 39));
+			}
 			else
 				err = 1;
 		}
@@ -131,6 +137,7 @@ int syntax_err_checker(t_token *token_list)
 				write(2, "syntax error near unexpected token `", 37);
 				ft_putstr_fd(tmp->next->value, 2);
 				write(2, "'\n", 2);
+				ft_exit_status(258, SET);
 				return(22);
 			}
 			err = 1;
@@ -138,7 +145,10 @@ int syntax_err_checker(t_token *token_list)
 		tmp = tmp->next;
 	}
 	if(err)
+	{
+		ft_exit_status(258, SET);
 		return(write(2, "syntax error near unexpected token `newline'\n", 45));
+	}
 	else
 		return (0);
 }
@@ -361,9 +371,15 @@ t_exec	*parse(char *str, t_env *env_list)
 		return (NULL);
 	cmd = ft_strjoinc(cmd, SEPARATOR);
 	if(cmd && double_quoted)
-		printf("Syntax error: unexpected end of file (unmatched double quote)\n");
+	{
+		write(2, "Syntax error: unexpected end of file (unmatched double quote)\n", 62);
+		ft_exit_status(258, SET);
+	}
 	else if(cmd && single_quoted)
-		printf("Syntax error: unexpected end of file (unmatched single quote)\n");
+	{
+		write(2, "Syntax error: unexpected end of file (unmatched single quote)\n", 62);
+		ft_exit_status(258, SET);
+	}
 	else
 	{
 		tokens = split_tokens(cmd, SEPARATOR);
@@ -379,10 +395,6 @@ t_exec	*parse(char *str, t_env *env_list)
 		////////////////////////////////////
 
 		token_list = list_tokens(tokens);
-
-
-
-
 		if(syntax_err_checker(token_list))
 			return (NULL);
 

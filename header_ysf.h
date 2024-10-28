@@ -24,6 +24,7 @@ typedef struct s_execution
 	int					fd_out;
 	struct s_execution	*next;
 }						t_exec;
+char	*ft_itoa(int n);
 void	set_signals(void);
 int		ft_pwd(t_exec *data);
 void	exec_test(t_env *env); 

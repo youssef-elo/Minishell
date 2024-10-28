@@ -41,13 +41,13 @@ int	is_builtin(t_exec *prompt)
 		ft_echo(prompt);
 	else if(!ft_strncmp(prompt->cmd, "pwd", len))
 		ft_pwd(prompt);
-	// else if(ft_strncmp(prompt->cmd, "exit", len))
+	// else if(!ft_strncmp(prompt->cmd, "exit", len))
 	// 	ft_exit(prompt);
-	// else if(ft_strncmp(prompt->cmd, "cd", len))
+	// else if(!ft_strncmp(prompt->cmd, "cd", len))
 	// 	ft_cd(prompt);
-	// else if(ft_strncmp(prompt->cmd, "env", len))
-	// 	ft_env(prompt);
-	// else if(ft_strncmp(prompt->cmd, "unset", len))
+	else if(!ft_strncmp(prompt->cmd, "env", len))
+		ft_env(prompt);
+	// else if(!ft_strncmp(prompt->cmd, "unset", len))
 	// 	ft_unset(prompt);
 	// else if(ft_strncmp(prompt->cmd, "export", len))
 		// ft_export(prompt);
@@ -170,8 +170,8 @@ void	is_builtin_pipe(t_exec *prompt)
 	// 	exit(ft_exit(prompt));
 	// else if(ft_strncmp(prompt->cmd, "cd", len))
 	// 	exit(ft_cd(prompt));
-	// else if(ft_strncmp(prompt->cmd, "env", len))
-	// 	exit(ft_env(prompt));
+	else if(ft_strncmp(prompt->cmd, "env", len))
+		exit(ft_env(prompt));
 	// else if(ft_strncmp(prompt->cmd, "unset", len))
 	// 	exit(ft_unset(prompt));
 	// else if(ft_strncmp(prompt->cmd, "export", len))
