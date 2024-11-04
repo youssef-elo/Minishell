@@ -2,22 +2,21 @@
 
 char *ft_strdup_env(char *str)
 {
-	int	i;
-	int	slen;
+	int		i;
+	int		slen;
 	char	*s2;
 
 	i = 0;
+	if (!str)
+		return (NULL);
 	slen = ft_strlen(str) + 1;
 	s2 = galloc(slen * sizeof(char), MALLOC);
-	if (!s2)
-		return (NULL);
 	ft_strlcpy(s2, str, slen);
 	return (s2);
 }
 t_env	*ft_lstnew_env(void *key, void *value)
 {
 	t_env	*node;
-
 
 	node = galloc(sizeof(t_env), MALLOC);
 	if (!node)
@@ -69,4 +68,26 @@ char **char_env(t_env *env)
 		i++;
 	}
 	return (env_c);
+}
+
+char	*ft_strjoin_env(char *s1, char *s2)
+{
+	int		i;
+	int		j;
+	char	*p;
+
+	if (s1 == NULL && s2 == NULL)
+		return (NULL);
+	if (s1 == NULL && s2)
+		return (ft_strdup_env(s2));
+	if (s2 == NULL && s1)
+		return (ft_strdup_env(s1));
+	i = ft_strlen(s1);
+	j = ft_strlen(s2);
+	p = galloc(i + j + 1, MALLOC);
+	if (!p)
+		return (NULL);
+	ft_strlcpy(p, s1, (i + 1));
+	ft_strlcat(p, s2, (i + j + 1));
+	return (p);
 }

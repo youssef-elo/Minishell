@@ -70,6 +70,7 @@ void env_stacking(char **env, t_env **env_stack)
 	int i;
 	int j;
 	int equal_pos;
+	char *key;
 
 	i = 0;
 	while(env[i])
@@ -78,7 +79,13 @@ void env_stacking(char **env, t_env **env_stack)
 		equal_pos = equal_sign_position(env[i]);
 		while(env[i][j])
 			j++;
-		append_node_env(env_stack, ft_substr(env[i], 0, equal_pos), ft_substr(env[i], equal_pos + 1, j - equal_pos));
+		key = ft_substr(env[i], 0, equal_pos);
+		if (ft_strncmp(key, "OLDPWD", ft_strlen(key)) == 0)
+		{
+			i++;
+			continue ;
+		}
+		append_node_env(env_stack, key, ft_substr(env[i], equal_pos + 1, j - equal_pos));
 		i++;
 	}
 	env_check(env_stack, *env_stack);

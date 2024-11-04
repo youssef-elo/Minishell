@@ -47,10 +47,10 @@ int	is_builtin(t_exec *prompt)
 	// 	ft_exit_status(ft_cd(prompt), SET);
 	else if(!ft_strncmp(prompt->cmd, "env", len))
 		ft_exit_status(ft_env(prompt), SET);
-	// else if(!ft_strncmp(prompt->cmd, "unset", len))
-	// 	ft_exit_status(ft_unset(prompt), SET);
+	else if(!ft_strncmp(prompt->cmd, "unset", len))
+		ft_exit_status(export_unset(prompt, 2), SET);
 	else if(!ft_strncmp(prompt->cmd, "export", len))
-		ft_exit_status(ft_export(prompt), SET);
+		ft_exit_status(export_unset(prompt, 1), SET);
 	else
 		return 0;
 	return 1;
@@ -172,10 +172,10 @@ void	is_builtin_pipe(t_exec *prompt)
 	// 	exit(ft_cd(prompt));
 	else if(!ft_strncmp(prompt->cmd, "env", len))
 		exit(ft_env(prompt));
-	// else if(!ft_strncmp(prompt->cmd, "unset", len))
-	// 	exit(ft_unset(prompt));
+	else if(!ft_strncmp(prompt->cmd, "unset", len))
+		exit(export_unset(prompt, 2));
 	else if(!ft_strncmp(prompt->cmd, "export", len))
-		exit(ft_export(prompt));
+		exit(export_unset(prompt, 1));
 }
 
 void	multi_exec(t_exec *prompt)
@@ -275,8 +275,6 @@ int	child_setup(t_exec *prompt, int *pip, int *c_pid)
 	return (1);
 }
 
-
-
 void	multi_commands(t_exec *prompt)
 {
 	int c_pid;
@@ -365,6 +363,14 @@ void put_struct(t_exec *prompt)
 //when a command is executed it should be put in the environemetn variable _
 void	main_exec(t_exec *prompt)
 {
+	// static t_export	*head;
+	// static int		f;
+
+	// if (f == 0)
+	// {
+	// 	export_init(prompt->env, head);
+	// 	f = 1;
+	// }
 	// put_struct(prompt);
 	if (!prompt)
 		return ;

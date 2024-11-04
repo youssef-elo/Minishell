@@ -65,7 +65,7 @@ t_token	*list_tokens(char **tokens);
 void	ft_putstr_fd(char *s, int fd);
 void	*gc_handler(int s ,int action);
 int		tokens_counter(const char *cmd);
-t_exec	*parse(char *str, t_env *env_list);
+t_exec	*parse(char *str, t_env *env_list, t_env **head);
 char	**split_tokens(const char *s, char c);
 char	*ft_strjoinc(const char *s1, const char c);
 char	*ft_strjoin(const char *s1, const char *s2);

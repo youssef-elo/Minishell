@@ -2,14 +2,15 @@
 
 int main(int argc, char **argv, char **env)
 {
-	char *rl;
-	t_exec *prompt;
-	struct termios status;
-	t_env *env_list = NULL;
-for( int i =0; env[i]; i++)printf("%s\n", env[i]);
-	tcgetattr(STDIN_FILENO, &status);
+	char			*rl;
+	t_exec			*prompt;
+	t_env			*env_list;
+	struct termios	status;
+	
 	argc = 0;
 	argv = 0;
+	env_list = NULL;
+	tcgetattr(STDIN_FILENO, &status);
 	env_stacking(env, &env_list);
 	set_signals();
 	while (1)
@@ -21,7 +22,7 @@ for( int i =0; env[i]; i++)printf("%s\n", env[i]);
 			add_history(rl);
 		if(ft_strncmp(rl, "exit", 4) == 0)
 			break;
-		prompt = parse(rl, env_list);
+		prompt = parse(rl, env_list, &env_list);
 		main_exec(prompt);
 		gc_handler(0, FREE);
 		free(rl);

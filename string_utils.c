@@ -94,9 +94,9 @@ char	*ft_chrdup(const char c)
 
 char	*ft_substr(const char *s, int start, int len)
 {
-	int	i;
-	int	j;
-	int	slen;
+	int		i;
+	int		j;
+	int		slen;
 	char	*p;
 
 	if(len == 0)
@@ -153,8 +153,8 @@ int	ft_strchrcat(char *dst, const char *src, int dstsize)
 
 char	*ft_strjoin(const char *s1, const char *s2)
 {
-	int	i;
-	int	j;
+	int		i;
+	int		j;
 	char	*p;
 
 	if (s1 == NULL && s2 == NULL)
@@ -174,7 +174,7 @@ char	*ft_strjoin(const char *s1, const char *s2)
 }
 char	*ft_strjoinc(const char *s1, const char c)
 {
-	int	i;
+	int		i;
 	char	*p;
 
 	if (s1 == NULL && !c)
