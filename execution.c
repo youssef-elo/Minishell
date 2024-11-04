@@ -49,8 +49,8 @@ int	is_builtin(t_exec *prompt)
 		ft_exit_status(ft_env(prompt), SET);
 	// else if(!ft_strncmp(prompt->cmd, "unset", len))
 	// 	ft_exit_status(ft_unset(prompt), SET);
-	// else if(ft_strncmp(prompt->cmd, "export", len))
-		// ft_exit_status(ft_export(prompt), SET);
+	else if(!ft_strncmp(prompt->cmd, "export", len))
+		ft_exit_status(ft_export(prompt), SET);
 	else
 		return 0;
 	return 1;
@@ -174,8 +174,8 @@ void	is_builtin_pipe(t_exec *prompt)
 		exit(ft_env(prompt));
 	// else if(!ft_strncmp(prompt->cmd, "unset", len))
 	// 	exit(ft_unset(prompt));
-	// else if(!ft_strncmp(prompt->cmd, "export", len))
-	// 	exit(ft_export(prompt));
+	else if(!ft_strncmp(prompt->cmd, "export", len))
+		exit(ft_export(prompt));
 }
 
 void	multi_exec(t_exec *prompt)
@@ -362,6 +362,7 @@ void put_struct(t_exec *prompt)
 	}
 }
 //environement should be revised 
+//when a command is executed it should be put in the environemetn variable _
 void	main_exec(t_exec *prompt)
 {
 	// put_struct(prompt);

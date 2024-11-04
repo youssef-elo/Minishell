@@ -6,11 +6,11 @@
 // 		perror;
 // }
 
-int main(int argc , char *argv[]){
-	if (chdir(argv[1]) == -1 )
-		perror("cd :");
-	printf("%s\n", getcwd(NULL, 0));
-}
+// int main(int argc , char *argv[]){
+// 	if (chdir(argv[1]) == -1 )
+// 		perror("cd :");
+// 	printf("%s\n", getcwd(NULL, 0));
+// }
 /*
 	the PWD and OLDPWD can only be set the bash doesnt not create them if they dont exist ,
 	when you first run bash there is already the pwd but the OLDPWD is exported but with no value

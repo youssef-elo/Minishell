@@ -2,14 +2,14 @@
 
 int main(int argc, char **argv, char **env)
 {
-	t_env *env_list = NULL;
+	char *rl;
 	t_exec *prompt;
 	struct termios status;
-
+	t_env *env_list = NULL;
+for( int i =0; env[i]; i++)printf("%s\n", env[i]);
 	tcgetattr(STDIN_FILENO, &status);
 	argc = 0;
 	argv = 0;
-	char *rl;
 	env_stacking(env, &env_list);
 	set_signals();
 	while (1)

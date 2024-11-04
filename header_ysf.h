@@ -15,7 +15,7 @@ typedef struct s_execution t_exec;
 #include <fcntl.h>
 #include <signal.h>
 
-typedef struct s_execution
+typedef struct	s_execution
 {
 	char				*cmd;
 	char				**args;
@@ -24,6 +24,15 @@ typedef struct s_execution
 	int					fd_out;
 	struct s_execution	*next;
 }						t_exec;
+
+typedef	struct	s_export
+{
+	char			*key;
+	char			*value;
+	struct s_export	*next;
+}					t_export;
+
+
 char	*ft_itoa(int n);
 void	set_signals(void);
 int		ft_pwd(t_exec *data);
@@ -32,6 +41,7 @@ int		ft_cd(t_exec * prompt);
 char	**char_env(t_env *env);
 int		ft_env(t_exec * prompt);
 void	signal_handler(int sig);
+int		ft_atoi(const char *str);
 int		ft_exit(t_exec * prompt);
 int		ft_echo(t_exec * prompt);
 void	main_exec(t_exec *prompt);
