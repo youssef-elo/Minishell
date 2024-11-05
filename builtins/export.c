@@ -193,7 +193,6 @@ void	update_append_env(t_env **env, int set_apnd, char *key, char *value)
 
 	f = 0;
 	tmp = *env;
-
 	while(tmp)
 	{
 		if (!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1))
@@ -287,7 +286,7 @@ int	ft_export(t_exec *prompt, t_export **head)
 	return (0);
 }
 
-int	export_unset(t_exec *prompt, int sw)
+int	export_unset_cd(t_exec *prompt, int sw)
 {
 	static t_export	*head;
 	static int		f;
@@ -299,6 +298,8 @@ int	export_unset(t_exec *prompt, int sw)
 	}
 	if (sw == 1)
 		return (ft_export(prompt, &head));
-	else
+	else if (sw == 2)
 		return (ft_unset(prompt, &head));
+	else
+		return (ft_cd(prompt, &head));
 }
