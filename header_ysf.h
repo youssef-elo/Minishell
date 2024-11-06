@@ -13,7 +13,9 @@ typedef struct s_execution t_exec;
 #include "header_hamza.h"
 #include <limits.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <signal.h>
+#include <errno.h>
 
 typedef struct	s_execution
 {

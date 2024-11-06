@@ -81,15 +81,18 @@ int	ft_cd(t_exec *prompt, t_export **head)
 {
 	char	cwd[PATH_MAX];
 	char	*pwd;
-	char	*check;
+	char	*error;
+	// char	*check;
 
 	getcwd(cwd, PATH_MAX);
 	if (!prompt->args[1])
 		return (cd_home(prompt, head, cwd));
-	check = getcwd(NULL, 0);
-	if (!check)
-		perror("cd");
-	free(check);
+	// check = getcwd(NULL, 0);
+	// if (!check)
+	// 	perror("cd");
+	// free(check);
+
+	
 	// check the error in case of nested diretories that were deleted;
 	if (chdir(prompt->args[1]) == -1)
 	{
@@ -100,7 +103,16 @@ int	ft_cd(t_exec *prompt, t_export **head)
 	pwd = ft_getenv(prompt->env, "PWD");
 	if (!pwd)
 		pwd = cwd;
-	getcwd(cwd, PATH_MAX);
+	if (getcwd(cwd, PATH_MAX) == NULL)
+	{
+		perror("cd: error retrieving current directory");
+		export_env_update(*head, prompt, "OLDPWD", pwd);
+		error = ft_getenv(prompt->env, "PWD");
+		if (error[ft_strlen(error) - 1] != '/')
+			error = ft_strjoin(error, "/");
+		export_env_update(*head, prompt, "PWD", ft_strjoin(error, prompt->args[1]));
+		return (0);
+	}
 	export_env_update(*head, prompt, "OLDPWD", pwd);
 	export_env_update(*head, prompt, "PWD", cwd);
 	return (0);
