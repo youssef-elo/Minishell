@@ -20,8 +20,6 @@ int main(int argc, char **argv, char **env)
 			exit(ft_exit_status(0, GET));
 		if(ft_strlen(rl) > 0)
 			add_history(rl);
-		if(ft_strncmp(rl, "exit", 4) == 0)
-			break;
 		prompt = parse(rl, env_list, &env_list);
 		main_exec(prompt);
 		gc_handler(0, FREE);

@@ -1,0 +1,51 @@
+#include "../minishell.h"
+
+int ft_exit_check(char *str)
+{
+	int i;
+
+	i = 0;
+	while(ft_isspace(str[i]))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	while(ft_is_digit(str[i]))
+		i++;
+	if (str[i])
+		return (1);
+	return (0);
+}
+int my_exit(int exit_status)
+{
+	galloc(0, FREE);
+	gc_handler(0, FREE);
+	exit(exit_status);
+	return (exit_status);
+}
+
+int ft_exit(t_exec *prompt)
+{
+	int check  = prompt->fd_in;
+
+	if (!prompt->args[1])
+	{
+		ft_putstr_fd("exit\n", 2);
+		return (my_exit(ft_exit_status(0, GET)));
+	}
+	check = ft_exit_check(prompt->args[1]);
+	if (check == 1)
+	{
+		ft_putstr_fd("exit\nminishell: exit: ", 2);
+		ft_putstr_fd(prompt->args[1], 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
+		return (my_exit(255));
+	}
+	if (check == 0 && !prompt->args[2])
+		return (my_exit(exit_atoi(prompt->args[1]) % 256));
+	if (prompt->args[2])
+	{
+		ft_putstrnl_fd("exit\n minishell: exit : too many arguments", 2);
+		return (1);
+	}
+	return (1);
+}

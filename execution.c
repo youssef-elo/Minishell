@@ -41,8 +41,8 @@ int	is_builtin(t_exec *prompt)
 		ft_exit_status(ft_echo(prompt), SET);
 	else if(!ft_strncmp(prompt->cmd, "pwd", len))
 		ft_exit_status(ft_pwd(prompt), SET);
-	// else if(!ft_strncmp(prompt->cmd, "exit", len))
-	// 	ft_exit_status(ft_exit(prompt), SET);
+	else if(!ft_strncmp(prompt->cmd, "exit", len))
+		ft_exit_status(ft_exit(prompt), SET);
 	else if(!ft_strncmp(prompt->cmd, "cd", len))
 		ft_exit_status(export_unset_cd(prompt, 3), SET);
 	else if(!ft_strncmp(prompt->cmd, "env", len))
@@ -142,6 +142,7 @@ void	solo_command(t_exec *prompt, char **env_c)
 	else
 	{
 		path = get_path(prompt->cmd, ft_getenv(prompt->env, "PATH"));
+		//if path doesnt exist check for file in cwd
 		if (path)
 		{
 			solo_exec(prompt, path, env_c);
@@ -166,8 +167,8 @@ void	is_builtin_pipe(t_exec *prompt)
 		exit(ft_echo(prompt));
 	else if(!ft_strncmp(prompt->cmd, "pwd", len))
 		exit(ft_pwd(prompt));
-	// else if(!ft_strncmp(prompt->cmd, "exit", len))
-	// 	exit(ft_exit(prompt));
+	else if(!ft_strncmp(prompt->cmd, "exit", len))
+		exit(ft_exit(prompt));
 	else if(!ft_strncmp(prompt->cmd, "cd", len))
 		exit(export_unset_cd(prompt, 3));
 	else if(!ft_strncmp(prompt->cmd, "env", len))

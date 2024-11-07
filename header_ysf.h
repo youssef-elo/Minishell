@@ -37,8 +37,10 @@ typedef	struct	s_export
 
 
 char		*ft_itoa(int n);
+int			ft_isspace(int c);
 void		set_signals(void);
 int			var_check(char *str);
+long long	exit_atoi(char *str);
 int			ft_pwd(t_exec *data);
 void		exec_test(t_env *env); 
 char		**char_env(t_env *env);
