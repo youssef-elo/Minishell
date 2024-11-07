@@ -128,6 +128,8 @@ void	solo_command(t_exec *prompt, char **env_c)
 	char	*path;
 	char	*env_path;
 
+	if (prompt->fd_in == -1 || prompt->fd_out == -1)
+		return ;
 	if (is_builtin(prompt))
 	{
 		if (prompt->fd_in != 0)
@@ -192,7 +194,9 @@ void	multi_exec(t_exec *prompt)
 {
 	char	*path;
 	char	*env_path;
-
+// check if the command is null it is null when there is a problem with the redirections
+	if (prompt->fd_in == -1 || prompt->fd_out == -1)
+		exit (1);
 	is_builtin_pipe(prompt);
 	//needs update so that it return what the builtin returns
 	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
@@ -380,6 +384,10 @@ void put_struct(t_exec *prompt)
 //when a command is executed it should be put in the environemetn variable _
 void	main_exec(t_exec *prompt)
 {
+
+	// ************
+	//update the _ variable here
+
 	// static t_export	*head;
 	// static int		f;
 
@@ -391,10 +399,16 @@ void	main_exec(t_exec *prompt)
 	// put_struct(prompt);
 	if (!prompt)
 		return ;
+	// prompt->next->args = NULL;
 	if (!prompt->next)
 		solo_command(prompt, char_env(prompt->env));
 	else
+	{
+		// prompt->cmd = NULL;
+		// prompt->args = NULL;
 		multi_commands(prompt);
+
+	}
 }
 
 // int main(int argc, char **argv, char **env){
