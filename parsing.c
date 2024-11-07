@@ -230,7 +230,7 @@ void open_fail_check(int input_fd, int output_fd, char *value)
 	}
 }
 
-int	open_output_rdrs(t_segment	*exec_segment)
+void	open_rdrs(t_segment	*exec_segment)
 {
 	int input_fd;
 	int output_fd;
@@ -277,37 +277,11 @@ int	open_output_rdrs(t_segment	*exec_segment)
 	exec_segment->seg_output_fd = output_fd;
 }
 
-void	open_input_rdrs(t_segment	*exec_segment)
-{
-	int input_fd;
-	int output_fd;
-	t_token	*temp;
 
-	input_fd = 0;
-	output_fd = 1;
-	temp = exec_segment->input_rdr;
-	while(temp)
-	{
-		if(temp->type == INPUT_R)
-			fd = open(temp->value, O_RDONLY);
-		if(fd == -1)
-			break;
-		temp = temp->next;
-	}
-	if(fd == -1)
-	{
-		write(2, "minishell: ", 11);
-		write(2, temp->value, ft_strlen(temp->value));
-		write(2, ": No such file or directory\n", 28);
-		fd = 0;
-	}
-	return(fd);
-}
 
 void	append_segment(t_exec	**exec_head, t_segment	*exec_segment)
 {
-	open_output_rdrs(exec_segment);
-	open_input_rdrs(exec_segment);
+	open_rdrs(exec_segment);
 	append_seg(exec_head, exec_segment);
 	exec_segment_init(&exec_segment);
 }
