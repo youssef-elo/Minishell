@@ -213,38 +213,78 @@ void exec_segment_init(t_segment **exec_segment)
 	(*exec_segment)->seg_output_fd = 1;
 }
 
+void open_fail_check(int input_fd, int output_fd, char *value)
+{
+	if(output_fd == -1)
+	{
+		write(2, value, ft_strlen(value));
+		write(2, ": Permission denied\n", 20);
+		output_fd = 1;
+	}
+	if(input_fd == -1)
+	{
+		write(2, "minishell: ", 11);
+		write(2, value, ft_strlen(value));
+		write(2, ": No such file or directory\n", 28);
+		input_fd = 0;
+	}
+}
+
 int	open_output_rdrs(t_segment	*exec_segment)
 {
-	int fd;
+	int input_fd;
+	int output_fd;
 	t_token	*temp;
 
-	fd = 1;
+	input_fd = 0;
+	output_fd = 1;
 	temp = exec_segment->output_rdr;
 	while(temp)
 	{
 		if(temp->type == OUTPUT_R)
-			fd = open(temp->value, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+		{
+			if(output_fd != 1)
+				close(output_fd);
+			output_fd = open(temp->value, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+		}
 		else if(temp->type == OUTPUT_A)
-			fd = open(temp->value, O_CREAT | O_WRONLY | O_APPEND, 0666);
-		if(fd == -1)
+		{
+			if(output_fd != 1)
+				close(output_fd);
+			output_fd = open(temp->value, O_CREAT | O_WRONLY | O_APPEND, 0666);
+		}
+		else if(temp->type == INPUT_R)
+		{
+			if(input_fd != 1)
+				close(input_fd);
+			input_fd = open(temp->value, O_RDONLY);
+		}
+		if(input_fd == -1 || output_fd == -1)
 			break;
 		temp = temp->next;
 	}
-	if(fd == -1)
+	open_fail_check(input_fd, output_fd, temp->value);
+	if(temp)
 	{
-		write(2, temp->value, ft_strlen(temp->value));
-		write(2, ": Permission denied\n", 20);
-		fd = 1;
+		if(input_fd > 1)
+			close(input_fd);
+		if(output_fd > 1)
+			close(output_fd);
+		exec_segment->seg_input_fd = -1;
+		exec_segment->seg_output_fd = -1;
 	}
-	return(fd);
+	exec_segment->seg_input_fd = input_fd;
+	exec_segment->seg_output_fd = output_fd;
 }
 
-int	open_input_rdrs(t_segment	*exec_segment)
+void	open_input_rdrs(t_segment	*exec_segment)
 {
-	int fd;
+	int input_fd;
+	int output_fd;
 	t_token	*temp;
 
-	fd = 0;
+	input_fd = 0;
+	output_fd = 1;
 	temp = exec_segment->input_rdr;
 	while(temp)
 	{
@@ -266,8 +306,8 @@ int	open_input_rdrs(t_segment	*exec_segment)
 
 void	append_segment(t_exec	**exec_head, t_segment	*exec_segment)
 {
-	exec_segment->seg_output_fd = open_output_rdrs(exec_segment);
-	exec_segment->seg_input_fd = open_input_rdrs(exec_segment);
+	open_output_rdrs(exec_segment);
+	open_input_rdrs(exec_segment);
 	append_seg(exec_head, exec_segment);
 	exec_segment_init(&exec_segment);
 }
