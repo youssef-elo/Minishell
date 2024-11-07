@@ -205,8 +205,7 @@ void	tokens_quotes_omit(t_token **list)
 void exec_segment_init(t_segment **exec_segment)
 {
 	(*exec_segment)->seg_command = NULL;
-	(*exec_segment)->input_rdr = NULL;
-	(*exec_segment)->output_rdr = NULL;
+	(*exec_segment)->rdrs = NULL;
 	(*exec_segment)->seg_args = NULL;
 	(*exec_segment)->args_count = 0;
 	(*exec_segment)->seg_input_fd = 0;
@@ -215,19 +214,12 @@ void exec_segment_init(t_segment **exec_segment)
 
 void open_fail_check(int input_fd, int output_fd, char *value)
 {
-	if(output_fd == -1)
+	if(output_fd == -1 || input_fd == -1)
 	{
-		write(2, value, ft_strlen(value));
-		write(2, ": Permission denied\n", 20);
-		output_fd = 1;
+		ft_putstr_fd("minishell: ", 2);
+		perror(value);
 	}
-	if(input_fd == -1)
-	{
-		write(2, "minishell: ", 11);
-		write(2, value, ft_strlen(value));
-		write(2, ": No such file or directory\n", 28);
-		input_fd = 0;
-	}
+	ft_exit_status(1, SET);
 }
 
 void	open_rdrs(t_segment	*exec_segment)
@@ -238,7 +230,7 @@ void	open_rdrs(t_segment	*exec_segment)
 
 	input_fd = 0;
 	output_fd = 1;
-	temp = exec_segment->output_rdr;
+	temp = exec_segment->rdrs;
 	while(temp)
 	{
 		if(temp->type == OUTPUT_R)
@@ -255,7 +247,7 @@ void	open_rdrs(t_segment	*exec_segment)
 		}
 		else if(temp->type == INPUT_R)
 		{
-			if(input_fd != 1)
+			if(input_fd != 0)
 				close(input_fd);
 			input_fd = open(temp->value, O_RDONLY);
 		}
@@ -263,21 +255,20 @@ void	open_rdrs(t_segment	*exec_segment)
 			break;
 		temp = temp->next;
 	}
-	open_fail_check(input_fd, output_fd, temp->value);
 	if(temp)
 	{
+		open_fail_check(input_fd, output_fd, temp->value);
 		if(input_fd > 1)
 			close(input_fd);
 		if(output_fd > 1)
 			close(output_fd);
 		exec_segment->seg_input_fd = -1;
 		exec_segment->seg_output_fd = -1;
+		return ;
 	}
 	exec_segment->seg_input_fd = input_fd;
 	exec_segment->seg_output_fd = output_fd;
 }
-
-
 
 void	append_segment(t_exec	**exec_head, t_segment	*exec_segment)
 {
@@ -312,12 +303,12 @@ void	exec_segments_definer(t_token *token_list, t_exec	**exec_head)
 		else if(temp->type == INPUT_R || temp->type == HEREDOC)
 		{
 			// printf("~FOUND INPUT REDIRECTION OR HEREDOC FROM : %s\n", temp->next->value);
-			append_token(&(exec_segment->input_rdr), temp->next->value, temp->type);
+			append_token(&(exec_segment->rdrs), temp->next->value, temp->type);
 		}
 		else if(temp->type == OUTPUT_R || temp->type == OUTPUT_A)
 		{
 			// printf("~FOUND OUTPUT REDIRECTION TO : %s\n", temp->next->value);
-			append_token(&(exec_segment->output_rdr), temp->next->value, temp->type);
+			append_token(&(exec_segment->rdrs), temp->next->value, temp->type);
 		}
 		if(temp->type == PIPE || !temp->next)
 		{
@@ -331,7 +322,7 @@ void	exec_segments_definer(t_token *token_list, t_exec	**exec_head)
 
 void put_env(t_env **head_env, t_exec *prompt)
 {
-	while(prompt)
+	while (prompt)
 	{
 		prompt->head = head_env;
 		prompt->env = *head_env;

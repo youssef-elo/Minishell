@@ -49,8 +49,7 @@ struct s_token
 typedef struct s_segment
 {
 	t_token	*seg_command;
-	t_token *output_rdr;
-	t_token *input_rdr;
+	t_token *rdrs;
 	t_token *seg_args;
 	int		args_count;
 	int		seg_output_fd;
@@ -65,13 +64,13 @@ t_token	*list_tokens(char **tokens);
 void	ft_putstr_fd(char *s, int fd);
 void	*gc_handler(int s ,int action);
 int		tokens_counter(const char *cmd);
-t_exec	*parse(char *str, t_env *env_list, t_env **head);
 char	**split_tokens(const char *s, char c);
 char	*ft_strjoinc(const char *s1, const char c);
 char	*ft_strjoin(const char *s1, const char *s2);
 void	env_stacking(char **env, t_env **env_stack);
 char	*ft_substr(const char *s, int start, int len);
 t_token	*ft_lstnewtoken(void *value, t_token_type type);
+t_exec	*parse(char *str, t_env *env_list, t_env **head);
 int		ft_strncmp(const char *s1, const char *s2, int n);
 int		ft_strlcpy(char *dst, const char *src, int dstsize);
 void	append_seg(t_exec	**exec_seg_list, t_segment	*seg);

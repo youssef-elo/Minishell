@@ -401,7 +401,9 @@ void	main_exec(t_exec *prompt)
 		return ;
 	// prompt->next->args = NULL;
 	if (!prompt->next)
+	{
 		solo_command(prompt, char_env(prompt->env));
+	}
 	else
 	{
 		// prompt->cmd = NULL;
