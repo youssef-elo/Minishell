@@ -73,7 +73,7 @@ char	*get_path(char *cmd, char *path)
 	while(path_split[i])
 	{
 		cmd_path = ft_strjoin(path_split[i], new_cmd);
-		if (!access(cmd_path, X_OK))
+		if (!access(cmd_path, F_OK))
 			return (cmd_path);
 		i++;
 	}
@@ -102,6 +102,7 @@ void	solo_exec(t_exec *prompt, char *path, char **env_c)
 			close(prompt->fd_out);
 		}
 		execve(path, prompt->args, env_c);
+		ft_putstr_fd("minishell: ", 2);
 		perror(prompt->cmd);
 		if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
 			ft_exit_status(126, SET);
@@ -125,6 +126,7 @@ void	solo_exec(t_exec *prompt, char *path, char **env_c)
 void	solo_command(t_exec *prompt, char **env_c)
 {
 	char	*path;
+	char	*env_path;
 
 	if (is_builtin(prompt))
 	{
@@ -141,14 +143,21 @@ void	solo_command(t_exec *prompt, char **env_c)
 	}
 	else
 	{
-		path = get_path(prompt->cmd, ft_getenv(prompt->env, "PATH"));
-		//if path doesnt exist check for file in cwd
+		env_path = ft_getenv(prompt->env, "PATH");
+		path = get_path(prompt->cmd, env_path);
+		if (!env_path || !env_path[0])
+		{
+			path = ft_strjoin("./", prompt->cmd);
+				solo_exec(prompt, path, env_c);
+				return ;
+		}
 		if (path)
 		{
 			solo_exec(prompt, path, env_c);
 			return ;
 		}
 	}
+	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(prompt->cmd, 2);
 	ft_putstr_fd(" : command not found\n", 2);
 	if (prompt->fd_in != 0)
@@ -182,12 +191,14 @@ void	is_builtin_pipe(t_exec *prompt)
 void	multi_exec(t_exec *prompt)
 {
 	char	*path;
+	char	*env_path;
 
 	is_builtin_pipe(prompt);
 	//needs update so that it return what the builtin returns
 	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
 	{
 		execve(prompt->cmd, prompt->args, char_env(prompt->env));
+		ft_putstr_fd("minishell: ", 2);
 		perror(prompt->cmd);
 		if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
 			exit (126);
@@ -196,22 +207,27 @@ void	multi_exec(t_exec *prompt)
 	}
 	else
 	{
-		path = get_path(prompt->cmd, ft_getenv(prompt->env, "PATH"));
+		env_path = ft_getenv(prompt->env, "PATH");
+		path = get_path(prompt->cmd, env_path);
+		if (!env_path || !env_path[0])
+			path = ft_strjoin("./", prompt->cmd);
 		if (path)
 		{
-			// printf("%s\n", path);
 			execve(path, prompt->args, char_env(prompt->env));
+			ft_putstr_fd("minishell: ", 2);
 			perror(prompt->cmd);
-			if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
+			if (!access(path, F_OK) && access(path, X_OK))
 				exit (126);
 			else if (access(prompt->cmd, F_OK))
 				exit (127);
 		}
 	}
+	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(prompt->cmd, 2);
 	ft_putstr_fd(" : command not found\n", 2);
 	exit (127);
 }
+//something is not right about the access above shouldnt i check the full path not just the prompt->cmd ?
 
 void	ft_wait(int lastp)
 {
