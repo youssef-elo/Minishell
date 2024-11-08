@@ -77,7 +77,10 @@ int cd_path(t_exec *prompt, t_export **head, char *cwd)
 	return (0);
 }
 
-void getcwd_fail(t_exec *prompt, t_export **head)
+// void getcwd_fail(t_exec *prompt, t_export **head)
+// {
+	
+// }
 
 int	ft_cd(t_exec *prompt, t_export **head)
 {
