@@ -28,6 +28,34 @@ void toggle(int *boolean)
 		*boolean = 1;
 }
 
+char *spaces_to_sep(char *str)
+{
+	char *new_str;
+	int i;
+
+	i = 0;
+	new_str = NULL;
+	if(!str)
+		return (NULL);
+	if(is_space(str[0]))
+	{
+		while (is_space(str[i]) && str[i])
+			i++;
+	}
+	while (str[i])
+	{
+		if(is_space(str[i]))
+		{
+			if(!is_space(str[i + 1]) && str[i + 1] != '\0')
+				new_str = ft_strjoinc(new_str, SEPARATOR);
+		}
+		else
+			new_str = ft_strjoinc(new_str, str[i]);
+		i++;
+	}
+	return(new_str);
+}
+
 char *expand_token(char *cmd, t_env *env_list)
 {
 	int i;
@@ -367,7 +395,12 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 		else if (!double_quoted && !single_quoted && (str[i] == '|' || str[i] == '>' || str[i] == '<'))
 			handle_delimiter(&i, &cmd, str);
 		else if(str[i] == '$' && !single_quoted)
-			cmd = ft_strjoin(cmd, handle_dollar_sign(&i, str, env_list, double_quoted));
+		{
+			if(double_quoted)
+				cmd = ft_strjoin(cmd, handle_dollar_sign(&i, str, env_list, double_quoted));
+			else
+				cmd = ft_strjoin(cmd, spaces_to_sep(handle_dollar_sign(&i, str, env_list, double_quoted)));
+		}
 		else
 			cmd = ft_strjoinc(cmd, str[i]);
 		if(str[i] != '\0')
