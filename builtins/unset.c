@@ -28,7 +28,6 @@ int unset_check_var(char *str, int *check)
 	return (0);
 }
 
-
 void	unset_exp(t_export **head, char *str)
 {
 	t_export	*tmp;

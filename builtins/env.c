@@ -2,8 +2,8 @@
 
 int ft_env(t_exec *prompt)
 {
-	char **env_c;
-	int i;
+	char	**env_c;
+	int		i;
 
 	i = 0;
 	env_c = char_env(prompt->env);

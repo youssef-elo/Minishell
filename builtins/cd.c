@@ -77,23 +77,17 @@ int cd_path(t_exec *prompt, t_export **head, char *cwd)
 	return (0);
 }
 
+void getcwd_fail(t_exec *prompt, t_export **head)
+
 int	ft_cd(t_exec *prompt, t_export **head)
 {
 	char	cwd[PATH_MAX];
 	char	*pwd;
 	char	*error;
-	// char	*check;
 
 	getcwd(cwd, PATH_MAX);
 	if (!prompt->args[1])
 		return (cd_home(prompt, head, cwd));
-	// check = getcwd(NULL, 0);
-	// if (!check)
-	// 	perror("cd");
-	// free(check);
-
-	
-	// check the error in case of nested diretories that were deleted;
 	if (chdir(prompt->args[1]) == -1)
 	{
 		ft_putstr_fd("cd : ", 2);

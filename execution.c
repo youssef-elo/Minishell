@@ -13,28 +13,48 @@
 // ◦ env with no options or arguments
 // ◦ exit with no options
 
-void builtin_fd_op(t_exec * prompt)
-{
-	int out_f;
-	int in_f;
+// void builtin_fd_op(t_exec * prompt)
+// {
+// 	int out_f;
+// 	int in_f;
 
-	if (prompt->fd_in != 0)
-	{
-		in_f = dup(0);
-		dup2(prompt->fd_in, 0);
-		close(prompt->fd_in);
-	}
-	if (prompt->fd_out != 1)
-	{
-		out_f = dup(1);
-		dup2(prompt->fd_out, 1);
-		close(prompt->fd_out);
-	}
-}
+// 	if (prompt->fd_in != 0)
+// 	{
+// 		in_f = dup(0);
+// 		dup2(prompt->fd_in, 0);
+// 		close(prompt->fd_in);
+// 	}
+// 	if (prompt->fd_out != 1)
+// 	{
+// 		out_f = dup(1);
+// 		dup2(prompt->fd_out, 1);
+// 		close(prompt->fd_out);
+// 	}
+// }
+
+// char	*ft_lower(char *str, int len)
+// {
+// 	char *ret;
+// 	int i;
+
+// 	i = 0;
+// 	ret = gc_handler(len, MALLOC);
+// 	while(str[i])
+// 	{
+// 		if (str[i] >= 'A' && str[i] <= 'Z')
+// 			ret[i] = str[i] + 32;
+// 		else 
+// 			ret[i] = str[i];
+// 		i++;
+// 	}
+// 	ret[i] = 0;
+// 	return (ret);
+// }
 
 int	is_builtin(t_exec *prompt)
 {
 	int	len;
+
 	
 	len = ft_strlen(prompt->cmd) + 1;
 	if (!ft_strncmp(prompt->cmd, "echo", len))
@@ -45,7 +65,7 @@ int	is_builtin(t_exec *prompt)
 		ft_exit_status(ft_exit(prompt), SET);
 	else if(!ft_strncmp(prompt->cmd, "cd", len))
 		ft_exit_status(export_unset_cd(prompt, 3), SET);
-	else if(!ft_strncmp(prompt->cmd, "env", len))
+	else if(!ft_strncmp(prompt->cmd, "env", len) && ft_getenv(prompt->env, "PATH"))
 		ft_exit_status(ft_env(prompt), SET);
 	else if(!ft_strncmp(prompt->cmd, "unset", len))
 		ft_exit_status(export_unset_cd(prompt, 2), SET);
@@ -108,9 +128,11 @@ void	solo_exec(t_exec *prompt, char *path, char **env_c)
 			ft_exit_status(126, SET);
 		else if (access(prompt->cmd, F_OK))
 			ft_exit_status(127, SET);
+		my_exit(ft_exit_status(0, GET));
 	}
 	else
 	{
+		signal_set_wait();
 		pid = waitpid(f, &stat, 0);
 		if (prompt->fd_in != 0)
 			close(prompt->fd_in);
@@ -120,6 +142,7 @@ void	solo_exec(t_exec *prompt, char *path, char **env_c)
 			ft_exit_status(WTERMSIG(stat) + 128, SET);
 		else
 			ft_exit_status(WEXITSTATUS(stat), SET);
+		set_signals(0, 0);
 	}
 }
 
@@ -128,7 +151,7 @@ void	solo_command(t_exec *prompt, char **env_c)
 	char	*path;
 	char	*env_path;
 
-	if (prompt->fd_in == -1 || prompt->fd_out == -1)
+	if (prompt->fd_in == -1 || prompt->fd_out == -1 || !prompt->cmd)
 		return ;
 	if (is_builtin(prompt))
 	{
@@ -139,10 +162,7 @@ void	solo_command(t_exec *prompt, char **env_c)
 		return ;
 	}
 	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
-	{
-		solo_exec(prompt, prompt->cmd, env_c);
-		return ;
-	}
+		return (solo_exec(prompt, prompt->cmd, env_c));
 	else
 	{
 		env_path = ft_getenv(prompt->env, "PATH");
@@ -150,8 +170,8 @@ void	solo_command(t_exec *prompt, char **env_c)
 		if (!env_path || !env_path[0])
 		{
 			path = ft_strjoin("./", prompt->cmd);
-				solo_exec(prompt, path, env_c);
-				return ;
+			solo_exec(prompt, path, env_c);
+			return ;
 		}
 		if (path)
 		{
@@ -171,7 +191,7 @@ void	solo_command(t_exec *prompt, char **env_c)
 
 void	is_builtin_pipe(t_exec *prompt)
 {
-	int	len;
+	int		len;
 
 	len = ft_strlen(prompt->cmd) + 1;
 	if (!ft_strncmp(prompt->cmd, "echo", len))
@@ -182,7 +202,7 @@ void	is_builtin_pipe(t_exec *prompt)
 		exit(ft_exit(prompt));
 	else if(!ft_strncmp(prompt->cmd, "cd", len))
 		exit(export_unset_cd(prompt, 3));
-	else if(!ft_strncmp(prompt->cmd, "env", len))
+	else if(!ft_strncmp(prompt->cmd, "env", len) && ft_getenv(prompt->env, "PATH"))
 		exit(ft_env(prompt));
 	else if(!ft_strncmp(prompt->cmd, "unset", len))
 		exit(export_unset_cd(prompt, 2));
@@ -194,20 +214,21 @@ void	multi_exec(t_exec *prompt)
 {
 	char	*path;
 	char	*env_path;
-// check if the command is null it is null when there is a problem with the redirections
+	
 	if (prompt->fd_in == -1 || prompt->fd_out == -1)
-		exit (1);
+		my_exit (1);
+	if (!prompt->cmd)
+		my_exit(ft_exit_status(0, GET));
 	is_builtin_pipe(prompt);
-	//needs update so that it return what the builtin returns
 	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
 	{
 		execve(prompt->cmd, prompt->args, char_env(prompt->env));
 		ft_putstr_fd("minishell: ", 2);
 		perror(prompt->cmd);
 		if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
-			exit (126);
+			my_exit (126);
 		else if (access(prompt->cmd, F_OK))
-			exit (127);
+			my_exit (127);
 	}
 	else
 	{
@@ -221,15 +242,15 @@ void	multi_exec(t_exec *prompt)
 			ft_putstr_fd("minishell: ", 2);
 			perror(prompt->cmd);
 			if (!access(path, F_OK) && access(path, X_OK))
-				exit (126);
-			else if (access(prompt->cmd, F_OK))
-				exit (127);
+				my_exit(126);
+			else if (access(path, F_OK))
+				my_exit(127);
 		}
 	}
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(prompt->cmd, 2);
 	ft_putstr_fd(" : command not found\n", 2);
-	exit (127);
+	my_exit(127);
 }
 //something is not right about the access above shouldnt i check the full path not just the prompt->cmd ?
 
@@ -238,8 +259,9 @@ void	ft_wait(int lastp)
 	pid_t	wpid;
 	int		stat;
 
+	signal_set_wait();
 	wpid = waitpid(-1, &stat, 0);
-	while(wpid != -1)
+	while (wpid != -1)
 	{
 		if (wpid == lastp)
 		{
@@ -250,6 +272,7 @@ void	ft_wait(int lastp)
 		}
 		wpid = waitpid(-1, &stat, 0);
 	}
+	set_signals(0, 0);
 }
 
 void	child_process(t_exec *prompt, int pre_pipe, int *pip)
@@ -262,17 +285,11 @@ void	child_process(t_exec *prompt, int pre_pipe, int *pip)
 		close(pre_pipe);
 	}
 	else if (prompt->fd_in != 0)
-	{
 		dup2(prompt->fd_in, 0);
-		// close(prompt->fd_in);
-	}
 	if (prompt->next && prompt->fd_out == 1)
 		dup2(pip[1], 1);
 	else if (prompt->fd_out != 1)
-	{
 		dup2(prompt->fd_out, 1);
-		// close(prompt->fd_out);
-	}
 	close(pip[0]);
 	multi_exec(prompt);
 }
@@ -296,66 +313,36 @@ int	child_setup(t_exec *prompt, int *pip, int *c_pid)
 	return (1);
 }
 
+void	parent_process(t_exec *prompt, int *pre_pipe, int *pip)
+{
+	if (*pre_pipe != -1)
+		close(*pre_pipe);
+	*pre_pipe = dup(pip[0]);
+	close(pip[0]);
+	close(pip[1]);
+	if (prompt->fd_in != 0)
+		close (prompt->fd_in);
+	if (prompt->fd_out != 1)
+		close(prompt->fd_out);
+}
+
 void	multi_commands(t_exec *prompt)
 {
-	int c_pid;
-	int lastp;
-	int pip[2];
-	int pre_pipe;
+	int	c_pid;
+	int	lastp;
+	int	pip[2];
+	int	pre_pipe;
 
 	pre_pipe = -1;
 	while(prompt)
 	{
 		if (!child_setup(prompt, pip, &c_pid))
 			return ;
-		// if (prompt->next)
-		// {
-		// 	if (pipe(pip))
-		// 	{
-		// 		perror("pipe ");
-		// 		return ;
-		// 	}
-		// }
-		// c_pid = fork();
-		// if (c_pid == -1)
-		// {
-		// 	perror("fork ");
-		// 	return ;
-		// }
 		if (c_pid == 0)
 			child_process(prompt, pre_pipe, pip);
-		// {
-		// 	if (pre_pipe != -1 && prompt->fd_in == 0)
-		// 	{
-		// 		dup2(pre_pipe, 0);
-		// 		close(pre_pipe);
-		// 	}
-		// 	else if (prompt->fd_in != 0)
-		// 	{
-		// 		dup2(prompt->fd_in, 0);
-		// 		close(prompt->fd_in);
-		// 	}
-		// 	if (prompt->next && prompt->fd_out == 1)
-		// 		dup2(pip[1], 1);
-		// 	else if (prompt->fd_out != 1)
-		// 	{
-		// 		dup2(prompt->fd_out, 1);
-		// 		close(prompt->fd_out);
-		// 	}
-		// 	close(pip[0]);
-		// 	multi_exec(prompt);
-		// }
 		else
 		{
-			if (pre_pipe != -1)
-				close(pre_pipe);
-			pre_pipe = dup(pip[0]);
-			close(pip[0]);
-			close(pip[1]);
-			if (prompt->fd_in != 0)
-				close (prompt->fd_in);
-			if (prompt->fd_out != 1)
-				close(prompt->fd_out);
+			parent_process(prompt, &pre_pipe, pip);
 			if (!prompt->next)
 				lastp = c_pid;
 		}
@@ -384,33 +371,12 @@ void put_struct(t_exec *prompt)
 //when a command is executed it should be put in the environemetn variable _
 void	main_exec(t_exec *prompt)
 {
-
-	// ************
-	//update the _ variable here
-
-	// static t_export	*head;
-	// static int		f;
-
-	// if (f == 0)
-	// {
-	// 	export_init(prompt->env, head);
-	// 	f = 1;
-	// }
-	// put_struct(prompt);
 	if (!prompt)
 		return ;
-	// prompt->next->args = NULL;
 	if (!prompt->next)
-	{
 		solo_command(prompt, char_env(prompt->env));
-	}
 	else
-	{
-		// prompt->cmd = NULL;
-		// prompt->args = NULL;
 		multi_commands(prompt);
-
-	}
 }
 
 // int main(int argc, char **argv, char **env){

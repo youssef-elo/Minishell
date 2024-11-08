@@ -15,12 +15,21 @@ int ft_exit_check(char *str)
 		return (1);
 	return (0);
 }
+
 int my_exit(int exit_status)
 {
 	galloc(0, FREE);
 	gc_handler(0, FREE);
 	exit(exit_status);
 	return (exit_status);
+}
+
+void readline_exit(void)
+{
+	write(1, "exit\n", 5);
+	galloc(0, FREE);
+	gc_handler(0, FREE);
+	exit(ft_exit_status(0, GET));
 }
 
 int ft_exit(t_exec *prompt)

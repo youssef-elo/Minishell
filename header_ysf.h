@@ -38,15 +38,18 @@ typedef	struct	s_export
 
 char		*ft_itoa(int n);
 int			ft_isspace(int c);
-void		set_signals(void);
+void		readline_exit(void);
 int			var_check(char *str);
 long long	exit_atoi(char *str);
 int			ft_pwd(t_exec *data);
+void		signal_wait(int sig);
+void		signal_set_wait(void);
 void		exec_test(t_env *env); 
 char		**char_env(t_env *env);
 int			ft_env(t_exec * prompt);
 void		signal_handler(int sig);
 int			ft_atoi(const char *str);
+int			my_exit(int exit_status);
 int			ft_exit(t_exec * prompt);
 int			ft_echo(t_exec * prompt);
 void		main_exec(t_exec *prompt);
@@ -58,6 +61,7 @@ void		ft_putstr_fd(char *str, int fd);
 t_export	*exp_node(char *key, char *value);
 void		ft_putstrnl_fd(char *str, int fd);
 char		*ft_strjoin_env(char *s1, char *s2);
+void		set_signals(int ign, char **ignore);
 char		*ft_getenv(t_env *envi , char *key);
 void 		gc_node(void *ptr, t_mblock **head);
 int			export_unset_cd(t_exec *prompt, int sw);
