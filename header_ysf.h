@@ -3,6 +3,7 @@
 
 #define SET 0
 #define GET 1
+#include <sys/stat.h>
 typedef struct s_execution t_exec;
 #include <stdio.h>
 #include <termios.h>

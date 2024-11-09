@@ -82,6 +82,7 @@ char	*get_path(char *cmd, char *path)
 	char	*new_cmd;
 	char	*cmd_path;
 	char	**path_split;
+	struct stat path_info;
 
 	i = 0;
 	if (!path || !cmd || !(*cmd))
@@ -93,8 +94,11 @@ char	*get_path(char *cmd, char *path)
 	while(path_split[i])
 	{
 		cmd_path = ft_strjoin(path_split[i], new_cmd);
-		if (!access(cmd_path, F_OK))
-			return (cmd_path);
+		if (!stat(cmd_path, &path_info))
+		{
+			if (S_ISREG(path_info.st_mode))
+				return (cmd_path);
+		}
 		i++;
 	}
 	return (NULL);
@@ -103,8 +107,9 @@ char	*get_path(char *cmd, char *path)
 void	solo_exec(t_exec *prompt, char *path, char **env_c)
 {
 	int		f;
-	int		stat;
+	int		status;
 	pid_t	pid;
+	struct stat	path_info;
 
 	f = fork();
 	if (f == 0)
@@ -122,26 +127,55 @@ void	solo_exec(t_exec *prompt, char *path, char **env_c)
 			close(prompt->fd_out);
 		}
 		execve(path, prompt->args, env_c);
-		ft_putstr_fd("minishell: ", 2);
-		perror(prompt->cmd);
-		if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
-			ft_exit_status(126, SET);
-		else if (access(prompt->cmd, F_OK))
+		if (!stat(path, &path_info))
+		{
+			if (S_ISDIR(path_info.st_mode))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(prompt->cmd, 2);
+				ft_putstr_fd(": is a directory\n", 2);
+				ft_exit_status(126, SET);
+			}
+			else
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(prompt->cmd, 2);
+				ft_putstr_fd(" Permission denied\n", 2);
+				ft_exit_status(126, SET);
+			}
+		}
+		else
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(prompt->cmd, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
 			ft_exit_status(127, SET);
+		}
+		
+		// {
+		// 	ft_putstr_fd("minishell: ", 2);
+		// 	ft_putstr_fd(prompt->cmd, 2);
+		// 	ft_putstr_fd(" No such file or directory\n", 2);
+		// 	ft_exit_status(127, SET);
+		// }
+		// if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
+		// 	ft_exit_status(126, SET);
+		// else if (access(prompt->cmd, F_OK))
+		// 	ft_exit_status(127, SET);
 		my_exit(ft_exit_status(0, GET));
 	}
 	else
 	{
 		signal_set_wait();
-		pid = waitpid(f, &stat, 0);
+		pid = waitpid(f, &status, 0);
 		if (prompt->fd_in != 0)
 			close(prompt->fd_in);
 		if (prompt->fd_out != 1)
 			close(prompt->fd_out);
-		if (WIFSIGNALED(stat))
-			ft_exit_status(WTERMSIG(stat) + 128, SET);
+		if (WIFSIGNALED(status))
+			ft_exit_status(WTERMSIG(status) + 128, SET);
 		else
-			ft_exit_status(WEXITSTATUS(stat), SET);
+			ft_exit_status(WEXITSTATUS(status), SET);
 		set_signals(0, 0);
 	}
 }
@@ -214,6 +248,7 @@ void	multi_exec(t_exec *prompt)
 {
 	char	*path;
 	char	*env_path;
+	struct stat path_info;
 	
 	if (prompt->fd_in == -1 || prompt->fd_out == -1)
 		my_exit (1);
@@ -223,12 +258,36 @@ void	multi_exec(t_exec *prompt)
 	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
 	{
 		execve(prompt->cmd, prompt->args, char_env(prompt->env));
-		ft_putstr_fd("minishell: ", 2);
-		perror(prompt->cmd);
-		if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
-			my_exit (126);
-		else if (access(prompt->cmd, F_OK))
-			my_exit (127);
+		if (!stat(prompt->cmd, &path_info))
+		{
+			if (S_ISDIR(path_info.st_mode))
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(prompt->cmd, 2);
+				ft_putstr_fd(": is a directory\n", 2);
+				my_exit(126);
+			}
+			else
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(prompt->cmd, 2);
+				ft_putstr_fd(" Permission denied\n", 2);
+				my_exit(126);
+			}
+		}
+		else
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(prompt->cmd, 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
+			my_exit(127);
+		}
+		// ft_putstr_fd("minishell: ", 2);
+		// perror(prompt->cmd);
+		// if (!access(prompt->cmd, F_OK) && access(prompt->cmd, X_OK))
+		// 	my_exit (126);
+		// else if (access(prompt->cmd, F_OK))
+		// 	my_exit (127);
 	}
 	else
 	{

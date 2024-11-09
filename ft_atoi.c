@@ -43,7 +43,7 @@ int	ft_atoi(const char *str)
 	return ((int)(r * sign));
 }
 
-long long exit_atoi(char *str)
+long long	exit_atoi(char *str)
 {
 	int					i;
 	int					sign;
@@ -51,7 +51,7 @@ long long exit_atoi(char *str)
 
 	i = 0;
 	res = 0;
-	sign =1;
+	sign = 1;
 	while (ft_isspace(str[i]) == 1)
 		i++;
 	if (str[i] == '-' || str[i] == '+')
@@ -59,7 +59,7 @@ long long exit_atoi(char *str)
 		if (str[i++] == '-')
 			sign *= -1;
 	}
-	while(ft_is_digit(str[i]))
+	while (ft_is_digit(str[i]))
 	{
 		res = res * 10 + (str[i] - 48);
 		if (res > LLONG_MAX && sign == 1)

@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void signal_handler(int sig)
+void	signal_handler(int sig)
 {
 	if (sig == SIGINT)
 	{
@@ -11,7 +11,8 @@ void signal_handler(int sig)
 		ft_exit_status(1, SET);
 	}
 }
-void set_signals(int ign, char **ignore)
+
+void	set_signals(int ign, char **ignore)
 {
 	ign = (int)ignore;
 	rl_catch_signals = 0;
@@ -19,14 +20,14 @@ void set_signals(int ign, char **ignore)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-void signal_set_wait(void)
+void	signal_set_wait(void)
 {
 	rl_catch_signals = 0;
 	signal(SIGINT, signal_wait);
 	signal(SIGQUIT, signal_wait);
 }
 
-void signal_wait(int sig)
+void	signal_wait(int sig)
 {
 	if (sig == SIGINT)
 		write(1, "\n", 1);

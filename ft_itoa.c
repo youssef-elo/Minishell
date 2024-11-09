@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static int	ft_counter(int n)
+int	ft_counter(int n)
 {
 	int	count;
 
@@ -28,7 +28,7 @@ char	*ft_itoa(int n)
 	if (n == -2147483648)
 		return (ft_strdup("-2147483648"));
 	len = ft_counter(n);
-	r = gc_handler(len + 1 , MALLOC);
+	r = gc_handler(len + 1, MALLOC);
 	if (r == NULL)
 		return (NULL);
 	r[len] = '\0';

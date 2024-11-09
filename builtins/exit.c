@@ -1,22 +1,22 @@
 #include "../minishell.h"
 
-int ft_exit_check(char *str)
+int	ft_exit_check(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
-	while(ft_isspace(str[i]))
+	while (ft_isspace(str[i]))
 		i++;
 	if (str[i] == '-' || str[i] == '+')
 		i++;
-	while(ft_is_digit(str[i]))
+	while (ft_is_digit(str[i]))
 		i++;
 	if (str[i])
 		return (1);
 	return (0);
 }
 
-int my_exit(int exit_status)
+int	my_exit(int exit_status)
 {
 	galloc(0, FREE);
 	gc_handler(0, FREE);
@@ -24,7 +24,7 @@ int my_exit(int exit_status)
 	return (exit_status);
 }
 
-void readline_exit(void)
+void	readline_exit(void)
 {
 	write(1, "exit\n", 5);
 	galloc(0, FREE);
@@ -32,10 +32,11 @@ void readline_exit(void)
 	exit(ft_exit_status(0, GET));
 }
 
-int ft_exit(t_exec *prompt)
+int	ft_exit(t_exec *prompt)
 {
-	int check  = prompt->fd_in;
+	int	check;
 
+	check = prompt->fd_in;
 	if (!prompt->args[1])
 	{
 		ft_putstr_fd("exit\n", 2);

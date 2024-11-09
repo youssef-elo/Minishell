@@ -1,8 +1,8 @@
 #include "../minishell.h"
 
-char	*ft_getenv(t_env *envi , char *key)
+char	*ft_getenv(t_env *envi, char *key)
 {
-	while(envi)
+	while (envi)
 	{
 		if (ft_strncmp(key, envi->key, ft_strlen(key) + 1) == 0)
 			return (envi->value);
@@ -16,10 +16,9 @@ int	ft_pwd(t_exec *prompt)
 	char	dir[PATH_MAX];
 	char	*env_pwd;
 
-	
-	if(getcwd(dir, PATH_MAX))
+	if (getcwd(dir, PATH_MAX))
 	{
-		ft_putstrnl_fd(dir , prompt->fd_out);
+		ft_putstrnl_fd(dir, prompt->fd_out);
 		return (0);
 	}
 	else
@@ -27,7 +26,7 @@ int	ft_pwd(t_exec *prompt)
 		env_pwd = ft_getenv(prompt->env, "PWD");
 		if (env_pwd)
 		{
-			ft_putstrnl_fd(env_pwd , prompt->fd_out);
+			ft_putstrnl_fd(env_pwd, prompt->fd_out);
 		}
 	}
 	if (!env_pwd)
