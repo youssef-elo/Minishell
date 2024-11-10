@@ -32,20 +32,21 @@ void	readline_exit(void)
 	exit(ft_exit_status(0, GET));
 }
 
-int	ft_exit(t_exec *prompt)
+int	ft_exit(t_exec *prompt, int pipe)
 {
 	int	check;
 
 	check = prompt->fd_in;
+	if (pipe == 0)
+		ft_putstr_fd("exit\n", 1);
 	if (!prompt->args[1])
 	{
-		ft_putstr_fd("exit\n", 2);
 		return (my_exit(ft_exit_status(0, GET)));
 	}
 	check = ft_exit_check(prompt->args[1]);
 	if (check == 1)
 	{
-		ft_putstr_fd("exit\nminishell: exit: ", 2);
+		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(prompt->args[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
 		return (my_exit(255));
@@ -54,7 +55,7 @@ int	ft_exit(t_exec *prompt)
 		return (my_exit(exit_atoi(prompt->args[1]) % 256));
 	if (prompt->args[2])
 	{
-		ft_putstrnl_fd("exit\n minishell: exit : too many arguments", 2);
+		ft_putstr_fd("minishell: exit : too many arguments\n", 2);
 		return (1);
 	}
 	return (1);

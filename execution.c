@@ -62,7 +62,7 @@ int	is_builtin(t_exec *prompt)
 	else if(!ft_strncmp(prompt->cmd, "pwd", len))
 		ft_exit_status(ft_pwd(prompt), SET);
 	else if(!ft_strncmp(prompt->cmd, "exit", len))
-		ft_exit_status(ft_exit(prompt), SET);
+		ft_exit_status(ft_exit(prompt, 0), SET);
 	else if(!ft_strncmp(prompt->cmd, "cd", len))
 		ft_exit_status(export_unset_cd(prompt, 3), SET);
 	else if(!ft_strncmp(prompt->cmd, "env", len) && ft_getenv(prompt->env, "PATH"))
@@ -233,7 +233,7 @@ void	is_builtin_pipe(t_exec *prompt)
 	else if(!ft_strncmp(prompt->cmd, "pwd", len))
 		exit(ft_pwd(prompt));
 	else if(!ft_strncmp(prompt->cmd, "exit", len))
-		exit(ft_exit(prompt));
+		exit(ft_exit(prompt, 1));
 	else if(!ft_strncmp(prompt->cmd, "cd", len))
 		exit(export_unset_cd(prompt, 3));
 	else if(!ft_strncmp(prompt->cmd, "env", len) && ft_getenv(prompt->env, "PATH"))
@@ -355,18 +355,35 @@ void	child_process(t_exec *prompt, int pre_pipe, int *pip)
 
 int	child_setup(t_exec *prompt, int *pip, int *c_pid)
 {
+	int pre_id;
+
 	if (prompt->next)
 	{
 		if (pipe(pip))
 		{
 			perror("pipe ");
+			close(pip[0]);
+			close(pip[1]);
+			if (prompt->fd_in != 0)
+				close(prompt->fd_in);
+			if (prompt->fd_out != 1)
+				close(prompt->fd_out);
 			return (0);
 		}
 	}
+	pre_id = *c_pid;
 	*c_pid = fork();
 	if (*c_pid == -1)
 	{
 		perror("fork ");
+		close(pip[0]);
+		close(pip[1]);
+		if (prompt->fd_in != 0)
+			close(prompt->fd_in);
+		if (prompt->fd_out != 1)
+			close(prompt->fd_out);
+		ft_wait(pre_id);
+		ft_exit_status(1, SET);
 		return (0);
 	}
 	return (1);
@@ -392,11 +409,24 @@ void	multi_commands(t_exec *prompt)
 	int	pip[2];
 	int	pre_pipe;
 
+	int i = 0;
 	pre_pipe = -1;
 	while(prompt)
 	{
 		if (!child_setup(prompt, pip, &c_pid))
+		{
+			if (pre_pipe != -1)
+				close(pre_pipe);
+			while(prompt)
+			{
+				if (prompt->fd_in != 0)
+					close(prompt->fd_in);
+				if (prompt->fd_out != 1)
+					close(prompt->fd_out);
+				prompt = prompt->next;
+			}
 			return ;
+		}
 		if (c_pid == 0)
 			child_process(prompt, pre_pipe, pip);
 		else
@@ -406,26 +436,11 @@ void	multi_commands(t_exec *prompt)
 				lastp = c_pid;
 		}
 		prompt = prompt->next;
+		i++;
 	}
 	ft_wait(lastp);
 }
 
-void put_struct(t_exec *prompt)
-{
-	while (prompt)
-	{
-		printf("%s\n", prompt->cmd);
-		int i =0;
-		if (prompt->args)
-		for (;prompt->args[i]; i++)
-			printf("%s\n", prompt->args[i]);
-		printf("%p\n", prompt->args[i]);
-		printf("%p\n", prompt->next);
-		printf("in : %d\tout : %d\n", prompt->fd_in, prompt->fd_out);
-		printf("-------------------------\n");
-		prompt = prompt->next;
-	}
-}
 //environement should be revised 
 //when a command is executed it should be put in the environemetn variable _
 void	main_exec(t_exec *prompt)

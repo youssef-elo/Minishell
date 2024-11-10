@@ -31,7 +31,7 @@ int	ft_pwd(t_exec *prompt)
 	}
 	if (!env_pwd)
 	{
-		ft_putstrnl_fd("pwd : error retreiving current directory", 2);
+		ft_putstr_fd("pwd : error retreiving current directory\n", 2);
 		return (1);
 	}
 	return (0);

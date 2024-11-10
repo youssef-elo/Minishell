@@ -5,7 +5,7 @@ int	unset_err(int *check, char *str)
 	(*check)++;
 	ft_putstr_fd("unset : '", 2);
 	ft_putstr_fd(str, 2);
-	ft_putstrnl_fd("': not a valid identifier", 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
 	return (-1);
 }
 

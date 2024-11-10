@@ -51,7 +51,7 @@ int			ft_env(t_exec * prompt);
 void		signal_handler(int sig);
 int			ft_atoi(const char *str);
 int			my_exit(int exit_status);
-int			ft_exit(t_exec * prompt);
+int			ft_exit(t_exec * prompt, int pipe);
 int			ft_echo(t_exec * prompt);
 void		main_exec(t_exec *prompt);
 char		*ft_strdup_env(char *str);

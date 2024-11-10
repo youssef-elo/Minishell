@@ -29,7 +29,7 @@ int	cd_home(t_exec *prompt, t_export **head, char *cwd)
 	newdir = ft_getenv(prompt->env, "HOME");
 	if (!newdir)
 	{
-		ft_putstrnl_fd("cd : HOME not set", 2);
+		ft_putstr_fd("cd : HOME not set\n", 2);
 		return (1);
 	}
 	if (chdir(newdir) == -1)
