@@ -79,17 +79,19 @@ char	*handle_dollar_sign(int *i, char *str, t_env *env_list, int double_quoted)
 	char	*cmd;
 	
 	cmd = NULL;
+	if(!(str[(*i) + 1]) || str[(*i) + 1] == ' ' || (double_quoted && str[(*i) + 1] == '"'))
+		return ("$");
 	if(str[(*i) + 1] && str[(*i) + 1] == '?')
 	{
 		cmd = ft_strjoin(cmd, ft_itoa(ft_exit_status(0, GET)));
-		cmd = ft_strjoinc(cmd, SEPARATOR);
 		(*i)++;
 		return (cmd);
 	}
-	if(str[(*i) + 1] && ft_is_alphanum(str[(*i) + 1]))
+	else if(str[(*i) + 1] && ((str[(*i) + 1] >= 'a' && str[(*i) + 1] <= 'z')
+			|| (str[(*i) + 1] >= 'A' && str[(*i) + 1] <= 'Z') || str[(*i) + 1] == '_'))
 	{
-		if(ft_is_digit(str[(*i) + 1]))
-			return (NULL);
+		cmd = ft_strjoinc(cmd, str[(*i) + 1]);
+		(*i)++;
 		while (ft_is_alphanum(str[(*i) + 1]))
 		{
 			cmd = ft_strjoinc(cmd, str[(*i) + 1]);
@@ -97,8 +99,18 @@ char	*handle_dollar_sign(int *i, char *str, t_env *env_list, int double_quoted)
 		}
 		return (expand_token(cmd, env_list));
 	}
-	if((str[(*i) + 1] == '"' || str[(*i) + 1] == '\'') && !double_quoted)
+	else if(ft_is_digit(str[(*i) + 1]))
+	{
+		(*i)++;
+		return (NULL);
+	}
+	if(str[(*i) + 1] && (str[(*i) + 1] == '"' || str[(*i) + 1] == '\'') && !double_quoted)
 		return (expand_token(cmd, env_list));
+	if (!(str[(*i) + 1] == '\'' || str[(*i) + 1] == '"'))
+	{
+		(*i)++;
+		return(ft_strjoinc("$", str[(*i)]));
+	}
 	return ("$");
 }
 
@@ -420,20 +432,15 @@ void is_heredoc(char *str, int i, int *heredoc)
 	if(str[i + 1] && str[i + 1] == '<' && str[i + 2] && str[i + 2] != '<')
 	{
 		i += 2;
-		while(ft_isspace(str[i]))
+		while(str[i] && str[i] != '$')
 			i++;
-		if(str[i])
-		while (!ft_isspace(str[i]))
-		{
-			if(str[i] == '$')
-			{
-				*heredoc = 1;
-				return ;
-			}
-			i++;
-		}
-		*heredoc = 0;
+		if(str[i] == '$')
+			*heredoc = 1;
+		else
+			*heredoc = 0;
 	}
+	else
+		*heredoc = 0;
 }
 
 char *delimiter_check(char *s)
@@ -443,13 +450,22 @@ char *delimiter_check(char *s)
 
 	new_s = NULL;
 	i = 0;
+	if(!s)
+		return NULL;
 	while (s[i])
 	{
 		// if(s[i] == '|')
-		if(s[i] == '|')
+
+		if(s[i] == '|' || s[i] == '<' || s[i] == '>')
 		{
-			if ((i == 0 && (s[i + 1] == '\0' || s[i + 1] == ' ')) 
-			|| ((s[i + 1] == '\0' && s[i - 1] == ' ' ) || (s[i + 1] != '\0' && s[i + 1] == ' ' && s[i - 1] == ' ')))
+			if(s[i + 1] && s[i] == s[i + 1] && s[i + 1] != '|')
+			{
+					new_s = ft_strjoinc(new_s, '"');
+					new_s = ft_strjoinc(new_s, s[i]);
+					new_s = ft_strjoinc(new_s, s[i]);
+					new_s = ft_strjoinc(new_s, '"');
+			}
+			else
 			{
 				new_s = ft_strjoinc(new_s, '"');
 				new_s = ft_strjoinc(new_s, s[i]);
@@ -457,56 +473,33 @@ char *delimiter_check(char *s)
 			}
 		}
 
-		else if(s[i] == '<')
-		{
-			if(s[i + 1] == '<')
-			{
-				if ((i == 0 && (s[i + 2] == '\0' || s[i + 2] == ' '))
-					|| ((s[i + 2] == '\0' && s[i - 1] == ' ' ) || (s[i + 2] != '\0' && s[i + 2] == ' ' && s[i - 1] == ' ')))
-				{
-					new_s = ft_strjoinc(new_s, '"');
-					new_s = ft_strjoinc(new_s, s[i]);
-					new_s = ft_strjoinc(new_s, s[i]);
-					new_s = ft_strjoinc(new_s, '"');
-				}
-			}
-			if ((i == 0 && (s[i + 1] == '\0' || s[i + 1] == ' ')) 
-				|| ((s[i + 1] == '\0' && s[i - 1] == ' ' ) || (s[i + 1] != '\0' && s[i + 1] == ' ' && s[i - 1] == ' ')))
-			{
-				new_s = ft_strjoinc(new_s, '"');
-				new_s = ft_strjoinc(new_s, s[i]);
-				new_s = ft_strjoinc(new_s, s[i]);
-				new_s = ft_strjoinc(new_s, '"');
-			}
-		}
-		else if(s[i] == '>')
-		{
-			printf("condition >\n");
-			if(s[i + 1] == '>')
-			{
-				if ((i == 0 && (s[i + 2] == '\0' || s[i + 2] == ' '))
-					|| ((s[i + 2] == '\0' && s[i - 1] == ' ' ) || (s[i + 2] != '\0' && s[i + 2] == ' ' && s[i - 1] == ' ')))
-				{
-					new_s = ft_strjoinc(new_s, '"');
-					new_s = ft_strjoinc(new_s, s[i]);
-					new_s = ft_strjoinc(new_s, s[i]);
-					new_s = ft_strjoinc(new_s, '"');
-					i++;
-				}
-			}
-			if ((i == 0 && (s[i + 1] == '\0' || s[i + 1] == ' ')) 
-					|| ((s[i + 1] == '\0' && s[i - 1] == ' ' ) || (s[i + 1] != '\0' && s[i + 1] == ' ' && s[i - 1] == ' ')))
-			{
-				new_s = ft_strjoinc(new_s, '"');
-				new_s = ft_strjoinc(new_s, s[i]);
-				new_s = ft_strjoinc(new_s, '"');
-			}
-		}
+		// if(s[i] == '|' || s[i] == '<' || s[i] == '>')
+		// {
+		// 	if(s[i + 1] && s[i] == s[i + 1] && s[i + 1] != '|')
+		// 	{
+		// 		if ((i == 0 && (s[i + 2] == '\0' || s[i + 2] == ' '))
+		// 			|| ((s[i + 2] == '\0' && s[i - 1] == ' ' ) || (s[i + 2] != '\0' && s[i + 2] == ' ' && s[i - 1] == ' ')))
+		// 		{
+		// 			new_s = ft_strjoinc(new_s, '"');
+		// 			new_s = ft_strjoinc(new_s, s[i]);
+		// 			new_s = ft_strjoinc(new_s, s[i]);
+		// 			new_s = ft_strjoinc(new_s, '"');
+		// 		}
+		// 	}
+		// 	else if ((i == 0 && (s[i + 1] == '\0' || s[i + 1] == ' ')) 
+		// 	|| ((s[i + 1] == '\0' && s[i - 1] == ' ' ) 
+		// 	|| (s[i + 1] != '\0' && s[i + 1] == ' ' && s[i - 1] == ' ')))
+		// 	{
+		// 		new_s = ft_strjoinc(new_s, '"');
+		// 		new_s = ft_strjoinc(new_s, s[i]);
+		// 		new_s = ft_strjoinc(new_s, '"');
+		// 	}
+		// }
 		else
 			new_s = ft_strjoinc(new_s, s[i]);
 		i++;
 	}
-	// printf("÷÷÷string: %s÷÷÷\n", new_s);
+	// printf("÷÷÷s->%s\n÷÷÷string->%s÷÷÷\n", s, new_s);
 	return (new_s);
 }
 
@@ -533,7 +526,7 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 	t_exec *exec_segments = NULL;
 	t_exec *temp_exec;
 
-	// const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
+	// const char * token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
 	
 	// exec_segments = gc_handler(sizeof(t_exec), MALLOC);
 	// exec_segments->cmd = NULL;
