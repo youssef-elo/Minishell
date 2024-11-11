@@ -81,6 +81,7 @@ int	ft_export(t_exec *prompt, t_export **head)
 {
 	int	check;
 
+	check = 0;
 	if (!prompt->args[1])
 	{
 		put_export(prompt, *head);

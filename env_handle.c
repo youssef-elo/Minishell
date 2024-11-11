@@ -38,6 +38,36 @@ void	shlvl_pwd_env(t_env **head, int sp[], char *pwd)
 		append_node_env(head, "PWD", pwd);
 }
 
+void shlvl_update(t_env *tmp, int *sp)
+{
+	long long next;
+
+	next = exit_atoi(tmp->value) + 1;
+	if (tmp->value[0] == '-' && alnm(tmp->value + 1))
+		tmp->value = ft_strdup_env("0");
+	if (!alnm(tmp->value))
+		tmp->value = ft_strdup_env("1");
+	if ((*(tmp->value) == '+' && alnm(tmp->value + 1)) || alnm(tmp->value))
+	{
+		if (ft_strlen(tmp->value) > 12 || next > 2147483647)
+			tmp->value = ft_strdup_env("0");
+		else if (next - 1 >= 1000)
+		{
+			ft_putstr_fd("minishell: warning: shell level (", 2);
+			ft_putstr_fd(ft_itoa(next), 2);
+			ft_putstr_fd(") too high, resetting to 1\n", 2);
+			tmp->value = ft_strdup_env("1");
+		}
+		else if (next > 1000)
+			tmp->value = ft_strdup_env("1");
+		else if (next < 1000)
+			tmp->value = ft_strdup_env(ft_itoa((int)next));
+		else if (next == 1000)
+			tmp->value = ft_strdup_env("");
+	}
+	sp[0] = 1;	
+}
+
 void	env_check(t_env **head, t_env *tmp)
 {
 	static int	sp[2];
@@ -53,15 +83,16 @@ void	env_check(t_env **head, t_env *tmp)
 			sp[1] = 1;
 		}
 		if (ft_strncmp(tmp->key, "SHLVL", ft_strlen(tmp->key)) == 0)
-		{
-			if (tmp->value[0] == '-' && alnm(tmp->value + 1))
-				tmp->value = ft_strdup_env("0");
-			if (!alnm(tmp->value))
-				tmp->value = ft_strdup_env("1");
-			if ((*tmp->value == '+' && alnm(tmp->value + 1)) || alnm(tmp->value))
-				tmp->value = ft_strdup_env(ft_itoa(ft_atoi(tmp->value) + 1));
-			sp[0] = 1;
-		}
+			shlvl_update(tmp, sp);
+		// {
+		// 	if (tmp->value[0] == '-' && alnm(tmp->value + 1))
+		// 		tmp->value = ft_strdup_env("0");
+		// 	if (!alnm(tmp->value))
+		// 		tmp->value = ft_strdup_env("1");
+		// 	if ((*tmp->value == '+' && alnm(tmp->value + 1)) || alnm(tmp->value))
+		// 		tmp->value = ft_strdup_env(ft_itoa(ft_atoi(tmp->value) + 1));
+		// 	sp[0] = 1;
+		// }
 		tmp = tmp->next;
 	}
 	shlvl_pwd_env(head, sp, pwd);

@@ -13,6 +13,7 @@ int main(int argc, char **argv, char **env)
 	set_signals(argc , argv);
 	while (1)
 	{
+		tcsetattr(STDIN_FILENO, TCSAFLUSH, &state);
 		rl = readline("minishell> ");
 		if(!rl)
 			readline_exit();
@@ -22,7 +23,6 @@ int main(int argc, char **argv, char **env)
 		main_exec(prompt);
 		gc_handler(0, FREE);
 		free(rl);
-		tcsetattr(STDIN_FILENO, TCSAFLUSH, &state);
 	}
 	galloc(0, FREE);
 	return 0;
