@@ -6,7 +6,7 @@ int main(int argc, char **argv, char **env)
 	t_exec			*prompt;
 	t_env			*env_list;
 	struct termios	state;
-	
+	int is = isatty(STDIN_FILENO);
 	env_list = NULL;
 	tcgetattr(STDIN_FILENO, &state);
 	env_stacking(env, &env_list);
@@ -14,9 +14,24 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		tcsetattr(STDIN_FILENO, TCSAFLUSH, &state);
-		rl = readline("minishell> ");
-		if(!rl)
+		if (is == 1)
+		{
+			rl = readline("minishell> ");
+			if(!rl)
 			readline_exit();
+		}
+		else if (is == 0)
+		{
+			rl = readline(NULL);
+			if(!rl)
+			{
+				gc_handler(0, FREE);
+				galloc(0, FREE);
+				exit(ft_exit_status(0, GET));
+			}
+			// readline_exit();
+		}
+		// printf("|%s|\n", rl);
 		if(ft_strlen(rl) > 0)
 			add_history(rl);
 		prompt = parse(rl, env_list, &env_list);

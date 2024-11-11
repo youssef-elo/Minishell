@@ -506,7 +506,7 @@ char *delimiter_check(char *s)
 			new_s = ft_strjoinc(new_s, s[i]);
 		i++;
 	}
-	printf("÷÷÷string: %s÷÷÷\n", new_s);
+	// printf("÷÷÷string: %s÷÷÷\n", new_s);
 	return (new_s);
 }
 
@@ -533,7 +533,7 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 	t_exec *exec_segments = NULL;
 	t_exec *temp_exec;
 
-	const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
+	// const char* token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
 	
 	// exec_segments = gc_handler(sizeof(t_exec), MALLOC);
 	// exec_segments->cmd = NULL;
@@ -624,12 +624,12 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 
 		// TOKENS PRINTER WITH TOKEN VALUE AND TYPE
 
-		t_token *temp_tokens_list = token_list;
-		while(temp_tokens_list)
-		{
-			printf("TOKEN VALUE -> {%s} ----- TOKEN TYPE -> {%s}\n", temp_tokens_list->value, token_types[temp_tokens_list->type]);
-			temp_tokens_list = temp_tokens_list->next;
-		}
+		// t_token *temp_tokens_list = token_list;
+		// while(temp_tokens_list)
+		// {
+		// 	printf("TOKEN VALUE -> {%s} ----- TOKEN TYPE -> {%s}\n", temp_tokens_list->value, token_types[temp_tokens_list->type]);
+		// 	temp_tokens_list = temp_tokens_list->next;
+		// }
 		//////////////////////////////////////////
 
 		exec_segments_definer(token_list, &exec_segments);

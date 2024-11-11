@@ -11,6 +11,8 @@ int	ft_exit_check(char *str)
 		i++;
 	while (ft_is_digit(str[i]))
 		i++;
+	while (ft_isspace(str[i]))
+		i++;
 	if (str[i])
 		return (1);
 	return (0);
@@ -37,8 +39,10 @@ int	ft_exit(t_exec *prompt, int pipe)
 	int	check;
 
 	check = prompt->fd_in;
-	if (pipe == 0)
+	if (isatty(STDIN_FILENO) && (pipe || !pipe))
 		ft_putstr_fd("exit\n", 1);
+	// if (pipe == 0)
+	// 	ft_putstr_fd("exit\n", 1);
 	if (!prompt->args[1])
 	{
 		return (my_exit(ft_exit_status(0, GET)));
