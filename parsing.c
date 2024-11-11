@@ -267,6 +267,34 @@ void exec_segment_init(t_segment **exec_segment)
 	(*exec_segment)->seg_output_fd = 1;
 }
 
+int heredoc_launcher(int fd, char *delimiter)
+{
+	char *line;
+	int fd_return;
+
+	line = NULL;
+	fd_return = -2;
+	while(1)
+	{
+		line = readline("> ");
+		if(!line)
+			break ;
+		if(ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
+			&& ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+		{
+			free(line);
+			break ;
+		}
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+		free(line);
+	}
+	close(fd);
+	fd_return = open("/tmp/heredoc_ms", O_RDONLY);
+	//Protection ??
+	return(fd_return);
+}
+
 void open_fail_check(int input_fd, int output_fd, char *value)
 {
 	if(output_fd == -1 || input_fd == -1)
@@ -305,6 +333,13 @@ void	open_rdrs(t_segment	*exec_segment)
 			if(input_fd != 0)
 				close(input_fd);
 			input_fd = open(temp->value, O_RDONLY);
+		}
+		else if(temp->type == HEREDOC)
+		{
+			if(input_fd != 0)
+				close(input_fd);
+			input_fd = open("/tmp/heredoc_ms", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+			input_fd = heredoc_launcher(input_fd, temp->value);
 		}
 		if(input_fd == -1 || output_fd == -1)
 			break;
