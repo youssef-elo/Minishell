@@ -17,11 +17,14 @@ void omit_spaces(int *i, char *str, char **cmd)
 		(*i)++;
 	(*i)--;
 	if(str[(*i) + 1] != '\0' && j > 0)
-		*cmd = ft_strjoinc(*cmd, SEPARATOR);
+	{
+		if((*cmd)[ft_strlen(*cmd) - 1] != SEPARATOR)
+			*cmd = ft_strjoinc(*cmd, SEPARATOR);
+	}
 }
-
 void toggle(int *boolean)
 {
+
 	if (*boolean)
 		*boolean = 0;
 	else
@@ -68,7 +71,12 @@ char *expand_token(char *cmd, t_env *env_list)
 	while (env_list)
 	{
 		if(ft_strncmp(cmd, env_list->key, cmd_len + 1) == 0)
+		{
+			if (!env_list->value[0])
+				return (NULL);
 			return (env_list->value);
+		}
+
 		env_list = env_list->next;
 	}
 	return (NULL);
@@ -608,7 +616,8 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 	}
 	if(!cmd)
 		return (NULL);
-	cmd = ft_strjoinc(cmd, SEPARATOR);
+	if (cmd[ft_strlen(cmd) - 1] != SEPARATOR)
+		cmd = ft_strjoinc(cmd, SEPARATOR);
 	if(cmd && double_quoted)
 	{
 		write(2, "Syntax error: unexpected end of file (unmatched double quote)\n", 62);
@@ -623,6 +632,15 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 	{
 		tokens = split_tokens(cmd, SEPARATOR);
 
+		// for (size_t i = 0; i < strlen(cmd); i++)
+		// {
+		// 	if(cmd[i] == SEPARATOR)
+		// 		printf("÷");
+		// 	else
+		// 		printf("%c", cmd[i]);
+		// }
+		// printf("\n");
+		
 
 		// TOKENS PRINTER WITH TOKEN VALUE
 
