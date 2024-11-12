@@ -296,6 +296,33 @@ int is_expandable(char *delimiter)
 	}
 	return 1;
 }
+void dollar_sign_case(char **str)
+{
+	int i;
+	int j;
+	char *new_str;
+
+	if(!(*str))
+		return;
+	new_str = NULL;
+	i = 0;
+	j = 0;
+	while ((*str)[i])
+	{
+		if((*str)[i] == '$')
+		{
+			
+			while ((*str)[i + j] == '$')
+				j++;
+			if((*str)[i + j] && ((*str)[i + j] == '"' || (*str)[i + j] == '\''))
+				i++;	
+		}
+		new_str = ft_strjoinc(new_str, (*str)[i]);
+		i++;
+	}
+	(*str) = ft_strdup(new_str);
+	return ;
+}
 
 void expand_line(char **line, t_env *env_list)
 {
@@ -308,10 +335,11 @@ void expand_line(char **line, t_env *env_list)
 	{
 		if((*line)[i] == '$' && (*line)[i + 1] && (*line)[i + 1] != '"' && (*line)[i + 1] != '\'')
 			new_line = ft_strjoin(new_line, handle_dollar_sign(&i, (*line), env_list, 0));
-		else
+		else if((*line)[i] != '$')
 			new_line = ft_strjoinc(new_line, (*line)[i]);
 		i++; 
 	}
+	// printf("newline->%s\n", new_line);
 	(*line) = ft_strdup(new_line);
 }
 
@@ -327,6 +355,7 @@ int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 	if(!is_expandable(delimiter))
 	{
 		expandable = 0;
+		dollar_sign_case(&delimiter);
 		quotes_omit(&delimiter);
 	}
 	// printf("DELIMITER-->%s\nEXPANDABLE->%d\n", delimiter, expandable);
