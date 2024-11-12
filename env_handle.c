@@ -38,11 +38,39 @@ void	shlvl_pwd_env(t_env **head, int sp[], char *pwd)
 		append_node_env(head, "PWD", pwd);
 }
 
+long long	shlvl_atoi(char *str)
+{
+	int					i;
+	int					sign;
+	unsigned long long	res;
+
+	i = 0;
+	res = 0;
+	sign = 1;
+	while (ft_isspace(str[i]) == 1)
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+	{
+		if (str[i++] == '-')
+			sign *= -1;
+	}
+	while (ft_is_digit(str[i]))
+	{
+		res = res * 10 + (str[i] - 48);
+		if (res > LLONG_MAX && sign == 1)
+			return (2147463648);
+		else if (res > (unsigned long long)LLONG_MAX + 1)
+			return (2147463648);
+		i++;
+	}
+	return ((long long)res * sign);
+}
+
 void shlvl_update(t_env *tmp, int *sp)
 {
 	long long next;
 
-	next = exit_atoi(tmp->value) + 1;
+	next = shlvl_atoi(tmp->value) + 1;
 	if (tmp->value[0] == '-' && alnm(tmp->value + 1))
 		tmp->value = ft_strdup_env("0");
 	if (!alnm(tmp->value))

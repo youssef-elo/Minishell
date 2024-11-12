@@ -41,7 +41,7 @@ char		*ft_itoa(int n);
 int			ft_isspace(int c);
 void		readline_exit(void);
 int			var_check(char *str);
-long long	exit_atoi(char *str);
+long long	exit_atoi(char *str, int *check);
 int			ft_pwd(t_exec *data);
 void		signal_wait(int sig);
 void		signal_set_wait(void);
