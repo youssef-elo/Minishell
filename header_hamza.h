@@ -8,6 +8,7 @@
 #define MALLOC 1
 #define FREE 0
 #define SEPARATOR '\x1D'
+#define EXPAND '\x1E'
 
 typedef struct s_env t_env;
 struct s_env
