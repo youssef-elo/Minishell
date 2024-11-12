@@ -84,6 +84,8 @@ int	ft_cd(t_exec *prompt, t_export **head)
 	getcwd(cwd, PATH_MAX);
 	if (!prompt->args[1])
 		return (cd_home(prompt, head, cwd));
+	if (!prompt->args[1][0])
+		return (0);
 	if (chdir(prompt->args[1]) == -1)
 	{
 		ft_putstr_fd("cd : ", 2);
