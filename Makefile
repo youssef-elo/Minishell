@@ -32,4 +32,4 @@ clean :
 	rm -rf $(OFILES)
 
 fclean : clean
-	rm -rf $(NAME)   
+	rm -rf $(NAME)

@@ -324,23 +324,26 @@ void dollar_sign_case(char **str)
 	return ;
 }
 
-void expand_line(char **line, t_env *env_list)
+
+// new code !!!!!!!!!!!!!!!!
+
+void expand_line(char *line, t_env *env_list, char **ret)
 {
 	char *new_line;
 	int i;
 
 	new_line = NULL;
 	i = 0;
-	while ((*line)[i])
+	while (line[i])
 	{
-		if((*line)[i] == '$' && (*line)[i + 1] && (*line)[i + 1] != '"' && (*line)[i + 1] != '\'')
-			new_line = ft_strjoin(new_line, handle_dollar_sign(&i, (*line), env_list, 0));
-		else if((*line)[i] != '$')
-			new_line = ft_strjoinc(new_line, (*line)[i]);
+		if(line[i] == '$' && line[i + 1] && line[i + 1] != '"' && line[i + 1] != '\'')
+			new_line = ft_strjoin(new_line, handle_dollar_sign(&i, line, env_list, 0));
+		else if(line[i] != '$')
+			new_line = ft_strjoinc(new_line, line[i]);
 		i++; 
 	}
 	// printf("newline->%s\n", new_line);
-	(*line) = ft_strdup(new_line);
+	(*ret) = ft_strdup(new_line);
 }
 
 int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
@@ -348,8 +351,10 @@ int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 	char *line;
 	int fd_return;
 	int	expandable;
+	char *ret;
 
 	line = NULL;
+	ret = NULL;
 	fd_return = -2;
 	expandable = 1;
 	if(!is_expandable(delimiter))
@@ -364,14 +369,20 @@ int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 		line = readline("> ");
 		if(!line)
 			break ;
-		if(ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
-			&& ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+		// if(ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
+		// 	&& ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+		if (!ft_strncmp(line , delimiter, ft_strlen(delimiter) + 1))
+		{
+			free(line);
+			line = NULL;
 			break ;
+		}
 		if(expandable)
-			expand_line(&line, env_list);
-		if(line)
-			write(fd, line, ft_strlen(line));
+			expand_line(line, env_list, &ret);
+		if(ret)
+			write(fd, ret, ft_strlen(ret));
 		write(fd, "\n", 1);
+		free(line);
 		line = NULL;
 	}
 	close(fd);
@@ -379,6 +390,67 @@ int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 	//Protection ??
 	return(fd_return);
 }
+//end of new code !!!!!!!!!!!
+
+// the previous code ---------------------
+
+// void expand_line(char **line, t_env *env_list)
+// {
+// 	char *new_line;
+// 	int i;
+
+// 	new_line = NULL;
+// 	i = 0;
+// 	while ((*line)[i])
+// 	{
+// 		if((*line)[i] == '$' && (*line)[i + 1] && (*line)[i + 1] != '"' && (*line)[i + 1] != '\'')
+// 			new_line = ft_strjoin(new_line, handle_dollar_sign(&i, (*line), env_list, 0));
+// 		else if((*line)[i] != '$')
+// 			new_line = ft_strjoinc(new_line, (*line)[i]);
+// 		i++; 
+// 	}
+// 	// printf("newline->%s\n", new_line);
+// 	(*line) = ft_strdup(new_line);
+// }
+
+// int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
+// {
+// 	char *line;
+// 	int fd_return;
+// 	int	expandable;
+
+// 	line = NULL;
+// 	fd_return = -2;
+// 	expandable = 1;
+// 	if(!is_expandable(delimiter))
+// 	{
+// 		expandable = 0;
+// 		dollar_sign_case(&delimiter);
+// 		quotes_omit(&delimiter);
+// 	}
+// 	// printf("DELIMITER-->%s\nEXPANDABLE->%d\n", delimiter, expandable);
+// 	while(1)
+// 	{
+// 		line = readline("> ");
+// 		if(!line)
+// 			break ;
+// 		if(ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
+// 			&& ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+// 			break ;
+// 		if(expandable)
+// 			expand_line(&line, env_list);
+// 		if(line)
+// 			write(fd, line, ft_strlen(line));
+// 		write(fd, "\n", 1);
+// 		line = NULL;
+// 	}
+// 	close(fd);
+// 	fd_return = open("/tmp/heredoc_ms", O_RDONLY);
+// 	//Protection ??
+// 	return(fd_return);
+// }
+
+// end of previous code ------------------
 
 void open_fail_check(int input_fd, int output_fd, char *value)
 {

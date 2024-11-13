@@ -185,8 +185,17 @@ void	solo_command(t_exec *prompt, char **env_c)
 	char	*path;
 	char	*env_path;
 
-	if (prompt->fd_in == -1 || prompt->fd_out == -1 || !prompt->cmd)
+	if (prompt->fd_in == -1 || prompt->fd_out == -1)
 		return ;
+	if (!prompt->cmd)
+	{
+		if (prompt->fd_in)
+			close(prompt->fd_in);
+		if (prompt->fd_out != 1)
+			close(prompt->fd_out);
+		ft_exit_status(0 , SET);
+		return ;
+	}
 	if (is_builtin(prompt))
 	{
 		if (prompt->fd_in != 0)
@@ -253,7 +262,7 @@ void	multi_exec(t_exec *prompt)
 	if (prompt->fd_in == -1 || prompt->fd_out == -1)
 		my_exit (1);
 	if (!prompt->cmd)
-		my_exit(ft_exit_status(0, GET));
+		my_exit(0);
 	is_builtin_pipe(prompt);
 	if ((prompt->cmd[0] == '.' && prompt->cmd[1] == '/') || prompt->cmd[0] == '/')
 	{
