@@ -66,9 +66,9 @@ long long	shlvl_atoi(char *str)
 	return ((long long)res * sign);
 }
 
-void shlvl_update(t_env *tmp, int *sp)
+void	shlvl_update(t_env *tmp)
 {
-	long long next;
+	long long	next;
 
 	next = shlvl_atoi(tmp->value) + 1;
 	if (tmp->value[0] == '-' && alnm(tmp->value + 1))
@@ -93,61 +93,54 @@ void shlvl_update(t_env *tmp, int *sp)
 		else if (next == 1000)
 			tmp->value = ft_strdup_env("");
 	}
-	sp[0] = 1;	
 }
 
-void	env_check(t_env **head, t_env *tmp)
-{
-	static int	sp[2];
-	char		pwd[PATH_MAX];
+// void	env_check(t_env **head, t_env *tmp)
+// {
+// 	static int	sp[2];
+// 	char		pwd[PATH_MAX];
 
-	getcwd(pwd, PATH_MAX);
-	while (tmp)
-	{
-		if (ft_strncmp(tmp->key, "PWD", ft_strlen(tmp->key)) == 0)
-		{
-			if (ft_strncmp(pwd, tmp->value, ft_strlen(tmp->value) + 1))
-				tmp->value = ft_strdup_env(pwd);
-			sp[1] = 1;
-		}
-		if (ft_strncmp(tmp->key, "SHLVL", ft_strlen(tmp->key)) == 0)
-			shlvl_update(tmp, sp);
-		// {
-		// 	if (tmp->value[0] == '-' && alnm(tmp->value + 1))
-		// 		tmp->value = ft_strdup_env("0");
-		// 	if (!alnm(tmp->value))
-		// 		tmp->value = ft_strdup_env("1");
-		// 	if ((*tmp->value == '+' && alnm(tmp->value + 1)) || alnm(tmp->value))
-		// 		tmp->value = ft_strdup_env(ft_itoa(ft_atoi(tmp->value) + 1));
-		// 	sp[0] = 1;
-		// }
-		tmp = tmp->next;
-	}
-	shlvl_pwd_env(head, sp, pwd);
-}
+// 	getcwd(pwd, PATH_MAX);
+// 	while (tmp)
+// 	{
+// 		if (ft_strncmp(tmp->key, "PWD", ft_strlen(tmp->key)) == 0)
+// 		{
+// 			if (ft_strncmp(pwd, tmp->value, ft_strlen(tmp->value) + 1))
+// 				tmp->value = ft_strdup_env(pwd);
+// 			sp[1] = 1;
+// 		}
+// 		if (ft_strncmp(tmp->key, "SHLVL", ft_strlen(tmp->key)) == 0)
+// 		{
+// 			shlvl_update(tmp, sp);
+// 			sp[0] = 1;
+// 		}
+// 		tmp = tmp->next;
+// 	}
+// 	shlvl_pwd_env(head, sp, pwd);
+// }
 
-void	env_stacking(char **env, t_env **env_stack)
-{
-	int		i;
-	int		j;
-	int		pos;
-	char	*key;
+// void	env_stacking(char **env, t_env **env_stack)
+// {
+// 	int		i;
+// 	int		j;
+// 	int		pos;
+// 	char	*key;
 
-	i = 0;
-	while (env[i])
-	{
-		j = 0;
-		pos = equal_sign_position(env[i]);
-		while (env[i][j])
-			j++;
-		key = ft_substr(env[i], 0, pos);
-		if (ft_strncmp(key, "OLDPWD", ft_strlen(key)) == 0)
-		{
-			i++;
-			continue ;
-		}
-		append_node_env(env_stack, key, ft_substr(env[i], pos + 1, j - pos));
-		i++;
-	}
-	env_check(env_stack, *env_stack);
-}
+// 	i = 0;
+// 	while (env[i])
+// 	{
+// 		j = 0;
+// 		pos = equal_sign_position(env[i]);
+// 		while (env[i][j])
+// 			j++;
+// 		key = ft_substr(env[i], 0, pos);
+// 		if (ft_strncmp(key, "OLDPWD", ft_strlen(key)) == 0)
+// 		{
+// 			i++;
+// 			continue ;
+// 		}
+// 		append_node_env(env_stack, key, ft_substr(env[i], pos + 1, j - pos));
+// 		i++;
+// 	}
+// 	env_check(env_stack, *env_stack);
+// }

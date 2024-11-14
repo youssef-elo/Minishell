@@ -7,18 +7,18 @@ int	tokens_counter(const char *cmd)
 
 	count = 0;
 	i = 0;
-	if(!cmd)
+	if (!cmd)
 		return (1);
 	while (cmd[i])
 	{
-		if(cmd[i] == SEPARATOR)
+		if (cmd[i] == SEPARATOR)
 			count++;
-		i++;	
+		i++;
 	}
 	return (count);
 }
 
-static	char	**ft_free(char **words, int j)
+char	**ft_free(char **words, int j)
 {
 	while (j)
 	{
@@ -48,7 +48,6 @@ char	**tokens_alloc(const char *s, char c, char **tokens)
 		tokens[j] = ft_substr(s, (i - len), len);
 		if (tokens[j] == NULL)
 			return (ft_free(tokens, j));
-		// printf("TOKEN N.%d : {%s}\n", j + 1, tokens[j]);
 		if (s[i])
 			i++;
 		j++;
@@ -75,27 +74,30 @@ char	**split_tokens(const char *s, char c)
 t_token_type	delimiter_definer(char	*token)
 {
 	if (token[0] == '>')
-		if(token[1] == '>')
+	{
+		if (token[1] == '>')
 			return (OUTPUT_A);
 		else
 			return (OUTPUT_R);
+	}
 	else if (token[0] == '<')
-		if(token[1] == '<')
+	{
+		if (token[1] == '<')
 			return (HEREDOC);
 		else
 			return (INPUT_R);
+	}
 	else if (token[0] == '|')
 		return (PIPE);
 	return (PIPE);
 }
 
-int	is_delimiter(char	*token)
+int	is_delimiter(char *token)
 {
-	if(token[0] == '>' || token[0] == '<' || token[0] == '|')
+	if (token[0] == '>' || token[0] == '<' || token[0] == '|')
 		return (1);
 	return (0);
 }
-
 
 t_token	*list_tokens(char **tokens)
 {
@@ -110,13 +112,13 @@ t_token	*list_tokens(char **tokens)
 	token_type = NIL;
 	while (tokens[i])
 	{
-		if(is_delimiter(tokens[i]))
+		if (is_delimiter(tokens[i]))
 			token_type = delimiter_definer(tokens[i]);
-		else if(i > 0 && is_delimiter(tokens[i - 1]) && PIPE != delimiter_definer(tokens[i - 1]))
+		else if (i > 0 && is_delimiter(tokens[i - 1]) && PIPE != delimiter_definer(tokens[i - 1]))
 			token_type = RDR_ARG;
 		else
 		{
-			if(count == 0)
+			if (count == 0)
 				token_type = CMD;
 			else
 				token_type = ARG;

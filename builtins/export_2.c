@@ -69,11 +69,6 @@ void	export_init(t_env *env, t_export **exp)
 
 	while (env)
 	{
-		if (!ft_strncmp("_", env->key, 2))
-		{
-			env = env->next;
-			continue ;
-		}
 		node = galloc(sizeof(t_export), MALLOC);
 		node->next = NULL;
 		node->key = env->key;
@@ -87,3 +82,9 @@ void	export_init(t_env *env, t_export **exp)
 	node->value = NULL;
 	export_append(exp, node);
 }
+
+// if (!ft_strncmp("_", env->key, 2))
+// {
+// 	env = env->next;
+// 	continue ;
+// }

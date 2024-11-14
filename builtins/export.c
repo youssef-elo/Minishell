@@ -65,11 +65,6 @@ void	export_var(t_exec *prompt, t_export **head, int *check)
 			continue ;
 		}
 		ft_substr_exp(prompt->args[i], &key, &val, apnd_set);
-		if (!ft_strncmp(key, "_", ft_strlen(key)))
-		{
-			i++;
-			continue ;
-		}
 		if (val)
 			update_append_env(prompt->head, apnd_set, key, val);
 		update_append_exp(head, apnd_set, key, val);

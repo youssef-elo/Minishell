@@ -348,10 +348,10 @@ void expand_line(char *line, t_env *env_list, char **ret)
 
 int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 {
-	char *line;
-	int fd_return;
-	int	expandable;
-	char *ret;
+	char	*line;
+	char	*ret;
+	int		fd_return;
+	int		expandable;
 
 	line = NULL;
 	ret = NULL;

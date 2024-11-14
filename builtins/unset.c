@@ -79,7 +79,6 @@ int	ft_unset(t_exec *prompt, t_export **head)
 	check = 0;
 	while (prompt->args[i])
 	{
-		// printf("|%s|\n", prompt->args[i]);
 		if (!unset_check_var(prompt->args[i], &check))
 		{
 			unset_exp(head, prompt->args[i]);

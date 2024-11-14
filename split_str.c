@@ -59,9 +59,9 @@ static char	**ft_strs(char const *s, char **rs, char c)
 char	**ft_split(char *s, char c)
 {
 	int		w;
-	char	**rs; 
+	char	**rs;
 
-	if (s == NULL) 
+	if (s == NULL)
 		return (NULL);
 	w = ft_cwords(s, c);
 	rs = gc_handler((w + 1) * sizeof(char *), MALLOC);
