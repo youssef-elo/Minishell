@@ -13,6 +13,22 @@ void	gc_free(t_mblock *head)
 	}
 }
 
+void	gc_node(void *ptr, t_mblock **head)
+{
+	t_mblock	*node;
+
+	node = malloc(sizeof(t_mblock));
+	if (!node)
+	{
+		gc_handler(0, FREE);
+		galloc(0, FREE);
+		exit (1);
+	}
+	node->next = *head;
+	node->ptr = ptr;
+	*head = node;
+}
+
 void	*galloc(int size, int action)
 {
 	static t_mblock	*head;
@@ -36,22 +52,6 @@ void	*galloc(int size, int action)
 		head = NULL;
 	}
 	return (NULL);
-}
-
-void	gc_node(void *ptr, t_mblock **head)
-{
-	t_mblock	*node;
-
-	node = malloc(sizeof(t_mblock));
-	if (!node)
-	{
-		gc_handler(0, FREE);
-		galloc(0, FREE);
-		exit (1);
-	}
-	node->next = *head;
-	node->ptr = ptr;
-	*head = node;
 }
 
 void	*gc_handler(int s, int action)

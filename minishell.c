@@ -5,22 +5,22 @@ void	read_l(char **rl, int is, struct termios state)
 	tcsetattr(STDIN_FILENO, TCSAFLUSH, &state);
 	if (is == 1)
 	{
-		rl = readline("minishell> ");
-		if (!rl)
+		*rl = readline("minishell> ");
+		if (!(*rl))
 			readline_exit();
 	}
 	else if (is == 0)
 	{
-		rl = readline(NULL);
-		if (!rl)
+		*rl = readline(NULL);
+		if (!(*rl))
 		{
 			gc_handler(0, FREE);
 			galloc(0, FREE);
 			exit(ft_exit_status(0, GET));
 		}
 	}
-	if (ft_strlen(rl) > 0)
-		add_history(rl);
+	if (ft_strlen(*rl) > 0)
+		add_history(*rl);
 }
 
 int	main(int argc, char **argv, char **env)
