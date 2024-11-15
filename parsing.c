@@ -462,7 +462,7 @@ void open_fail_check(int input_fd, int output_fd, char *value)
 	ft_exit_status(1, SET);
 }
 
-void	open_rdrs(t_segment	*exec_segment, t_env *env_list)
+void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 {
 	int input_fd;
 	int output_fd;
@@ -497,6 +497,11 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list)
 				close(input_fd);
 			input_fd = open("/tmp/heredoc_ms", O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			input_fd = heredoc_launcher(input_fd, temp->value, env_list);
+			if (input_fd == -1)
+			{
+				*check = -1;
+				return ;
+			}
 		}
 		if(input_fd == -1 || output_fd == -1)
 			break;
@@ -517,14 +522,16 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list)
 	exec_segment->seg_output_fd = output_fd;
 }
 
-void	append_segment(t_exec	**exec_head, t_segment	*exec_segment, t_env *env_list)
+void	append_segment(t_exec	**exec_head, t_segment	*exec_segment, t_env *env_list, int *check)
 {
-	open_rdrs(exec_segment, env_list);
+	open_rdrs(exec_segment, env_list, check);
+	if (*check == -1)
+		return ;
 	append_seg(exec_head, exec_segment);
 	exec_segment_init(&exec_segment);
 }
 
-void	exec_segments_definer(t_token *token_list, t_exec	**exec_head, t_env *env_list)
+void	exec_segments_definer(t_token *token_list, t_exec	**exec_head, t_env *env_list, int *check)
 {
 	t_token		*temp;
 	t_segment	*exec_segment;
@@ -559,7 +566,9 @@ void	exec_segments_definer(t_token *token_list, t_exec	**exec_head, t_env *env_l
 		}
 		if(temp->type == PIPE || !temp->next)
 		{
-			append_segment(exec_head, exec_segment, env_list);
+			append_segment(exec_head, exec_segment, env_list, check);
+			if (*check == -1)
+				return ;
 			exec_segment_init(&exec_segment);
 		}
 		temp = temp->next;
@@ -719,6 +728,9 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 	t_exec 	*exec_segments = NULL;
 	t_exec	*temp_exec;
 	int		unexpected_nl;
+	int check;
+
+	check =0;
 
 	// const char * token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
 	
@@ -835,7 +847,9 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 		// }
 		//////////////////////////////////////////
 
-		exec_segments_definer(token_list, &exec_segments, env_list);
+		exec_segments_definer(token_list, &exec_segments, env_list, &check);
+		if (check == -1)
+			return (NULL);
 		put_env(head, exec_segments);
 		return (exec_segments);
 		// temp_exec = exec_segments;
@@ -859,6 +873,6 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 		// }
 		
 	}
-	return NULL;
+	return (NULL);
 }
 //cmd arg red arg red == segv
