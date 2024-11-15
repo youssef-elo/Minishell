@@ -8,9 +8,9 @@ OFILES = $(FILES:.c=.o)
 HEADER := $(shell ls *.h)
 #also forbidden remove later
 
-# SANITIZE = -g -fsanitize=address
+SANITIZE = -g -fsanitize=address
 
-# FLAGS = -Wall -Wextra -Werror $(SANITIZE)
+FLAGS = -Wall -Wextra -Werror $(SANITIZE)
 
 LIBS =  -L ~/.brew/opt/readline/lib -l readline
 

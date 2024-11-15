@@ -76,7 +76,13 @@ int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
     }
 	signal(SIGINT, signal_handler);
 	if (g_here_sig == 1)
+	{
 		dup2(in_dup, 0);
+		close(in_dup);
+		close(fd);
+		ft_exit_status(1, SET);
+		return (-1);
+	}
 	close(in_dup);
     close(fd);
     fd_return = open("/tmp/heredoc_ms", O_RDONLY);

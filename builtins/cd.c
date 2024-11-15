@@ -1,5 +1,7 @@
 #include "../minishell.h"
 
+// to fix : -p segfault
+
 void	export_env_update(t_export *exp, t_exec *prompt, char *key, char *value)
 {
 	int	f;

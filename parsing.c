@@ -18,7 +18,7 @@ void omit_spaces(int *i, char *str, char **cmd)
 	(*i)--;
 	if(str[(*i) + 1] != '\0' && j > 0)
 	{
-		if((*cmd)[ft_strlen(*cmd) - 1] != SEPARATOR)
+		if((*cmd) && (*cmd)[ft_strlen(*cmd) - 1] != SEPARATOR)
 			*cmd = ft_strjoinc(*cmd, SEPARATOR);
 	}
 }
