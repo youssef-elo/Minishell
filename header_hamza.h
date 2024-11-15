@@ -59,11 +59,14 @@ typedef struct s_segment
 
 int		ft_is_digit(int c);
 int		ft_is_alphanum(int c);
+void	quotes_omit(char **str);
 int		ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
 t_token	*list_tokens(char **tokens);
+void	dollar_sign_case(char **str);
 void	ft_putstr_fd(char *s, int fd);
 void	*gc_handler(int s ,int action);
+int		is_expandable(char *delimiter);
 int		tokens_counter(const char *cmd);
 char	**split_tokens(const char *s, char c);
 char	*ft_strjoinc(const char *s1, const char c);
@@ -75,5 +78,9 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head);
 int		ft_strncmp(const char *s1, const char *s2, int n);
 int		ft_strlcpy(char *dst, const char *src, int dstsize);
 void	append_seg(t_exec	**exec_seg_list, t_segment	*seg);
+void	expand_line(char **line, t_env *env_list);
+int		heredoc_launcher(int fd, char *delimiter, t_env *env_list);
 void	append_token(t_token **token_list, char *value, t_token_type type);
+char	*handle_dollar_sign(int *i, char *str, t_env *env_list, int double_quoted);
+
 #endif

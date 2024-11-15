@@ -296,6 +296,7 @@ int is_expandable(char *delimiter)
 	}
 	return 1;
 }
+
 void dollar_sign_case(char **str)
 {
 	int i;
@@ -327,69 +328,68 @@ void dollar_sign_case(char **str)
 
 // new code !!!!!!!!!!!!!!!!
 
-void expand_line(char *line, t_env *env_list, char **ret)
-{
-	char *new_line;
-	int i;
+// void expand_line(char *line, t_env *env_list, char **ret)
+// {
+// 	char *new_line;
+// 	int i;
 
-	new_line = NULL;
-	i = 0;
-	while (line[i])
-	{
-		if(line[i] == '$' && line[i + 1] && line[i + 1] != '"' && line[i + 1] != '\'')
-			new_line = ft_strjoin(new_line, handle_dollar_sign(&i, line, env_list, 0));
-		else if(line[i] != '$')
-			new_line = ft_strjoinc(new_line, line[i]);
-		i++; 
-	}
-	// printf("newline->%s\n", new_line);
-	(*ret) = ft_strdup(new_line);
-}
+// 	new_line = NULL;
+// 	i = 0;
+// 	while (line[i])
+// 	{
+// 		if(line[i] == '$' && line[i + 1] && line[i + 1] != '"' && line[i + 1] != '\'')
+// 			new_line = ft_strjoin(new_line, handle_dollar_sign(&i, line, env_list, 0));
+// 		else if(line[i] != '$')
+// 			new_line = ft_strjoinc(new_line, line[i]);
+// 		i++; 
+// 	}
+// 	(*ret) = new_line;
+// }
 
-int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
-{
-	char	*line;
-	char	*ret;
-	int		fd_return;
-	int		expandable;
+// int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
+// {
+// 	char	*line;
+// 	char	*ret;
+// 	int		fd_return;
+// 	int		expandable;
 
-	line = NULL;
-	ret = NULL;
-	fd_return = -2;
-	expandable = 1;
-	if(!is_expandable(delimiter))
-	{
-		expandable = 0;
-		dollar_sign_case(&delimiter);
-		quotes_omit(&delimiter);
-	}
-	// printf("DELIMITER-->%s\nEXPANDABLE->%d\n", delimiter, expandable);
-	while(1)
-	{
-		line = readline("> ");
-		if(!line)
-			break ;
-		// if(ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
-		// 	&& ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
-		if (!ft_strncmp(line , delimiter, ft_strlen(delimiter) + 1))
-		{
-			free(line);
-			line = NULL;
-			break ;
-		}
-		if(expandable)
-			expand_line(line, env_list, &ret);
-		if(ret)
-			write(fd, ret, ft_strlen(ret));
-		write(fd, "\n", 1);
-		free(line);
-		line = NULL;
-	}
-	close(fd);
-	fd_return = open("/tmp/heredoc_ms", O_RDONLY);
-	//Protection ??
-	return(fd_return);
-}
+// 	line = NULL;
+// 	ret = NULL;
+// 	fd_return = -2;
+// 	expandable = 1;
+// 	if(!is_expandable(delimiter))
+// 	{
+// 		expandable = 0;
+// 		dollar_sign_case(&delimiter);
+// 		quotes_omit(&delimiter);
+// 	}
+// 	// printf("DELIMITER-->%s\nEXPANDABLE->%d\n", delimiter, expandable);
+// 	while(1)
+// 	{
+// 		line = readline("> ");
+// 		if(!line)
+// 			break ;
+// 		// if(ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
+// 		// 	&& ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+// 		if (!ft_strncmp(line , delimiter, ft_strlen(delimiter) + 1))
+// 		{
+// 			free(line);
+// 			line = NULL;
+// 			break ;
+// 		}
+// 		if(expandable)
+// 			expand_line(line, env_list, &ret);
+// 		if(ret)
+// 			write(fd, ret, ft_strlen(ret));
+// 		write(fd, "\n", 1);
+// 		free(line);
+// 		line = NULL;
+// 	}
+// 	close(fd);
+// 	fd_return = open("/tmp/heredoc_ms", O_RDONLY);
+// 	//Protection ??
+// 	return(fd_return);
+// }
 //end of new code !!!!!!!!!!!
 
 // the previous code ---------------------
