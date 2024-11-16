@@ -1,7 +1,5 @@
 #include "../minishell.h"
 
-// to fix : -p segfault
-
 void	export_env_update(t_export *exp, t_exec *prompt, char *key, char *value)
 {
 	int	f;
@@ -66,18 +64,6 @@ int	cd_path(t_exec *prompt, t_export **head, char *cwd)
 	return (0);
 }
 
-void	getcwd_fail(t_exec *prompt, t_export **head, char *pwd)
-{
-	char	*error;
-
-	perror("cd: error retrieving current directory");
-	export_env_update(*head, prompt, "OLDPWD", pwd);
-	error = ft_getenv(prompt->env, "PWD");
-	if (error[ft_strlen(error) - 1] != '/')
-		error = ft_strjoin(error, "/");
-	export_env_update(*head, prompt, "PWD", ft_strjoin(error, prompt->args[1]));
-}
-
 int	ft_cd(t_exec *prompt, t_export **head)
 {
 	char	cwd[PATH_MAX];
@@ -97,12 +83,9 @@ int	ft_cd(t_exec *prompt, t_export **head)
 	pwd = ft_getenv(prompt->env, "PWD");
 	if (!pwd)
 		pwd = cwd;
+	export_env_update(*head, prompt, "OLDPWD", cwd);
 	if (getcwd(cwd, PATH_MAX) == NULL)
-	{
-		getcwd_fail(prompt, head, pwd);
-		return (0);
-	}
-	export_env_update(*head, prompt, "OLDPWD", pwd);
+		perror("cd: error retrieving current directory");
 	export_env_update(*head, prompt, "PWD", cwd);
 	return (0);
 }

@@ -16,7 +16,9 @@ int	ft_pwd(t_exec *prompt)
 	char	dir[PATH_MAX];
 	char	*env_pwd;
 
-	if (getcwd(dir, PATH_MAX))
+	dir[0] = 0;
+	getcwd(dir, PATH_MAX);
+	if (dir[0] == '/')
 	{
 		ft_putstrnl_fd(dir, prompt->fd_out);
 		return (0);
