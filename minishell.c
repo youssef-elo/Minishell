@@ -2,6 +2,7 @@
 
 int g_here_sig = 0;
 
+
 void heredoc_signal(int sig)
 {
 	if(sig == SIGINT)
@@ -36,13 +37,13 @@ int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 	char	*ret;
     char	*line;
 	int		in_dup;
-    int		fd_return;
+	// int		fd_dup;
     int		expandable;
 
 	ret = NULL;
     line = NULL;
+	// fd_dup = dup(fd);
 	in_dup = dup(0);
-    fd_return = -2;
     expandable = 1;
     if(!is_expandable(delimiter))
     {
@@ -80,14 +81,13 @@ int heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 		dup2(in_dup, 0);
 		close(in_dup);
 		close(fd);
+		// close(fd_dup);
 		ft_exit_status(1, SET);
 		return (-1);
 	}
 	close(in_dup);
     close(fd);
-    fd_return = open("/tmp/heredoc_ms", O_RDONLY);
-    //Protection ??
-    return(fd_return);
+    return(fd);
 }
 
 void	read_l(char **rl, int is, struct termios state)
@@ -131,7 +131,6 @@ int	main(int argc, char **argv, char **env)
 	{
 		read_l(&rl, is, state);
 		prompt = parse(rl, env_list, &env_list);
-
 		if (g_here_sig == 1)
 		{
 			g_here_sig = 0;
@@ -145,9 +144,11 @@ int	main(int argc, char **argv, char **env)
 			}
 			gc_handler(0, FREE);
 			free(rl);
+			heredoc_file(RESET);
 			rl = NULL;
 			continue ;
 		}
+		heredoc_file(RESET);
 		main_exec(prompt);
 		gc_handler(0, FREE);
 		free(rl);

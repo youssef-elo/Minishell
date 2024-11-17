@@ -4,6 +4,9 @@
 # define SET 0
 # define GET 1
 
+#define RESET 0
+#define CREATE 1
+
 typedef struct s_execution	t_exec;
 typedef unsigned long long	t_ull;
 
@@ -54,6 +57,7 @@ char	*ft_chrdup(const char c);
 int		my_exit(int exit_status);
 int		ft_atoi(const char *str);
 int		my_exit(int exit_status);
+int		heredoc_file(int action);
 int		ft_exit_check(char *str);
 void	shlvl_update(t_env *tmp);
 void	main_exec(t_exec *prompt);

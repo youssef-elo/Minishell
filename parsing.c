@@ -495,8 +495,9 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 		{
 			if(input_fd != 0)
 				close(input_fd);
-			input_fd = open("/tmp/heredoc_ms", O_CREAT | O_WRONLY | O_TRUNC, 0644);
-			input_fd = heredoc_launcher(input_fd, temp->value, env_list);
+			input_fd = heredoc_file(CREATE);
+			heredoc_launcher(dup(input_fd), temp->value, env_list);
+			// fix
 			if (input_fd == -1)
 			{
 				*check = -1;

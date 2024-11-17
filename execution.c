@@ -232,6 +232,8 @@ void	solo_command(t_exec *prompt, char **env_c)
 	ft_exit_status(127, SET);
 }
 
+// should only run in lower case , reason : command -v echo gives the name echo as a builtin , but command -v ECHO display the bin path to echo executable
+
 void	is_builtin_pipe(t_exec *prompt)
 {
 	int		len;

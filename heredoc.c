@@ -1,5 +1,32 @@
 #include "minishell.h"
 
+int	heredoc_file(int action)
+{
+	static unsigned int	i;
+	int					fd;
+	char				*name;
+	struct stat			state;
+
+	if (action == CREATE)
+	{
+		name = ft_strjoin("/tmp/", ft_strjoin("laboursemchat", ft_itoa(i)));
+		if (!stat(name, &state))
+		{
+			i++;
+			return (heredoc_file(CREATE));
+		}
+		fd = open(name, O_RDWR | O_CREAT , 0644);
+		if (fd == -1)
+			return (heredoc_file(CREATE));
+		// unlink(name);
+		i++;
+		return (fd);
+	}
+	else if (action == RESET)
+		i = 0;
+	return (0);
+}
+
 // int	g_here_sig = 0;
 
 // void	heredoc_signal()
