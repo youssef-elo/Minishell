@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	heredoc_file(int action)
+int	heredoc_file(int action, int *read_fd)
 {
 	static unsigned int	i;
 	int					fd;
@@ -13,12 +13,13 @@ int	heredoc_file(int action)
 		if (!stat(name, &state))
 		{
 			i++;
-			return (heredoc_file(CREATE));
+			return (heredoc_file(CREATE, read_fd));
 		}
-		fd = open(name, O_RDWR | O_CREAT , 0644);
+		*read_fd = open(name, O_RDONLY | O_CREAT | O_TRUNC, 0644);
+		fd = open(name, O_RDWR | O_CREAT | O_TRUNC, 0644);
 		if (fd == -1)
-			return (heredoc_file(CREATE));
-		// unlink(name);
+			return (heredoc_file(CREATE, read_fd));
+		unlink(name);
 		i++;
 		return (fd);
 	}
@@ -27,6 +28,60 @@ int	heredoc_file(int action)
 	return (0);
 }
 
+void	expand_line(char **line, t_env *env)
+{
+	int		i;
+	char	*nline;
+
+	i = 0;
+	nline = NULL;
+	while ((*line)[i])
+	{
+		if ((*line)[i] == '$' && (*line)[i + 1]
+			&& (*line)[i + 1] != '"' && (*line)[i + 1] != '\'')
+			nline = ft_strjoin(nline, handle_dollar_sign(&i, (*line), env, 0));
+		else if ((*line)[i] != '$')
+			nline = ft_strjoinc(nline, (*line)[i]);
+		i++;
+	}
+	(*line) = nline;
+}
+
+void	heredoc_readl(int fd, char *delimiter, t_env *env_list, int expandable)
+{
+	char	*ret;
+	char	*line;
+
+	while (1)
+	{
+		line = readline("> ");
+		ret = ft_strdup(line);
+		if (!line)
+			return ;
+		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
+			&& ft_strncmp(line, delimiter, ft_strlen(line)) == 0)
+		{
+			free(line);
+			return ;
+		}
+		if (expandable)
+			expand_line(&ret, env_list);
+		if (ret)
+			write(fd, ret, ft_strlen(ret));
+		write(fd, "\n", 1);
+		free(line);
+		line = NULL;
+	}
+}
+
+int	heredoc_exit(int in_dup, int fd)
+{
+	dup2(in_dup, 0);
+	close(in_dup);
+	close(fd);
+	ft_exit_status(1, SET);
+	return (-1);
+}
 // int	g_here_sig = 0;
 
 // void	heredoc_signal()
@@ -61,7 +116,7 @@ int	heredoc_file(int action)
 // 	// printf("DELIMITER-->%s\nEXPANDABLE->%d\n", delimiter, expandable);
 // 	while(1)
 // 	{
-// 		signal(SIGINT, heredoc_signal); // signals 
+// 		signal(SIGINT, heredoc_signal); // signals
 // 		line = readline("> ");
 // 		if(!line || g_here_sig)
 // 			break ;
@@ -81,12 +136,12 @@ int	heredoc_file(int action)
 // 		free(line);
 // 		line = NULL;
 // 	}
-// 	// signals 
+// 	// signals
 // 	if (g_here_sig == 1)
 // 		dup2(in_dup , 0);
 // 	set_signals(0 , 0);
 // 	close (in_dup);
-// 	// end signals 
+// 	// end signals
 // 	close(fd);
 // 	fd_return = open("/tmp/heredoc_ms", O_RDONLY);
 // 	//Protection ??

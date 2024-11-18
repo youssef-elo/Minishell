@@ -466,6 +466,7 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 {
 	int input_fd;
 	int output_fd;
+	int	heredoc_check;
 	t_token	*temp;
 
 	input_fd = 0;
@@ -473,6 +474,7 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 	temp = exec_segment->rdrs;
 	while(temp)
 	{
+		heredoc_check = 0;
 		if(temp->type == OUTPUT_R)
 		{
 			if(output_fd != 1)
@@ -495,11 +497,13 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 		{
 			if(input_fd != 0)
 				close(input_fd);
-			input_fd = heredoc_file(CREATE);
-			heredoc_launcher(dup(input_fd), temp->value, env_list);
+			// input_fd = heredoc_file(CREATE);
+			heredoc_check = heredoc_launcher(heredoc_file(CREATE, &input_fd), temp->value, env_list);
 			// fix
-			if (input_fd == -1)
+			if (heredoc_check == -1)
 			{
+				if(input_fd != 0)
+					close(input_fd);
 				*check = -1;
 				return ;
 			}
@@ -849,8 +853,8 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 		//////////////////////////////////////////
 
 		exec_segments_definer(token_list, &exec_segments, env_list, &check);
-		if (check == -1)
-			return (NULL);
+		// if (check == -1)
+		// 	return (NULL);
 		put_env(head, exec_segments);
 		return (exec_segments);
 		// temp_exec = exec_segments;
