@@ -29,48 +29,6 @@ char	**ft_free(char **words, int j)
 	return (NULL);
 }
 
-char	**tokens_alloc(const char *s, char c, char **tokens)
-{
-	int	j;
-	int	i;
-	int	len;
-
-	j = 0;
-	i = 0;
-	while (s[i])
-	{
-		len = 0;
-		while (s[i] != c)
-		{
-			len++;
-			i++;
-		}
-		tokens[j] = ft_substr(s, (i - len), len);
-		if (tokens[j] == NULL)
-			return (ft_free(tokens, j));
-		if (s[i])
-			i++;
-		j++;
-	}
-	tokens[j] = NULL;
-	return (tokens);
-}
-
-char	**split_tokens(const char *s, char c)
-{
-	int		tokens_count;
-	char	**tokens;
-
-	if (s == NULL)
-		return (NULL);
-	tokens_count = tokens_counter(s);
-	tokens = (char **)gc_handler(((tokens_count + 1) * sizeof(char *)), MALLOC);
-	if (tokens == NULL)
-		return (NULL);
-	tokens = tokens_alloc(s, c, tokens);
-	return (tokens);
-}
-
 t_token_type	delimiter_definer(char	*token)
 {
 	if (token[0] == '>')
@@ -92,11 +50,32 @@ t_token_type	delimiter_definer(char	*token)
 	return (PIPE);
 }
 
-int	is_delimiter(char *token)
+t_token	*list_tokens_u(char **tok, t_token_type t_type, t_token *f_token, int c)
 {
-	if (token[0] == '>' || token[0] == '<' || token[0] == '|')
-		return (1);
-	return (0);
+	int	i;
+
+	i = 0;
+	while (tok[i])
+	{
+		if (is_delimiter(tok[i]))
+			t_type = delimiter_definer(tok[i]);
+		else if (i > 0 && is_delimiter(tok[i - 1])
+			&& PIPE != delimiter_definer(tok[i - 1]))
+			t_type = RDR_ARG;
+		else
+		{
+			if (c == 0)
+				t_type = CMD;
+			else
+				t_type = ARG;
+			c++;
+		}
+		append_token(&f_token, tok[i], t_type);
+		if (t_type == PIPE)
+			c = 0;
+		i++;
+	}
+	return (f_token);
 }
 
 t_token	*list_tokens(char **tokens)
@@ -106,28 +85,9 @@ t_token	*list_tokens(char **tokens)
 	t_token			*first_token;
 	t_token_type	token_type;
 
-	count = 0;
 	i = 0;
-	first_token = NULL;
+	count = 0;
 	token_type = NIL;
-	while (tokens[i])
-	{
-		if (is_delimiter(tokens[i]))
-			token_type = delimiter_definer(tokens[i]);
-		else if (i > 0 && is_delimiter(tokens[i - 1]) && PIPE != delimiter_definer(tokens[i - 1]))
-			token_type = RDR_ARG;
-		else
-		{
-			if (count == 0)
-				token_type = CMD;
-			else
-				token_type = ARG;
-			count++;
-		}
-		append_token(&first_token, tokens[i], token_type);
-		if (token_type == PIPE)
-			count = 0;
-		i++;
-	}
-	return (first_token);
+	first_token = NULL;
+	return (list_tokens_u(tokens, token_type, first_token, count));
 }
