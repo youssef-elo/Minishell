@@ -57,6 +57,25 @@ typedef struct s_segment
 	int		seg_input_fd;
 } t_segment;
 
+typedef struct	s_flags
+{
+	int check;
+	int unexpected_nl;
+	int  heredoc;
+	int double_quoted;
+	int single_quoted;
+}		t_flags;
+
+typedef struct s_parsing_vars
+{
+	t_exec	*exec_segments;
+	t_token	*token_list;
+	t_env	*env_list;
+	t_env	**head;
+	char	*cmd;
+	char	**tokens;
+}			t_parsing_vars;
+
 int		ft_is_digit(int c);
 int		ft_is_alphanum(int c);
 void	quotes_omit(char **str);
