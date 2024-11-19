@@ -166,6 +166,7 @@ void handle_delimiter(int *i, char **cmd, char *str)
 // 	}
 // 	if(str[i - 1] == '<')
 // }
+// int	write_error()
 
 int syntax_err_checker(t_token *token_list, int *unexpected_nl)
 {
@@ -466,7 +467,6 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 {
 	int input_fd;
 	int output_fd;
-	int	heredoc_check;
 	t_token	*temp;
 
 	input_fd = 0;
@@ -474,7 +474,6 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 	temp = exec_segment->rdrs;
 	while(temp)
 	{
-		heredoc_check = 0;
 		if(temp->type == OUTPUT_R)
 		{
 			if(output_fd != 1)
@@ -497,13 +496,10 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 		{
 			if(input_fd != 0)
 				close(input_fd);
-			// input_fd = heredoc_file(CREATE);
-			heredoc_check = heredoc_launcher(heredoc_file(CREATE, &input_fd), temp->value, env_list);
-			// fix
-			if (heredoc_check == -1)
+			input_fd = heredoc_file(CREATE);
+			heredoc_launcher(dup(input_fd), temp->value, env_list);
+			if (input_fd == -1)
 			{
-				if(input_fd != 0)
-					close(input_fd);
 				*check = -1;
 				return ;
 			}
@@ -549,26 +545,16 @@ void	exec_segments_definer(t_token *token_list, t_exec	**exec_head, t_env *env_l
 	while (temp)
 	{
 		if(temp->type == CMD)
-		{
-			// printf("~FOUND CMD : %s\n", temp->value);
 			exec_segment->seg_command = temp;
-		}
 		else if(temp->type == ARG)
 		{
-			// printf("~FOUND ARG : %s\n", temp->value);
 			append_token(&(exec_segment->seg_args), temp->value, temp->type);
 			exec_segment->args_count++;
 		}
 		else if(temp->type == INPUT_R || temp->type == HEREDOC)
-		{
-			// printf("~FOUND INPUT REDIRECTION OR HEREDOC FROM : %s\n", temp->next->value);
 			append_token(&(exec_segment->rdrs), temp->next->value, temp->type);
-		}
 		else if(temp->type == OUTPUT_R || temp->type == OUTPUT_A)
-		{
-			// printf("~FOUND OUTPUT REDIRECTION TO : %s\n", temp->next->value);
 			append_token(&(exec_segment->rdrs), temp->next->value, temp->type);
-		}
 		if(temp->type == PIPE || !temp->next)
 		{
 			append_segment(exec_head, exec_segment, env_list, check);
@@ -578,6 +564,14 @@ void	exec_segments_definer(t_token *token_list, t_exec	**exec_head, t_env *env_l
 		}
 		temp = temp->next;
 	}
+}
+void	expand_toggler(char *s, int i, int *double_quoted, int *single_quoted)
+{
+	if(s[i] == '"' && !*single_quoted)
+		toggle(double_quoted);
+	else if(s[i] == '\'' && !*double_quoted)
+		toggle(single_quoted);
+	return ;
 }
 
 void expand(char **token, t_env *env_list)
@@ -593,12 +587,9 @@ void expand(char **token, t_env *env_list)
 	i = 0;
 	if(!(*token))
 		return ;
-	while ((*token)[i])
+	while ((*token)[i++])
 	{
-		if((*token)[i] == '"' && !single_quoted)
-			toggle(&double_quoted);
-		else if((*token)[i] == '\'' && !double_quoted)
-			toggle(&single_quoted);
+		expand_toggler((*token), i, &double_quoted, &single_quoted);
 		if((*token)[i] == '$' && !single_quoted)
 		{
 			if(double_quoted)
@@ -608,7 +599,6 @@ void expand(char **token, t_env *env_list)
 		}
 		else
 			cmd = ft_strjoinc(cmd, (*token)[i]);
-		i++;
 	}
 	*token = ft_strdup(cmd);
 }
@@ -650,6 +640,19 @@ void is_heredoc(char *str, int i, int *heredoc, int *unexpected_nl)
 	*unexpected_nl = 1;
 }
 
+char *join_in_double_quotes(char c, int	is_double)
+{
+	char *to_join;
+
+	to_join = NULL;
+	to_join = ft_strjoinc(to_join, '"');
+	to_join = ft_strjoinc(to_join, c);
+	if(is_double)
+		to_join = ft_strjoinc(to_join, c);
+	to_join = ft_strjoinc(to_join, '"');
+	return (to_join);
+}
+
 char *delimiter_check(char *s)
 {
 	int 	i;
@@ -661,52 +664,17 @@ char *delimiter_check(char *s)
 		return NULL;
 	while (s[i])
 	{
-		// if(s[i] == '|')
-
 		if(s[i] == '|' || s[i] == '<' || s[i] == '>')
 		{
 			if(s[i + 1] && s[i] == s[i + 1] && s[i + 1] != '|')
-			{
-					new_s = ft_strjoinc(new_s, '"');
-					new_s = ft_strjoinc(new_s, s[i]);
-					new_s = ft_strjoinc(new_s, s[i]);
-					new_s = ft_strjoinc(new_s, '"');
-			}
+				join_in_double_quotes(s[i], 1);
 			else
-			{
-				new_s = ft_strjoinc(new_s, '"');
-				new_s = ft_strjoinc(new_s, s[i]);
-				new_s = ft_strjoinc(new_s, '"');
-			}
+				join_in_double_quotes(s[i], 0);
 		}
-
-		// if(s[i] == '|' || s[i] == '<' || s[i] == '>')
-		// {
-		// 	if(s[i + 1] && s[i] == s[i + 1] && s[i + 1] != '|')
-		// 	{
-		// 		if ((i == 0 && (s[i + 2] == '\0' || s[i + 2] == ' '))
-		// 			|| ((s[i + 2] == '\0' && s[i - 1] == ' ' ) || (s[i + 2] != '\0' && s[i + 2] == ' ' && s[i - 1] == ' ')))
-		// 		{
-		// 			new_s = ft_strjoinc(new_s, '"');
-		// 			new_s = ft_strjoinc(new_s, s[i]);
-		// 			new_s = ft_strjoinc(new_s, s[i]);
-		// 			new_s = ft_strjoinc(new_s, '"');
-		// 		}
-		// 	}
-		// 	else if ((i == 0 && (s[i + 1] == '\0' || s[i + 1] == ' ')) 
-		// 	|| ((s[i + 1] == '\0' && s[i - 1] == ' ' ) 
-		// 	|| (s[i + 1] != '\0' && s[i + 1] == ' ' && s[i - 1] == ' ')))
-		// 	{
-		// 		new_s = ft_strjoinc(new_s, '"');
-		// 		new_s = ft_strjoinc(new_s, s[i]);
-		// 		new_s = ft_strjoinc(new_s, '"');
-		// 	}
-		// }
 		else
 			new_s = ft_strjoinc(new_s, s[i]);
 		i++;
 	}
-	// printf("÷÷÷s->%s\n÷÷÷string->%s÷÷÷\n", s, new_s);
 	return (new_s);
 }
 
@@ -721,163 +689,134 @@ void put_env(t_env **head_env, t_exec *prompt)
 	}
 }
 
-t_exec	*parse(char *str, t_env *env_list, t_env **head)
+void	flagger(char *str, int *i, t_flags *flags)
 {
-	int 	i;
-	int 	double_quoted;
-	int 	single_quoted;
-	int 	heredoc;
-	char 	*cmd;
-	char 	**tokens;
-	t_token *token_list;
-	t_exec 	*exec_segments = NULL;
-	t_exec	*temp_exec;
-	int		unexpected_nl;
-	int check;
+	if(str[*i] == '"' && !flags->single_quoted)
+		toggle(&(flags->double_quoted));
+	else if(str[*i] == '\'' && !flags->double_quoted)
+		toggle(&(flags->single_quoted));
+	else if(str[*i] == '<')
+		is_heredoc(str, *i, &(flags->heredoc), &(flags->unexpected_nl));
+	else if(str[*i] == '>' || str[*i] == '|')
+		flags->unexpected_nl = 1;
+	return ;
+}
 
-	check =0;
+void	dollar_sign_formatter(int *i, char *str, t_flags *flags, t_parsing_vars *pv)
+{
+	char *to_join;
+	char *temp_str;
 
-	// const char * token_types[] = {"CMD", "ARG", "RDR_ARG", "PIPE", "INPUT_R", "OUTPUT_R", "OUTPUT_A", "HEREDOC"};
-	
-	// exec_segments = gc_handler(sizeof(t_exec), MALLOC);
-	// exec_segments->cmd = NULL;
-	// exec_segments->args = NULL;
-	// exec_segments->fd_in = 0;
-	// exec_segments->fd_out = 1;
-	// exec_segments->next = NULL;
-	temp_exec = exec_segments;
-	double_quoted = 0;
-	single_quoted = 0;
-	heredoc = 0;
-	cmd = NULL;
-	token_list = NULL;
-	i = 0;
-	if(str[0] == '\0')
-		return (NULL);
-	while (str[i])
+	to_join = NULL;
+	temp_str = NULL;
+	if(flags->double_quoted)
 	{
-		// if(!ft_isspace(str[i]) && heredoc)
-		// 	heredoc = 0;
-		if(str[i] == '"' && !single_quoted)
-			toggle(&double_quoted);
-		else if(str[i] == '\'' && !double_quoted)
-			toggle(&single_quoted);
-		else if(str[i] == '<')
-			is_heredoc(str, i, &heredoc, &unexpected_nl);
-		else if(str[i] == '>' || str[i] == '|')
-			unexpected_nl = 1;
-		if (is_space(str[i]) && !double_quoted && !single_quoted)
-			omit_spaces(&i, str, &cmd);
-		else if (!double_quoted && !single_quoted && (str[i] == '|' || str[i] == '>' || str[i] == '<'))
-			handle_delimiter(&i, &cmd, str);
-		else if(str[i] == '$' && !single_quoted && !heredoc)
-		// else if(str[i] == '$' && !single_quoted)
-		{
-			// printf("heredoc: %d\n", heredoc);
-			if(double_quoted)
-				cmd = ft_strjoin(cmd, handle_dollar_sign(&i, str, env_list, double_quoted));
-			else
-				cmd = ft_strjoin(cmd, delimiter_check(spaces_to_sep(handle_dollar_sign(&i, str, env_list, double_quoted))));
-				unexpected_nl = 0;
-		}
-		else
-			cmd = ft_strjoinc(cmd, str[i]);
-		if(str[i] != '\0')
-			i++;
+		to_join = handle_dollar_sign(i, str, pv->env_list, flags->double_quoted);
+		pv->cmd = ft_strjoin(pv->cmd, to_join);
 	}
-	if(!cmd)
-		return (NULL);
-	if (cmd[ft_strlen(cmd) - 1] != SEPARATOR)
-		cmd = ft_strjoinc(cmd, SEPARATOR);
-	if(cmd && double_quoted)
+	else
+	{
+		temp_str = handle_dollar_sign(i, str, pv->env_list, flags->double_quoted);
+		
+		to_join = spaces_to_sep(temp_str);
+		pv->cmd = ft_strjoin(pv->cmd, delimiter_check(to_join));
+	}
+	// flags->unexpected_nl = 0;
+	return ;
+}
+
+void	command_formatter(int *i, char *str, t_flags *flags, t_parsing_vars *pv)
+{	
+	flagger(str, i, flags);
+	if (is_space(str[*i]) && !(flags->double_quoted) && !(flags->single_quoted))
+		omit_spaces(i, str, &(pv->cmd));
+	else if (!(flags->double_quoted) && !(flags->single_quoted) 
+			&& (str[*i] == '|' || str[*i] == '>' || str[*i] == '<'))
+		handle_delimiter(i, &(pv->cmd), str);
+	else if(str[*i] == '$' && !(flags->single_quoted) && !(flags->heredoc))
+		dollar_sign_formatter(i, str, flags, pv);
+	else
+		pv->cmd = ft_strjoinc(pv->cmd, str[*i]);
+	return ;
+}
+
+void	unmatched_quote_error(t_flags *flags)
+{
+	if(flags->double_quoted)
 	{
 		write(2, "Syntax error: unexpected end of file (unmatched double quote)\n", 62);
 		ft_exit_status(258, SET);
 	}
-	else if(cmd && single_quoted)
+	else if(flags->single_quoted)
 	{
 		write(2, "Syntax error: unexpected end of file (unmatched single quote)\n", 62);
 		ft_exit_status(258, SET);
 	}
-	else
+	return ;
+}
+
+t_exec	*command_parser(t_parsing_vars *pv, t_flags *flags)
+{
+	t_token *prev;
+	t_token *temp_tokens_listt;
+
+	pv->tokens = split_tokens(pv->cmd, SEPARATOR);
+	pv->token_list = list_tokens(pv->tokens);
+
+	
+	t_token *tmp = pv->token_list;
+	while (tmp)
 	{
-		tokens = split_tokens(cmd, SEPARATOR);
-
-		// for (size_t i = 0; i < strlen(cmd); i++)
-		// {
-		// 	if(cmd[i] == SEPARATOR)
-		// 		printf("÷");
-		// 	else
-		// 		printf("%c", cmd[i]);
-		// }
-		// printf("\n");
-		
-
-		// TOKENS PRINTER WITH TOKEN VALUE
-
-		// int j = 0;
-		// while(tokens[j])
-		// {
-		// 	printf("TOKEN -> {%s}\n", tokens[j]);
-		// 	j++;
-		// }
-		////////////////////////////////////
-
-
-		// expand_tokens(tokens, env_list);
-
-
-
-		token_list = list_tokens(tokens);
-		if(syntax_err_checker(token_list, &unexpected_nl))
-			return (NULL);
-
-		t_token *temp_tokens_listt = token_list;
-		t_token *prev = NULL;
-		while(temp_tokens_listt)
-		{
-			if(prev && prev->type != HEREDOC)
-				quotes_omit(&temp_tokens_listt->value);
-			prev = temp_tokens_listt;
-			temp_tokens_listt = temp_tokens_listt->next;
-		}
-
-		// TOKENS PRINTER WITH TOKEN VALUE AND TYPE
-
-		// t_token *temp_tokens_list = token_list;
-		// while(temp_tokens_list)
-		// {
-		// 	printf("TOKEN VALUE -> {%s} ----- TOKEN TYPE -> {%s}\n", temp_tokens_list->value, token_types[temp_tokens_list->type]);
-		// 	temp_tokens_list = temp_tokens_list->next;
-		// }
-		//////////////////////////////////////////
-
-		exec_segments_definer(token_list, &exec_segments, env_list, &check);
-		// if (check == -1)
-		// 	return (NULL);
-		put_env(head, exec_segments);
-		return (exec_segments);
-		// temp_exec = exec_segments;
-		// while (temp_exec)
-		// {
-		// 	printf("\n--------------------------------\n");
-		// 	if(temp_exec->cmd)
-		// 		printf("CMD: %s\n", temp_exec->cmd);
-		// 	if(temp_exec->args)
-		// 	{
-		// 		int iter = 0;
-		// 		while (temp_exec->args[iter])
-		// 		{
-		// 			printf("ARG : %s\n", temp_exec->args[iter]);
-		// 			iter++;
-		// 		}
-		// 	}
-		// 	printf("FD_IN : %d\nFD_OUT : %d\n", temp_exec->fd_in, temp_exec->fd_out);
-		// 	printf("\n--------------------------------\n");
-		// 	temp_exec = temp_exec->next;
-		// }
-		
+		printf("TOKEN VALUE -> %s\n", tmp->value);
+		tmp = tmp->next;
 	}
+	
+	
+	
+	
+	if(syntax_err_checker(pv->token_list, &(flags->unexpected_nl)))
+		return (NULL);
+	temp_tokens_listt = pv->token_list;
+	prev = NULL;
+	while(temp_tokens_listt)
+	{
+		if((prev && prev->type != HEREDOC) || !prev)
+			quotes_omit(&temp_tokens_listt->value);
+		prev = temp_tokens_listt;
+		temp_tokens_listt = temp_tokens_listt->next;
+	}
+	exec_segments_definer(pv->token_list, &(pv->exec_segments), pv->env_list, &(flags->check));
+	if (flags->check == -1)
+		return (NULL);
+	put_env(pv->head, pv->exec_segments);
+	return (pv->exec_segments);
+}
+
+t_exec	*parse(char *str, t_env *env_list, t_env **head)
+{
+	int 			i;
+	t_flags			flags;
+	t_parsing_vars	pv;
+	
+	(1 && (flags.check = 0, flags.heredoc = 0, flags.unexpected_nl = 0));
+	(1 && (flags.double_quoted = 0, flags.single_quoted = 0));
+	(1 && (pv.exec_segments = NULL, pv.cmd = NULL, pv.token_list = NULL));
+	(1 && (pv.env_list = env_list, pv.head = head, i = 0));
+	if(str[0] == '\0')
+		return (NULL);
+	while (str[i])
+	{
+		command_formatter(&i, str, &flags, &pv);
+		if(str[i] != '\0')
+			i++;
+	}
+	if(!(pv.cmd))
+		return (NULL);
+	if ((pv.cmd)[ft_strlen(pv.cmd) - 1] != SEPARATOR)
+		(pv.cmd) = ft_strjoinc((pv.cmd), SEPARATOR);
+	if((pv.cmd) && (flags.double_quoted || flags.single_quoted))
+		unmatched_quote_error(&flags);
+	else
+		return (command_parser(&pv, &flags));
 	return (NULL);
 }
-//cmd arg red arg red == segv

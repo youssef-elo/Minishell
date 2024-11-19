@@ -4,8 +4,8 @@
 # define SET 0
 # define GET 1
 
-#define RESET 0
-#define CREATE 1
+# define RESET 0
+# define CREATE 1
 
 typedef struct s_execution	t_exec;
 typedef unsigned long long	t_ull;

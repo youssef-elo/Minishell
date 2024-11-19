@@ -470,9 +470,10 @@ void	solo_command(t_exec *prompt, char **env_c)
 	}
 	solo_not_found(prompt);
 }
-
+//in solo commands when entering variablethat doesnt exit execution gets null no struct , but in pipes i do get an empty string
 void	main_exec(t_exec *prompt)
 {
+	// printf("%p\n", prompt);
 	if (!prompt)
 		return ;
 	if (!prompt->next)
