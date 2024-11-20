@@ -679,8 +679,13 @@ char *delimiter_check(char *s)
 
 void put_env(t_env **head_env, t_exec *prompt)
 {
+	char *expand_sep;
+
+	expand_sep = ft_chrdup(EXPAND);
 	while (prompt)
 	{
+		if (!ft_strncmp(prompt->cmd, expand_sep, ft_strlen(prompt->cmd) + 1))
+			prompt->cmd = NULL;
 		prompt->head = head_env;
 		prompt->env = *head_env;
 		prompt = prompt->next;
@@ -700,6 +705,46 @@ void	flagger(char *str, int *i, t_flags *flags)
 	return ;
 }
 
+int	last_element_pipe(char *cmd)
+{
+	int i;
+	int is_pipe;
+
+	i = 0;
+	is_pipe = 0;
+	while (cmd[i])
+	{
+		if(cmd[i] == '|')
+			is_pipe = 1;
+		else if (cmd[i] != SEPARATOR)
+			is_pipe = 0;
+		i++;
+	}
+	return (is_pipe);
+}
+
+int	next_element_pipe(char *str, int *i)
+{
+	int j;
+
+	j = *i;
+	j++;
+	if(!str[j])
+		return (1);
+	while(ft_isspace(str[j]))
+		j++;
+	if (!str[j])
+		return (1);
+	if(str[j] == '|')
+	{
+		while(ft_isspace(str[j]))
+			j++;
+		if(str[j])
+			return (1);
+	}	
+	return (0);
+}
+
 void	dollar_sign_formatter(int *i, char *str, t_flags *flags, t_parsing_vars *pv)
 {
 	char *to_join;
@@ -715,9 +760,16 @@ void	dollar_sign_formatter(int *i, char *str, t_flags *flags, t_parsing_vars *pv
 	else
 	{
 		temp_str = handle_dollar_sign(i, str, pv->env_list, flags->double_quoted);
-		
+		if(temp_str == NULL)
+		{
+			// printf("is_pipe -> %d\n", next_element_pipe(str, i));
+			if((!(pv->cmd) || last_element_pipe(pv->cmd))
+				&& next_element_pipe(str, i))
+				pv->cmd = ft_strjoinc(pv->cmd, EXPAND);
+		}
 		to_join = spaces_to_sep(temp_str);
 		pv->cmd = ft_strjoin(pv->cmd, delimiter_check(to_join));
+
 	}
 	// flags->unexpected_nl = 0;
 	return ;
@@ -762,12 +814,12 @@ t_exec	*command_parser(t_parsing_vars *pv, t_flags *flags)
 	pv->token_list = list_tokens(pv->tokens);
 
 	
-	t_token *tmp = pv->token_list;
-	while (tmp)
-	{
-		printf("TOKEN VALUE -> %s\n", tmp->value);
-		tmp = tmp->next;
-	}
+	// t_token *tmp = pv->token_list;
+	// while (tmp)
+	// {
+	// 	printf("TOKEN VALUE -> [%s]\n", tmp->value);
+	// 	tmp = tmp->next;
+	// }
 	
 	
 	
