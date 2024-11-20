@@ -468,7 +468,11 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 	int input_fd;
 	int output_fd;
 	t_token	*temp;
+	char	*sep;
+	int		ambiguous;
 
+	ambiguous = 0;
+	sep = ft_chrdup(EXPAND);
 	input_fd = 0;
 	output_fd = 1;
 	temp = exec_segment->rdrs;
@@ -478,16 +482,34 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 		{
 			if(output_fd != 1)
 				close(output_fd);
+			if (!ft_strncmp(temp->value , sep , ft_strlen(temp->value)))
+			{
+				ambiguous = 1;
+				output_fd = -1;
+				break;
+			}
 			output_fd = open(temp->value, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 		}
 		else if(temp->type == OUTPUT_A)
 		{
 			if(output_fd != 1)
 				close(output_fd);
+			if (!ft_strncmp(temp->value , sep , ft_strlen(temp->value)))
+			{
+				ambiguous = 1;
+				output_fd = -1;
+				break;
+			}
 			output_fd = open(temp->value, O_CREAT | O_WRONLY | O_APPEND, 0666);
 		}
 		else if(temp->type == INPUT_R)
 		{
+			if (!ft_strncmp(temp->value , sep , ft_strlen(temp->value)))
+			{
+				ambiguous = 1;
+				output_fd = -1;
+				break;
+			}
 			if(input_fd != 0)
 				close(input_fd);
 			input_fd = open(temp->value, O_RDONLY);
@@ -506,7 +528,7 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 			break;
 		temp = temp->next;
 	}
-	if(temp)
+	if(temp && !ambiguous)
 	{
 		open_fail_check(input_fd, output_fd, temp->value);
 		if(input_fd > 1)
@@ -516,6 +538,11 @@ void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
 		exec_segment->seg_input_fd = -1;
 		exec_segment->seg_output_fd = -1;
 		return ;
+	}
+	if (ambiguous)
+	{
+		ft_putstr_fd("minishell: ambiguous redirect\n", 2);
+		ft_exit_status(1, SET);
 	}
 	exec_segment->seg_input_fd = input_fd;
 	exec_segment->seg_output_fd = output_fd;
@@ -745,6 +772,36 @@ int	next_element_pipe(char *str, int *i)
 	return (0);
 }
 
+int is_redirection_arg(char *cmd)
+{
+	int i;
+	int ret;
+
+	i = 0;
+	ret = 0;
+	if (cmd)
+	{
+		while (cmd[i])
+		{
+			if(cmd[i] == '>' || cmd[i] == '<')
+			{
+				if((cmd[i] == '>' && cmd[i + 1] == '>')
+					&& ((cmd[i - 1] && cmd[i - 1] != '"') || cmd[i + 2] != '"'))
+				{
+					ret = 1;
+					i++;
+				}
+				else if(cmd[i - 1] && (cmd[i - 1] != '"' || cmd[i + 1] != '"'))
+					ret = 1;
+			}
+			else if(cmd[i] != SEPARATOR)
+				ret = 0;
+			i++;
+		}
+	}
+	return (ret);
+}
+
 void	dollar_sign_formatter(int *i, char *str, t_flags *flags, t_parsing_vars *pv)
 {
 	char *to_join;
@@ -763,15 +820,14 @@ void	dollar_sign_formatter(int *i, char *str, t_flags *flags, t_parsing_vars *pv
 		if(temp_str == NULL)
 		{
 			// printf("is_pipe -> %d\n", next_element_pipe(str, i));
-			if((!(pv->cmd) || last_element_pipe(pv->cmd))
-				&& next_element_pipe(str, i))
+			if(((!(pv->cmd) || last_element_pipe(pv->cmd)) && next_element_pipe(str, i)) || is_redirection_arg(pv->cmd))
 				pv->cmd = ft_strjoinc(pv->cmd, EXPAND);
 		}
 		to_join = spaces_to_sep(temp_str);
 		pv->cmd = ft_strjoin(pv->cmd, delimiter_check(to_join));
 
 	}
-	// flags->unexpected_nl = 0;
+	flags->unexpected_nl = 0;
 	return ;
 }
 
@@ -817,7 +873,7 @@ t_exec	*command_parser(t_parsing_vars *pv, t_flags *flags)
 	// t_token *tmp = pv->token_list;
 	// while (tmp)
 	// {
-	// 	printf("TOKEN VALUE -> [%s]\n", tmp->value);
+	// 	printf("%u -> [%s]\n", tmp->type ,tmp->value);
 	// 	tmp = tmp->next;
 	// }
 	
