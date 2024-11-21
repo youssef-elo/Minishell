@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 static char	**ft_freearray(char **s, int i)
 {

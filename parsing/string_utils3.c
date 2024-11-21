@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 int	ft_strlcpy(char *dst, const char *src, int dstsize)
 {

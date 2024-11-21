@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 
 char	**tokens_alloc(const char *s, char c, char **tokens)
