@@ -19,7 +19,6 @@ void	dollar_sign_case(char **str)
 		new_str = ft_strjoinc(new_str, (*str)[i]);
 		i++;
 	}
-	printf("before->%s\nafter->%s\n", *str, new_str);
 	(*str) = ft_strdup(new_str);
 	return ;
 }

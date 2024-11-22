@@ -44,7 +44,11 @@ void	quotes_omit(char **str)
 			j++;
 		}
 		else
-			(1 && ((*str)[i] = (*str)[j], i++, j++));
+		{
+			(*str)[i] = (*str)[j];
+			i++;
+			j++;
+		}
 	}
 	(*str)[i] = '\0';
 	return ;

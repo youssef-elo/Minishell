@@ -59,8 +59,6 @@
 // 	int		ambiguous;
 // }			t_rdr_flags;
 
-
-
 // typedef struct s_mblock	t_mblock;
 
 // struct s_mblock

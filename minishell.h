@@ -9,7 +9,6 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <unistd.h>
-# include "header_hamza.h"
 # include <limits.h>
 # include <fcntl.h>
 # include <signal.h>
