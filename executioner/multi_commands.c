@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 void	child_process(t_exec *prompt, int pre_pipe, int *pip)
 {

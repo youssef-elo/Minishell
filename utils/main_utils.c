@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 void	read_l(char **rl, int istty, struct termios state)
 {

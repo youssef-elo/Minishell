@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 void	solo_child(t_exec *prompt, char *path, char **env_c)
 {

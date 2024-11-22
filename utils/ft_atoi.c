@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 int	ft_isspace(int c)
 {
@@ -42,31 +42,3 @@ int	ft_atoi(const char *str)
 	}
 	return ((int)(r * sign));
 }
-
-// long long	exit_atoi(char *str)
-// {
-// 	int					i;
-// 	int					sign;
-// 	unsigned long long	res;
-
-// 	i = 0;
-// 	res = 0;
-// 	sign = 1;
-// 	while (ft_isspace(str[i]) == 1)
-// 		i++;
-// 	if (str[i] == '-' || str[i] == '+')
-// 	{
-// 		if (str[i++] == '-')
-// 			sign *= -1;
-// 	}
-// 	while (ft_is_digit(str[i]))
-// 	{
-// 		res = res * 10 + (str[i] - 48);
-// 		if (res > LLONG_MAX && sign == 1)
-// 			return (255);
-// 		else if (res > (unsigned long long)LLONG_MAX + 1)
-// 			return (255);
-// 		i++;
-// 	}
-// 	return ((long long)res * sign);
-// }
