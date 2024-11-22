@@ -13,17 +13,13 @@ void	dollar_sign_case(char **str)
 	j = 0;
 	while ((*str)[i])
 	{
-		if ((*str)[i] == '$')
-		{
-			while ((*str)[i + j] == '$')
-				j++;
-			if ((*str)[i + j] && ((*str)[i + j] == '"'
-				|| (*str)[i + j] == '\''))
-				i++;
-		}
+		if ((*str)[i] == '$' && (*str)[i + 1] &&
+			((*str)[i + 1] == '"' || (*str)[i + j] == '\''))
+			i++;
 		new_str = ft_strjoinc(new_str, (*str)[i]);
 		i++;
 	}
+	printf("before->%s\nafter->%s\n", *str, new_str);
 	(*str) = ft_strdup(new_str);
 	return ;
 }
