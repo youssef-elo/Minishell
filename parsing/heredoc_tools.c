@@ -85,9 +85,9 @@ int	heredoc_exit(int in_dup, int fd)
 
 int	heredoc_handler(t_token *tmp, int *in_fd, int *out_fd, t_env *env)
 {
-	int hd_file;
+	int	hd_file;
 
-	if(*in_fd != 0)
+	if (*in_fd != 0)
 		close(*in_fd);
 	hd_file = heredoc_file(CREATE, in_fd);
 	if (heredoc_launcher(hd_file, tmp->value, env) == -1)
@@ -99,5 +99,3 @@ int	heredoc_handler(t_token *tmp, int *in_fd, int *out_fd, t_env *env)
 	}
 	return (0);
 }
-
-

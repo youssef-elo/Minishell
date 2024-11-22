@@ -15,8 +15,8 @@ t_token	*ft_lstnewtoken(void *value, t_token_type type)
 
 t_exec	*ft_lstnewseg(t_segment *seg)
 {
-	t_exec		*exec_seg;
-	int			i;
+	int		i;
+	t_exec	*exec_seg;
 
 	i = 0;
 	exec_seg = gc_handler(sizeof(t_exec), MALLOC);
@@ -43,8 +43,8 @@ t_exec	*ft_lstnewseg(t_segment *seg)
 
 void	append_token(t_token **token_list, char *value, t_token_type type)
 {
-	t_token	*new_token;
 	t_token	*temp;
+	t_token	*new_token;
 
 	if (!token_list)
 		return ;

@@ -13,7 +13,7 @@ void	fd_assigner(int amb, t_segment *exec, int in_fd, int out_fd)
 
 void	redirection_opener(t_token *temp, int *input_fd, int *output_fd)
 {
-	if(temp->type == OUTPUT_R)
+	if (temp->type == OUTPUT_R)
 		*output_fd = open(temp->value, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 	else if (temp->type == OUTPUT_A)
 		*output_fd = open(temp->value, O_CREAT | O_WRONLY | O_APPEND, 0666);
@@ -29,15 +29,15 @@ void	fd_closer(t_token *temp, int *input_fd, int *output_fd)
 		close(*input_fd);
 }
 
-int	redirections_handler(t_token *tmp, int *input_fd, int *output_fd, int *amb)
+int	rdr_hndl(t_token *tmp, int *input_fd, int *output_fd, int *amb)
 {
-	char *sep;
+	char	*sep;
 
 	sep = ft_chrdup(EXPAND);
-	if(tmp->type == OUTPUT_R || tmp->type == OUTPUT_A || tmp->type == INPUT_R)
+	if (tmp->type == OUTPUT_R || tmp->type == OUTPUT_A || tmp->type == INPUT_R)
 	{
-		fd_closer(tmp,  input_fd, output_fd);
-		if (!ft_strncmp(tmp->value , sep, ft_strlen(tmp->value)))
+		fd_closer(tmp, input_fd, output_fd);
+		if (!ft_strncmp(tmp->value, sep, ft_strlen(tmp->value)))
 		{
 			(1 && (*amb = 1, *output_fd = -1));
 			return (-1);
@@ -47,32 +47,31 @@ int	redirections_handler(t_token *tmp, int *input_fd, int *output_fd, int *amb)
 	return (0);
 }
 
-void	open_rdrs(t_segment	*exec_segment, t_env *env_list, int *check)
+void	open_rdrs(t_segment	*exec_segment, t_env *env, int *check)
 {
 	char		*sep;
-	t_token		*temp;
-	t_rdr_flags	rf;
+	t_token		*t;
+	t_rdr_flags	r;
 
-	(1 && (rf.input_fd = 0, rf.ambiguous = 0, rf.output_fd = 1));
-	(1 && (sep = ft_chrdup(EXPAND), temp = exec_segment->rdrs));
-	while(temp)
+	(1 && (r.input_fd = 0, r.ambiguous = 0, r.output_fd = 1));
+	(1 && (sep = ft_chrdup(EXPAND), t = exec_segment->rdrs));
+	while (t)
 	{
-		if (redirections_handler(temp, &(rf.input_fd), &(rf.output_fd), &(rf.ambiguous)) == -1)
-			break;
-		else if(temp->type == HEREDOC)
+		if (rdr_hndl(t, &(r.input_fd), &(r.output_fd), &(r.ambiguous)) == -1)
+			break ;
+		else if (t->type == HEREDOC)
 		{
-			if (heredoc_handler(temp, &(rf.input_fd), &(rf.output_fd), env_list) == -1)
+			if (heredoc_handler(t, &(r.input_fd), &(r.output_fd), env) == -1)
 			{
 				*check = -1;
 				return ;
 			}
-			printf("%d\n", rf.input_fd);
 		}
-		if(rf.input_fd == -1 || rf.output_fd == -1)
-			break;
-		temp = temp->next;
+		if (r.input_fd == -1 || r.output_fd == -1)
+			break ;
+		t = t->next;
 	}
-	if(temp && !(rf.ambiguous))
-		return (open_fail(temp, &(rf.input_fd), &(rf.output_fd), exec_segment));
-	fd_assigner(rf.ambiguous, exec_segment, rf.input_fd, rf.output_fd);
+	if (t && !(r.ambiguous))
+		return (open_fail(t, &(r.input_fd), &(r.output_fd), exec_segment));
+	fd_assigner(r.ambiguous, exec_segment, r.input_fd, r.output_fd);
 }
