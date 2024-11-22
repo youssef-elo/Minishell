@@ -88,7 +88,7 @@ char	*handle_dollar_sign(int *i, char *s, t_env *env, int dbl_qt)
 		return ("$");
 	if (s[(*i) + 1] && s[(*i) + 1] == '?')
 	{
-		cmd = ft_sjoin(cmd, ft_itoa(ft_exit_status(0, GET)));
+		cmd = ft_strjoin(cmd, ft_itoa(ft_exit_status(0, GET)));
 		return ((*i)++, cmd);
 	}
 	else if (s[(*i) + 1] && ((s[(*i) + 1] >= 'a' && s[(*i) + 1] <= 'z')

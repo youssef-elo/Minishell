@@ -63,17 +63,17 @@ void	flagger(char *str, int *i, t_flags *flags)
 	return ;
 }
 
-void	command_formatter(int *i, char *str, t_flags *flags, t_parsing_vars *pv)
+void	command_formatter(int *i, char *str, t_flags *flag, t_parsing_vars *pv)
 {
-	flagger(str, i, flags);
-	if (is_space(str[*i]) && !(flags->double_quoted)
-		&& !(flags->single_quoted))
+	flagger(str, i, flag);
+	if (is_space(str[*i]) && !(flag->double_quoted)
+		&& !(flag->single_quoted))
 		omit_spaces(i, str, &(pv->cmd));
-	else if (!(flags->double_quoted) && !(flags->single_quoted)
+	else if (!(flag->double_quoted) && !(flag->single_quoted)
 		&& (str[*i] == '|' || str[*i] == '>' || str[*i] == '<'))
 		handle_delimiter(i, &(pv->cmd), str);
-	else if (str[*i] == '$' && !(flags->single_quoted) && !(flags->heredoc))
-		dollar_sign_formatter(i, str, flags, pv);
+	else if (str[*i] == '$' && !(flag->single_quoted) && !(flag->heredoc))
+		dollar_sign_formatter(i, str, flag, pv);
 	else
 		pv->cmd = ft_strjoinc(pv->cmd, str[*i]);
 	return ;
