@@ -78,32 +78,31 @@ char	*spaces_to_sep(char *str)
 	return (new_str);
 }
 
-char	*handle_dollar_sign(int *i, char *str, t_env *env, int dbl_qt)
+char	*handle_dollar_sign(int *i, char *s, t_env *env, int dbl_qt)
 {
 	char	*cmd;
 
 	cmd = NULL;
-	if (!(str[(*i) + 1]) || str[(*i) + 1] == ' '
-		|| (dbl_qt && str[(*i) + 1] == '"'))
+	if (!(s[(*i) + 1]) || s[(*i) + 1] == ' '
+		|| (dbl_qt && s[(*i) + 1] == '"'))
 		return ("$");
-	if (str[(*i) + 1] && str[(*i) + 1] == '?')
+	if (s[(*i) + 1] && s[(*i) + 1] == '?')
 	{
-		cmd = ft_strjoin(cmd, ft_itoa(ft_exit_status(0, GET)));
+		cmd = ft_sjoin(cmd, ft_itoa(ft_exit_status(0, GET)));
 		return ((*i)++, cmd);
 	}
-	else if (str[(*i) + 1] && ((str[(*i) + 1] >= 'a' && str[(*i) + 1] <= 'z')
-			|| (str[(*i) + 1] >= 'A'
-				&& str[(*i) + 1] <= 'Z') || str[(*i) + 1] == '_'))
+	else if (s[(*i) + 1] && ((s[(*i) + 1] >= 'a' && s[(*i) + 1] <= 'z')
+			|| (s[(*i) + 1] >= 'A'
+				&& s[(*i) + 1] <= 'Z') || s[(*i) + 1] == '_'))
 	{
-		expand_helper(&cmd, str, i);
+		expand_helper(&cmd, s, i);
 		return (expand_token(cmd, env));
 	}
-	else if (ft_is_digit(str[(*i) + 1]))
+	else if (ft_is_digit(s[(*i) + 1]))
 		return ((*i)++, NULL);
-	if (str[(*i) + 1] && (str[(*i) + 1] == '"' || str[(*i) + 1] == '\'')
-		&& !dbl_qt)
+	if (s[(*i) + 1] && (s[(*i) + 1] == '"' || s[(*i) + 1] == '\'') && !dbl_qt)
 		return (expand_token(cmd, env));
-	if (!(str[(*i) + 1] == '\'' || str[(*i) + 1] == '"'))
-		return ((*i)++, ft_strjoinc("$", str[(*i)]));
+	if (!(s[(*i) + 1] == '\'' || s[(*i) + 1] == '"'))
+		return ((*i)++, ft_strjoinc("$", s[(*i)]));
 	return ("$");
 }
