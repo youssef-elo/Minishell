@@ -58,12 +58,6 @@ void	main_exec(t_exec *prompt)
 {
 	if (!prompt)
 		return ;
-	t_exec *tmp = prompt;
-	while(tmp)
-	{
-		printf("cmd : |%s|\n", tmp->cmd);
-		tmp = tmp->next;
-	}
 	if (!prompt->next)
 		solo_command(prompt, char_env(prompt->env));
 	else

@@ -22,6 +22,7 @@ t_exec	*parse(char *str, t_env *env_list, t_env **head)
 		return (NULL);
 	if ((pv.cmd)[ft_strlen(pv.cmd) - 1] != SEPARATOR)
 		(pv.cmd) = ft_strjoinc((pv.cmd), SEPARATOR);
+	
 	if ((pv.cmd) && (flags.double_quoted || flags.single_quoted))
 		unmatched_quote_error(&flags);
 	else

@@ -23,7 +23,7 @@ int	is_expandable(char *delimiter)
 	i = 0;
 	while (delimiter[i])
 	{
-		if (delimiter[i] == '"' || delimiter[i] == '\'')
+		if (delimiter[i] == -2 || delimiter[i] == -1)
 			return (0);
 		i++;
 	}

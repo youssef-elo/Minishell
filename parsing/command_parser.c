@@ -96,7 +96,7 @@ t_exec	*command_parser(t_parsing_vars *pv, t_flags *f)
 	}
 	ex_seg_df(pv->token_list, &(pv->exec_segments), pv->env_list, &(f->check));
 	if (f->check == -1)
-		return (NULL);
+		return (pv->exec_segments);
 	put_env(pv->head, pv->exec_segments);
 	return (pv->exec_segments);
 }

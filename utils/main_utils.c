@@ -36,9 +36,9 @@ void	heredoc_sigint(t_exec *prompt, char **rl)
 {
 	while (prompt)
 	{
-		if (prompt->fd_in && prompt->fd_in != -1)
+		if (prompt->fd_in > 1)
 			close(prompt->fd_in);
-		if (prompt->fd_out != 1 && prompt->fd_out != -1)
+		if (prompt->fd_out > 1)
 			close(prompt->fd_out);
 		prompt = prompt->next;
 	}

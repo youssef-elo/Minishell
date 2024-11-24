@@ -33,12 +33,12 @@ void	quotes_omit(char **str)
 	len = ft_strlen(*str);
 	while (j < len)
 	{
-		if ((*str)[j] == '"' && !single_quoted)
+		if ((*str)[j] == -2 && !single_quoted)
 		{
 			toggle(&double_quoted);
 			j++;
 		}
-		else if ((*str)[j] == '\'' && !double_quoted)
+		else if ((*str)[j] == -1 && !double_quoted)
 		{
 			toggle(&single_quoted);
 			j++;

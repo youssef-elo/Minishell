@@ -14,7 +14,7 @@ void	dollar_sign_case(char **str)
 	while ((*str)[i])
 	{
 		if ((*str)[i] == '$' && (*str)[i + 1] &&
-			((*str)[i + 1] == '"' || (*str)[i + j] == '\''))
+			((*str)[i + 1] == -2 || (*str)[i + j] == -1))
 			i++;
 		new_str = ft_strjoinc(new_str, (*str)[i]);
 		i++;
