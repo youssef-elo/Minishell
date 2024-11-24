@@ -55,10 +55,21 @@ void	solo_not_found(t_exec *prompt)
 	ft_exit_status(127, SET);
 }
 
+void fd_close(int fd_in, int fd_out)
+{
+	if (fd_in > 1)
+		close(fd_in);
+	if (fd_out > 1)
+		close(fd_out);
+}
+
 int	solo_pre(t_exec *prompt)
 {
 	if (prompt->fd_in == -1 || prompt->fd_out == -1)
+	{
+		fd_close(prompt->fd_in, prompt->fd_out);
 		return (1);
+	}
 	if (!prompt->cmd)
 	{
 		if (prompt->fd_in)

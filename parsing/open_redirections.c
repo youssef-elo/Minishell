@@ -4,6 +4,10 @@ void	fd_assigner(int amb, t_segment *exec, int in_fd, int out_fd)
 {
 	if (amb)
 	{
+		if (in_fd > 1)
+			close(in_fd);
+		if (out_fd > 1)
+			close(out_fd);
 		ft_putstr_fd("minishell: ambiguous redirect\n", 2);
 		ft_exit_status(1, SET);
 	}
@@ -39,7 +43,11 @@ int	rdr_hndl(t_token *tmp, int *input_fd, int *output_fd, int *amb)
 		fd_closer(tmp, input_fd, output_fd);
 		if (!ft_strncmp(tmp->value, sep, ft_strlen(tmp->value)))
 		{
-			(1 && (*amb = 1, *output_fd = -1));
+			*amb = 1;
+			if (tmp->type == OUTPUT_A || tmp->type == OUTPUT_R)
+				*output_fd = -1;
+			if (tmp->type == INPUT_R)
+				*input_fd = -1;
 			return (-1);
 		}
 		redirection_opener(tmp, input_fd, output_fd);

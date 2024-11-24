@@ -19,7 +19,7 @@ void	unmatched_quote_error(t_flags *flags)
 
 void	handle_delimiter(int *i, char **cmd, char *str)
 {
-	if ((*i) != 0 && !is_space(str[*i - 1]))
+	if ((*i) != 0 && !is_space(str[*i - 1]) && (*cmd))
 		*cmd = ft_strjoinc(*cmd, SEPARATOR);
 	*cmd = ft_strjoinc(*cmd, str[*i]);
 	if (str[*i] == str[*i + 1])

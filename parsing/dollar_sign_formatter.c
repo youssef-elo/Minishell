@@ -5,25 +5,24 @@ int	is_redirection_arg(char *cmd)
 	int	i;
 	int	ret;
 
-	i = 0;
-	ret = 0;
+	((1) && (i = 0, ret = 0));
 	if (cmd)
 	{
-		while (cmd[i++])
+		while (cmd[i])
 		{
 			if (cmd[i] == '>' || cmd[i] == '<')
 			{
-				if ((cmd[i] == '>' && cmd[i + 1] == '>')
-					&& ((cmd[i - 1] && cmd[i - 1] != '"') || cmd[i + 2] != '"'))
+				if ((cmd[i] == '>' && cmd[i + 1] == '>') && ((i >= 1 && cmd[i - 1] != '"') || (cmd[i + 1] && cmd[i + 2] != '"')))
 				{
 					ret = 1;
 					i++;
 				}
-				else if (cmd[i - 1] && (cmd[i - 1] != '"' || cmd[i + 1] != '"'))
+				else if ((i >= 1 && cmd[i - 1] != '"') || cmd[i + 1] != '"')
 					ret = 1;
 			}
-			else if (cmd[i] != SEPARATOR)
+			else if (cmd[i] != SEPARATOR && !ft_isspace(cmd[i]))
 				ret = 0;
+			i++;
 		}
 	}
 	return (ret);

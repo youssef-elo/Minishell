@@ -55,7 +55,7 @@ OFILES = $(FILES:.c=.o)
 
 FLAGS = -Wall -Wextra -Werror $(SANITIZE)
 
-# SANITIZE = -g -fsanitize=address
+SANITIZE = -g -fsanitize=address
 
 LIBS =  -L ~/.brew/opt/readline/lib -l readline
 

@@ -73,3 +73,30 @@ void	ft_wait(int lastp)
 	}
 	set_signals(0, 0);
 }
+char	*get_path(char *cmd, char *path)
+{
+	int			i;
+	char		*new_cmd;
+	char		*cmd_path;
+	char		**path_split;
+	struct stat	path_info;
+
+	i = 0;
+	if (!path || !cmd || !(*cmd))
+		return (NULL);
+	new_cmd = ft_strjoin("/", cmd);
+	if (!path)
+		return (NULL);
+	path_split = ft_split(path, ':');
+	while (path_split[i])
+	{
+		cmd_path = ft_strjoin(path_split[i], new_cmd);
+		if (!stat(cmd_path, &path_info))
+		{
+			if (S_ISREG(path_info.st_mode))
+				return (cmd_path);
+		}
+		i++;
+	}
+	return (NULL);
+}

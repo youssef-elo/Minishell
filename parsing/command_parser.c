@@ -72,13 +72,13 @@ t_exec	*command_parser(t_parsing_vars *pv, t_flags *f)
 	t_token	*temp_tokens_listt;
 
 	pv->tokens = split_tokens(pv->cmd, SEPARATOR);
-	for (int i =0;pv->tokens[i]; i++)
-	{
-		if(pv->tokens[i][0] == EXPAND)
-			printf("÷\n");
-		else
-			printf("%s\n", pv->tokens[i]);
-	}
+	// for (int i =0;pv->tokens[i]; i++)
+	// {
+	// 	if(pv->tokens[i][0] == EXPAND)
+	// 		printf("÷\n");
+	// 	else
+	// 		printf("%s\n", pv->tokens[i]);
+	// }
 	pv->token_list = list_tokens(pv->tokens);
 	if (syntax_err_checker(pv->token_list, &(f->unexpected_nl)))
 		return (NULL);

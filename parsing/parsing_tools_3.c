@@ -36,9 +36,9 @@ char	*expand_token(char *cmd, t_env *env_list)
 	int	cmd_len;
 
 	i = 0;
-	cmd_len = ft_strlen(cmd);
 	if (!cmd)
 		return (NULL);
+	cmd_len = ft_strlen(cmd);
 	while (env_list)
 	{
 		if (ft_strncmp(cmd, env_list->key, cmd_len + 1) == 0)
