@@ -22,12 +22,14 @@ int	heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 	line = NULL;
 	in_dup = dup(0);
 	expandable = 1;
+	// printf("BEFORE DELIMITER->%s\n", delimiter);
 	if (!is_expandable(delimiter))
 	{
 		expandable = 0;
 		dollar_sign_case(&delimiter);
 		quotes_omit(&delimiter);
 	}
+	// printf("AFTER DELIMITER->%s\n", delimiter);
 	signal(SIGINT, heredoc_signal);
 	heredoc_readl(fd, delimiter, env_list, expandable);
 	signal(SIGINT, signal_handler);
