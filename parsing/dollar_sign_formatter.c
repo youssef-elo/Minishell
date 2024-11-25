@@ -1,8 +1,7 @@
 #include "../minishell.h"
 
-int	is_redirection_arg(char *cmd)
+int	is_redir_arg(char *cmd, int i)
 {
-	int	i;
 	int	ret;
 
 	((1) && (i = 0, ret = 0));
@@ -12,7 +11,9 @@ int	is_redirection_arg(char *cmd)
 		{
 			if (cmd[i] == '>' || cmd[i] == '<')
 			{
-				if ((cmd[i] == '>' && cmd[i + 1] == '>') && ((i >= 1 && cmd[i - 1] != '"') || (cmd[i + 1] && cmd[i + 2] != '"')))
+				if ((cmd[i] == '>' && cmd[i + 1] == '>')
+					&& ((i >= 1 && cmd[i - 1] != '"')
+						|| (cmd[i + 1] && cmd[i + 2] != '"')))
 				{
 					ret = 1;
 					i++;
@@ -95,10 +96,11 @@ int	last_element_pipe(char *cmd)
 
 void	dollar_sign_formatter(int *i, char *s, t_flags *f, t_parsing_vars *pv)
 {
+	int		j;
 	char	*to_join;
 	char	*temp_str;
 
-	to_join = NULL;
+	(1 && (to_join = NULL, j = 0));
 	temp_str = NULL;
 	if (f->double_quoted)
 	{
@@ -111,7 +113,7 @@ void	dollar_sign_formatter(int *i, char *s, t_flags *f, t_parsing_vars *pv)
 		if (temp_str == NULL)
 		{
 			if (((!(pv->cmd) || last_element_pipe(pv->cmd))
-					&& next_element_pipe(s, i)) || is_redirection_arg(pv->cmd))
+					&& next_element_pipe(s, i)) || is_redir_arg(pv->cmd, j))
 				pv->cmd = ft_strjoinc(pv->cmd, EXPAND);
 		}
 		to_join = spaces_to_sep(temp_str);

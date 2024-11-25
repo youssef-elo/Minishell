@@ -73,6 +73,7 @@ void	ft_wait(int lastp)
 	}
 	set_signals(0, 0);
 }
+
 char	*get_path(char *cmd, char *path)
 {
 	int			i;

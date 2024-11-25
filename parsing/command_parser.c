@@ -72,25 +72,15 @@ t_exec	*command_parser(t_parsing_vars *pv, t_flags *f)
 	t_token	*temp_tokens_listt;
 
 	pv->tokens = split_tokens(pv->cmd, SEPARATOR);
-	// for (int i =0;pv->tokens[i]; i++)
-	// {
-	// 	if(pv->tokens[i][0] == EXPAND)
-	// 		printf("÷\n");
-	// 	else
-	// 		printf("%s\n", pv->tokens[i]);
-	// }
 	pv->token_list = list_tokens(pv->tokens);
 	if (syntax_err_checker(pv->token_list, &(f->unexpected_nl)))
 		return (NULL);
 	temp_tokens_listt = pv->token_list;
 	prev = NULL;
-	
 	while (temp_tokens_listt)
 	{
-		// printf("TOKEN before->%s\n", temp_tokens_listt->value);
 		if ((prev && prev->type != HEREDOC) || !prev)
 			quotes_omit(&temp_tokens_listt->value);
-		// printf("TOKEN after->%s\n--------------------------\n", temp_tokens_listt->value);
 		prev = temp_tokens_listt;
 		temp_tokens_listt = temp_tokens_listt->next;
 	}

@@ -22,14 +22,12 @@ int	heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 	line = NULL;
 	in_dup = dup(0);
 	expandable = 1;
-	// printf("BEFORE DELIMITER->%s\n", delimiter);
 	if (!is_expandable(delimiter))
 	{
 		expandable = 0;
 		dollar_sign_case(&delimiter);
 		quotes_omit(&delimiter);
 	}
-	// printf("AFTER DELIMITER->%s\n", delimiter);
 	signal(SIGINT, heredoc_signal);
 	heredoc_readl(fd, delimiter, env_list, expandable);
 	signal(SIGINT, signal_handler);
@@ -38,6 +36,13 @@ int	heredoc_launcher(int fd, char *delimiter, t_env *env_list)
 	close(in_dup);
 	close(fd);
 	return (0);
+}
+
+void	prompt_reset(struct termios *state)
+{
+	tcsetattr(0, TCSAFLUSH, state);
+	heredoc_file(RESET, NULL);
+	gc_handler(0, FREE);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -61,8 +66,7 @@ int	main(int argc, char **argv, char **env)
 			continue ;
 		}
 		main_exec(prompt);
-		heredoc_file(RESET, NULL);
-		gc_handler(0, FREE);
+		prompt_reset(&state);
 		free(rl);
 	}
 	galloc(0, FREE);

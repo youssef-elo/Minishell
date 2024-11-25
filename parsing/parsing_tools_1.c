@@ -36,19 +36,20 @@ void	quotes_omit(char **str)
 		if ((*str)[j] == -2 && !single_quoted)
 		{
 			toggle(&double_quoted);
-			j++;
+			// j++;
 		}
 		else if ((*str)[j] == -1 && !double_quoted)
 		{
 			toggle(&single_quoted);
-			j++;
+			// j++;
 		}
 		else
 		{
 			(*str)[i] = (*str)[j];
 			i++;
-			j++;
+			// j++;
 		}
+		j++;
 	}
 	(*str)[i] = '\0';
 	return ;

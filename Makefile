@@ -24,8 +24,9 @@ EXECUTIONER = executioner/signals.c\
 		executioner/env_handle2.c       \
 		executioner/exit_status.c        \
 		executioner/solo_command.c        \
-		executioner/multi_commands.c       \
-		executioner/multi_commands2.c       \
+		executioner/solo_command2.c        \
+		executioner/multi_commands.c        \
+		executioner/multi_commands2.c        \
 
 PARSING = minishell.c      \
 		parsing/parsing.c   \
