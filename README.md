@@ -1,22 +1,72 @@
-Minishell is a UNIX shell written in c language, it replicates bash behavior emphasizing on rigorous error handling, command parsing, process execution, pipes, output and input redirections and signal handling.
+# Minishell
+A UNIX command-line interpreter
+42 School Project | Systems Programming in C
 
-Parsing:
+# 🌐 Overview
+Minishell is a lightweight UNIX shell supporting basic command execution, pipelines, redirections, and environment management. Developed in C as part of the 42 curriculum, it demonstrates mastery of:
 
-	• Syntax errors checking.
-	• Spliting input into tokens depending on their type.
-	• Handling different Quoting ' ".
-	• Redirection checking.
+✔️ Process creation (fork, execve)
 
-Execution:
+✔️ File descriptor management
 
-	• Builtin commands inpeentation (cd, echo, export, env, exit, pwd, unset).
-	• Environement variable maintenance updating using export and unset.
-	• Executing commands using fork() and execve() and collecting their exit status.
-	• Exit status updating when each command is executed.
-	• Implementing pipes between processes using the pipe() and dup2() commands to link processes input and output to the pipe.
-	• Signal handling SIGINT(redisplay of the promp) SIGQUIT(ignored) EOF		(exiting the shell).
-	• Redirecting proccesses input and output to the correspoding redirection set in the command  
-	">" output redirection without appending erasing all previous file contents.
-	">>" appending output to the specified file.
-	"<" input redirection , process input is the file content.
-	"<<" heredoc implementation a temporary file is created user input is added to the file which will be the input of the command.
+✔️ Signal handling
+
+✔️ Memory management
+
+# 🎯 Features
+
+Core Functionality
+
+• Command execution (e.g., ls -la, ./my_program)
+
+• History navigation (Up/Down keys)
+
+• Leak-free
+
+• Built-ins:
+
+	echo, cd, pwd, exit
+	
+	export, unset, env
+
+• Redirections:
+
+        > (overwrite), >> (append)
+        < (input), << (heredoc)
+
+• Pipes: 
+	
+ 	cmd1 | cmd2 | cmd3
+
+• Environment variables: 
+
+ 	$VAR expansion
+
+# 📡 Signal Handling
+
+SIGINT (Ctrl+C)		Interrupts foreground process/ redisplay prompt 
+
+SIGQUIT (Ctrl+ \\)	IGNORED
+
+CTRL + D		Graceful shell exit  
+
+#  Error handling
+
+   syntax errors
+
+   command not found
+
+   file not found
+
+# ✅ Compliance
+42 Norminette: Strict coding style
+
+Error Handling:
+
+Invalid syntax
+
+Permission denied
+
+Ambiguous redirects
+
+No Leaks: Verified with Valgrind
