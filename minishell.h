@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/25 19:51:23 by yel-ouaz          #+#    #+#             */
+/*   Updated: 2024/11/26 10:24:55 by yel-ouaz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -5,7 +17,6 @@
 # include <sys/stat.h>
 # include <stdio.h>
 # include <termios.h>
-# include <string.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <unistd.h>

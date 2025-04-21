@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing_tools_1.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/25 19:51:59 by yel-ouaz          #+#    #+#             */
+/*   Updated: 2024/11/25 19:59:46 by hrochd           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 void	expand_helper(char **cmd, char *str, int *i)
@@ -34,20 +46,13 @@ void	quotes_omit(char **str)
 	while (j < len)
 	{
 		if ((*str)[j] == -2 && !single_quoted)
-		{
 			toggle(&double_quoted);
-			// j++;
-		}
 		else if ((*str)[j] == -1 && !double_quoted)
-		{
 			toggle(&single_quoted);
-			// j++;
-		}
 		else
 		{
 			(*str)[i] = (*str)[j];
 			i++;
-			// j++;
 		}
 		j++;
 	}

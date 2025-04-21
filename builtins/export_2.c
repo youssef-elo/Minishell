@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export_2.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: yel-ouaz <yel-ouaz@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/25 19:53:17 by yel-ouaz          #+#    #+#             */
+/*   Updated: 2024/11/25 19:53:18 by yel-ouaz         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 void	put_export(t_exec *prompt, t_export *exp)
@@ -82,9 +94,3 @@ void	export_init(t_env *env, t_export **exp)
 	node->value = NULL;
 	export_append(exp, node);
 }
-
-// if (!ft_strncmp("_", env->key, 2))
-// {
-// 	env = env->next;
-// 	continue ;
-// }

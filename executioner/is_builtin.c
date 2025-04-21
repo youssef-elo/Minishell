@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   is_builtin.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hrochd <hrochd@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/25 19:52:49 by yel-ouaz          #+#    #+#             */
+/*   Updated: 2024/11/25 20:07:02 by hrochd           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	is_builtin(t_exec *prompt)
@@ -13,8 +25,7 @@ int	is_builtin(t_exec *prompt)
 		ft_exit_status(ft_exit(prompt, 0), SET);
 	else if (!ft_strncmp(prompt->cmd, "cd", len))
 		ft_exit_status(export_unset_cd(prompt, 3), SET);
-	else if (!ft_strncmp(prompt->cmd, "env", len)
-		&& ft_getenv(prompt->env, "PATH"))
+	else if (!ft_strncmp(prompt->cmd, "env", len))
 		ft_exit_status(ft_env(prompt), SET);
 	else if (!ft_strncmp(prompt->cmd, "unset", len))
 		ft_exit_status(export_unset_cd(prompt, 2), SET);
@@ -38,8 +49,7 @@ void	is_builtin_pipe(t_exec *prompt)
 		exit(ft_exit(prompt, 1));
 	else if (!ft_strncmp(prompt->cmd, "cd", len))
 		exit(export_unset_cd(prompt, 3));
-	else if (!ft_strncmp(prompt->cmd, "env", len)
-		&& ft_getenv(prompt->env, "PATH"))
+	else if (!ft_strncmp(prompt->cmd, "env", len))
 		exit(ft_env(prompt));
 	else if (!ft_strncmp(prompt->cmd, "unset", len))
 		exit(export_unset_cd(prompt, 2));

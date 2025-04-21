@@ -54,9 +54,9 @@ FILES =  $(BUILTINS) $(UTILS) $(EXECUTIONER) $(PARSING)
 
 OFILES = $(FILES:.c=.o)
 
-FLAGS = -Wall -Wextra -Werror $(SANITIZE)
+FLAGS = -Wall -Wextra -Werror
 
-SANITIZE = -g -fsanitize=address
+# SANITIZE = -g -fsanitize=address
 
 LIBS =  -L ~/.brew/opt/readline/lib -l readline
 
