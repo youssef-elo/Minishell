@@ -61,12 +61,6 @@ CTRL + D		Graceful shell exit
 # ✅ Compliance
 42 Norminette: Strict coding style
 
-Error Handling:
+No memory Leaks
 
-Invalid syntax
-
-Permission denied
-
-Ambiguous redirects
-
-No Leaks: Verified with Valgrind
+No file descriptor leaks
